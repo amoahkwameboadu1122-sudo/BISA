@@ -1,20 +1,20 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover products, services and student businesses with BISA, your campus marketplace.">
+    <meta name="theme-color" content="#FFF1DA">
     <title>BISA | Campus Marketplace</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <header class="header">
+        <a href="index.html" class="logo" aria-label="BISA home">BISA<span>.</span></a>
 
-    <header>
-        <h1>BISA</h1>
-
-        <nav>
-            <a href="index.html">Home</a>
+        <nav aria-label="Main navigation">
+            <a href="index.html" class="active" aria-current="page">Home</a>
             <a href="explore.html">Explore</a>
             <a href="business.html">List Your Business</a>
             <a href="about.html">About Us</a>
@@ -23,21 +23,102 @@
     </header>
 
     <main>
-        <section>
-            <h2>Find What You Need on Campus</h2>
-            <p>
-                Discover products, services and businesses
-                offered by fellow students.
-            </p>
+        <section class="home-hero">
+            <div class="hero-copy">
+                <p class="eyebrow">YOUR CAMPUS MARKETPLACE</p>
+                <h1>Big ideas. Great finds. All on campus.</h1>
+                <p class="hero-text">
+                    Discover products, services and student businesses — and
+                    help great campus ideas find their people.
+                </p>
+                <div class="hero-buttons">
+                    <a href="explore.html" class="btn btn-primary">Explore BISA</a>
+                    <a href="business.html" class="btn btn-outline">List your business</a>
+                </div>
+            </div>
 
-            <a href="explore.html">Explore Marketplace</a>
+            <div class="hero-visual" aria-hidden="true">
+                <div class="hero-graphic">
+                    <div class="hero-graphic-circle"></div>
+                    <div class="hero-graphic-mark">BISA<span>.</span></div>
+                    <div class="hero-note hero-note-top">Ideas &amp; services</div>
+                    <div class="hero-note hero-note-bottom">Made on campus</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section home-section" aria-labelledby="discover-heading">
+            <div class="section-heading">
+                <p class="eyebrow">A LITTLE BIT OF EVERYTHING</p>
+                <h2 id="discover-heading">Good things are happening on campus.</h2>
+                <p>Find the products, services and student-run businesses around you.</p>
+            </div>
+
+            <div class="category-grid">
+                <article class="category-card home-category-card">
+                    <span class="category-icon" aria-hidden="true">01</span>
+                    <h3>Products</h3>
+                    <p>Discover useful finds and things made or sold by students.</p>
+                </article>
+                <article class="category-card home-category-card">
+                    <span class="category-icon" aria-hidden="true">02</span>
+                    <h3>Services</h3>
+                    <p>Find creative skills, practical help and services close to campus.</p>
+                </article>
+                <article class="category-card home-category-card">
+                    <span class="category-icon" aria-hidden="true">03</span>
+                    <h3>Student businesses</h3>
+                    <p>Meet the entrepreneurs building something of their own.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="section home-section" aria-labelledby="how-heading">
+            <div class="section-heading">
+                <p class="eyebrow">SIMPLE BY DESIGN</p>
+                <h2 id="how-heading">Find your way around BISA.</h2>
+                <p>Whether you are looking for something or sharing what you do, start here.</p>
+            </div>
+
+            <div class="how-it-works">
+                <article class="how-card">
+                    <span>01 / DISCOVER</span>
+                    <h3>Explore what is on offer</h3>
+                    <p>Browse the marketplace to find products, services and student businesses.</p>
+                </article>
+                <article class="how-card">
+                    <span>02 / CONNECT</span>
+                    <h3>Reach out directly</h3>
+                    <p>Use a listing's contact details to connect with the business owner.</p>
+                </article>
+                <article class="how-card">
+                    <span>03 / SHARE</span>
+                    <h3>Bring your idea to BISA</h3>
+                    <p>Tell us about your business and apply to be part of the marketplace.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="business-banner" aria-labelledby="business-banner-heading">
+            <div>
+                <p class="eyebrow light">HAVE SOMETHING TO SHARE?</p>
+                <h2 id="business-banner-heading">Your next customer could be right here.</h2>
+                <p>Introduce your student business to the BISA community.</p>
+            </div>
+            <a href="business.html" class="btn btn-light">List your business</a>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2026 BISA. All rights reserved.</p>
+    <footer class="footer">
+        <a href="index.html" class="logo footer-logo">BISA<span>.</span></a>
         <p>Find What You Need. Connect with Student Businesses.</p>
+        <nav class="footer-nav" aria-label="Footer navigation">
+            <a href="explore.html">Explore</a>
+            <a href="business.html">List Your Business</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+        <p class="copyright">&copy; 2026 BISA. All rights reserved.</p>
     </footer>
-
 </body>
 </html>

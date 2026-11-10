@@ -4,8 +4,18 @@
    Main CSS Stylesheet
 ================================= */
 
-/* GOOGLE FONT */
-@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700;800&display=swap');
+/* GOOGLE FONTS */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Sofia+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --berry-plum: #54234A;
+    --mango-gold: #FFB02E;
+    --hot-coral: #F16B4B;
+    --warm-vanilla: #FFF1DA;
+    --dark: var(--berry-plum);
+    --white: #FFFFFF;
+    --gray: #665B62;
+}
 
 
 /* 1. GENERAL STYLING */
@@ -17,7 +27,7 @@
 }
 
 body {
-    font-family: 'Sofia Sans', sans-serif;
+    font-family: 'Montserrat', 'Sofia Sans', sans-serif;
     background-color: #FFF1DA;
     color: #54234A;
     line-height: 1.6;
@@ -44,7 +54,8 @@ button, input, textarea, select {
 
 /* 2. HEADER AND NAVIGATION */
 
-.header {
+.header,
+.site-header {
     background-color: #FFFFFF;
     min-height: 75px;
     padding: 15px 7%;
@@ -86,6 +97,19 @@ nav a.active {
     color: #F16B4B;
 }
 
+.site-header .header-button {
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--berry-plum);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.site-header .header-button:hover {
+    background: #71335F;
+}
+
 
 /* 3. HERO SECTION */
 
@@ -121,6 +145,175 @@ nav a.active {
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.home-hero {
+    min-height: 490px;
+    padding: 72px 7%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
+    align-items: center;
+    gap: clamp(32px, 6vw, 80px);
+    text-align: left;
+    background:
+        radial-gradient(ellipse at 82% 48%, rgba(255, 176, 46, 0.2), transparent 34%),
+        var(--warm-vanilla);
+}
+
+.home-hero h1 {
+    max-width: 680px;
+    margin-bottom: 20px;
+    color: var(--berry-plum);
+    font-size: clamp(40px, 5.2vw, 68px);
+    letter-spacing: -2px;
+}
+
+.home-hero .hero-text {
+    max-width: 560px;
+    margin: 0 0 28px;
+    font-size: 18px;
+}
+
+.hero-visual {
+    min-height: 330px;
+    display: grid;
+    place-items: center;
+}
+
+.hero-graphic {
+    position: relative;
+    width: min(100%, 430px);
+    min-height: 330px;
+    display: grid;
+    place-items: center;
+}
+
+.hero-graphic-circle {
+    position: absolute;
+    width: min(72vw, 290px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(84, 35, 74, 0.16);
+    border-radius: 50%;
+    background: linear-gradient(145deg, #FFD88B, #F7AD9B);
+    box-shadow: 0 24px 60px rgba(84, 35, 74, 0.12);
+}
+
+.hero-graphic-mark {
+    z-index: 1;
+    color: var(--berry-plum);
+    font-size: clamp(54px, 8vw, 88px);
+    font-weight: 800;
+    letter-spacing: -6px;
+}
+
+.hero-graphic-mark span {
+    color: var(--hot-coral);
+}
+
+.hero-note {
+    position: absolute;
+    z-index: 2;
+    padding: 13px 17px;
+    border: 1px solid rgba(84, 35, 74, 0.08);
+    border-radius: 10px;
+    background: var(--white);
+    box-shadow: 0 12px 32px rgba(84, 35, 74, 0.12);
+    color: var(--berry-plum);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.hero-note-top {
+    top: 24px;
+    right: 0;
+}
+
+.hero-note-bottom {
+    bottom: 24px;
+    left: 0;
+}
+
+.home-section {
+    padding-top: 68px;
+    padding-bottom: 68px;
+}
+
+.home-section:nth-of-type(even) {
+    background: #FFFFFF;
+}
+
+.home-section .section-heading {
+    max-width: 760px;
+    margin: 0 auto 30px;
+    display: block;
+    text-align: center;
+}
+
+.home-section .section-heading h2 {
+    margin-bottom: 10px;
+    color: var(--berry-plum);
+    font-size: clamp(27px, 3.5vw, 38px);
+}
+
+.home-section .section-heading p {
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.home-category-card {
+    min-height: 190px;
+}
+
+.home-category-card .category-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--warm-vanilla);
+}
+
+.how-it-works {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.how-card {
+    padding: 25px;
+    border: 1px solid #EEE3E8;
+    border-radius: 10px;
+    background: var(--white);
+}
+
+.how-card span {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: var(--hot-coral);
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.how-card h3 {
+    margin-bottom: 8px;
+}
+
+.business-banner .btn {
+    white-space: nowrap;
+}
+
+.footer-nav {
+    margin: 14px 0;
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    color: #F8EAF1;
+    font-size: 14px;
+}
+
+.footer-nav a:hover {
+    color: var(--mango-gold);
 }
 
 
@@ -519,7 +712,8 @@ nav a.active {
 
 @media (max-width: 768px) {
 
-    .header {
+    .header,
+    .site-header {
         flex-direction: column;
         padding: 18px 5%;
     }
@@ -537,13 +731,47 @@ nav a.active {
         padding: 70px 5%;
     }
 
+    .home-hero {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 64px 6% 40px;
+        text-align: center;
+    }
+
+    .home-hero h1,
+    .home-hero .hero-text {
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .home-hero .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-visual {
+        min-height: 280px;
+    }
+
+    .hero-graphic {
+        min-height: 280px;
+    }
+
     .section {
         padding: 45px 5%;
+    }
+
+    .home-section {
+        padding-top: 50px;
+        padding-bottom: 50px;
     }
 
     .category-grid,
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .how-it-works {
+        grid-template-columns: 1fr;
     }
 
     .business-banner {
@@ -552,6 +780,10 @@ nav a.active {
 
     .contact-layout {
         grid-template-columns: 1fr;
+    }
+
+    .site-header .header-button {
+        display: none;
     }
 }
 
@@ -571,6 +803,36 @@ nav a.active {
         width: 100%;
     }
 
+    .home-hero {
+        padding: 52px 5% 32px;
+    }
+
+    .home-hero h1 {
+        letter-spacing: -1px;
+    }
+
+    .hero-visual,
+    .hero-graphic {
+        min-height: 240px;
+    }
+
+    .hero-graphic-circle {
+        width: 200px;
+    }
+
+    .hero-note {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .hero-note-top {
+        right: -4px;
+    }
+
+    .hero-note-bottom {
+        left: -4px;
+    }
+
     .search-box {
         flex-direction: column;
     }
@@ -586,6 +848,7 @@ nav a.active {
     .bisa-form {
         padding: 20px;
     }
+}
     
 /* =========================================
    BISA EXPLORE PAGE - UPDATED WIREFRAME
@@ -594,7 +857,7 @@ nav a.active {
 /* PAGE INTRODUCTION */
 
 .explore-page {
-    padding: 0 3.5%;
+    padding: 0 5%;
 }
 
 .explore-intro {
@@ -625,10 +888,34 @@ nav a.active {
 .market-search input {
     flex: 1;
     min-width: 0;
+    padding: 13px 15px;
+    border: 1px solid #DDD0D8;
+    border-radius: 7px;
+    background: var(--white);
 }
 
 .market-search button {
     min-width: 110px;
+}
+
+.button {
+    padding: 11px 16px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.primary-button,
+.submit-request {
+    background: var(--berry-plum);
+    color: var(--white);
+}
+
+.primary-button:hover,
+.submit-request:hover {
+    background: #71335F;
 }
 
 
@@ -646,9 +933,10 @@ nav a.active {
 /* FILTER PANEL */
 
 .filter-panel {
-    border: 1px solid #CCCCCC;
+    border: 1px solid #EEE3E8;
+    border-radius: 10px;
     padding: 18px;
-    background: #FAFAFA;
+    background: var(--white);
 }
 
 .filter-panel h2 {
@@ -693,9 +981,13 @@ nav a.active {
 .filter-button {
     width: 100%;
     background: var(--white);
-    color: var(--dark);
+    color: var(--berry-plum);
     border: 1px solid var(--dark);
-    border-radius: 0;
+    border-radius: 7px;
+}
+
+.filter-button:hover {
+    background: var(--warm-vanilla);
 }
 
 
@@ -726,14 +1018,28 @@ nav a.active {
 }
 
 .marketplace-listings .listing-card {
-    border: 1px solid #AAAAAA;
-    border-radius: 0;
-    padding: 6px;
+    border: 1px solid #EEE3E8;
+    border-radius: 10px;
+    padding: 8px;
+    background: var(--white);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.marketplace-listings .listing-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(84, 35, 74, 0.1);
 }
 
 .marketplace-listings .image-placeholder {
     min-height: 125px;
-    border-radius: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #FFF1DA, #F8E6D2);
+    color: var(--berry-plum);
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .marketplace-listings .listing-content {
@@ -768,8 +1074,9 @@ nav a.active {
 
 .contact-link {
     padding: 6px 12px;
-    border: 1px solid var(--dark);
-    color: var(--dark) !important;
+    border: 1px solid var(--berry-plum);
+    border-radius: 5px;
+    color: var(--berry-plum) !important;
     font-size: 10px !important;
     margin: 0 !important;
 }
@@ -787,8 +1094,8 @@ nav a.active {
 .chat-panel,
 .request-panel {
     background: var(--white);
-    border: 1px solid #AAAAAA;
-    border-radius: 0;
+    border: 1px solid #EEE3E8;
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -881,8 +1188,9 @@ nav a.active {
     min-height: 110px;
     margin: 10px;
     padding: 15px;
-    background: #F2F2F2;
-    border: 1px solid #CCCCCC;
+    background: #FFF9EF;
+    border: 1px solid #EEE3E8;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -915,7 +1223,8 @@ nav a.active {
     border: none;
     background: var(--berry-plum);
     color: var(--white);
-    border-radius: 4px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 
@@ -955,8 +1264,8 @@ nav a.active {
 .request-form textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #BBBBBB;
-    border-radius: 0;
+    border: 1px solid #DDD0D8;
+    border-radius: 6px;
     font-size: 11px;
 }
 
@@ -973,8 +1282,7 @@ nav a.active {
     width: 100%;
     margin-top: 5px !important;
     align-self: stretch !important;
-    background: var(--berry-plum);
-    border-radius: 0;
+    border-radius: 7px;
 }
 
 
@@ -1053,7 +1361,5 @@ nav a.active {
     .marketplace-listings .listing-grid {
         grid-template-columns: 1fr;
     }
-
-}
 
 }
