@@ -39,13 +39,6 @@
                 <h2>Filters</h2>
 
                 <div class="filter-group">
-                    <h3>Category</h3>
-                    <label><input type="checkbox" name="category" value="products"> Products</label>
-                    <label><input type="checkbox" name="category" value="services"> Services</label>
-                    <label><input type="checkbox" name="category" value="businesses"> Businesses</label>
-                </div>
-
-                <div class="filter-group">
                     <h3>Location</h3>
                     <label><input type="checkbox" name="location" value="campus"> Campus</label>
                     <label><input type="checkbox" name="location" value="nearby"> Nearby</label>
@@ -56,147 +49,18 @@
 
             <section class="marketplace-listings">
                 <div class="listings-heading">
-                    <h2>Available Listings</h2>
+                    <h2>Published businesses</h2>
                     <select aria-label="Sort listings">
-                        <option>Sort by</option>
+                        <option>Featured</option>
                         <option>Newest</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
                     </select>
                 </div>
 
                 <div class="listing-grid">
-                    <article class="listing-card">
-                        <div class="image-placeholder">Product</div>
-                        <div class="listing-content">
-                            <p class="listing-category">Product</p>
-                            <h3>Fruitful Bites</h3>
-                            <p>Healthy smoothies, wraps and snack packs made fresh on campus.</p>
-                            <div class="listing-footer"><span>Main Campus</span><a href="contact.html" class="contact-link">Contact</a></div>
-                        </div>
-                    </article>
-
-                    <article class="listing-card">
-                        <div class="image-placeholder">Service</div>
-                        <div class="listing-content">
-                            <p class="listing-category">Service</p>
-                            <h3>Glow Studio</h3>
-                            <p>Beauty and grooming services with flexible student-friendly hours.</p>
-                            <div class="listing-footer"><span>Hostel Zone</span><a href="contact.html" class="contact-link">Contact</a></div>
-                        </div>
-                    </article>
-
-                    <article class="listing-card">
-                        <div class="image-placeholder">Business</div>
-                        <div class="listing-content">
-                            <p class="listing-category">Business</p>
-                            <h3>FixHub Campus</h3>
-                            <p>Quick phone repairs, chargers and tech support for student devices.</p>
-                            <div class="listing-footer"><span>Engineering Block</span><a href="contact.html" class="contact-link">Contact</a></div>
-                        </div>
-                    </article>
-
-                    <article class="listing-card">
-                        <div class="image-placeholder">Product</div>
-                        <div class="listing-content">
-                            <p class="listing-category">Product</p>
-                            <h3>BookNest</h3>
-                            <p>Used textbooks, stationery and academic essentials at student prices.</p>
-                            <div class="listing-footer"><span>Library Corner</span><a href="contact.html" class="contact-link">Contact</a></div>
-                        </div>
-                    </article>
-
-                    <article class="listing-card">
-                        <div class="image-placeholder">Service</div>
-                        <div class="listing-content">
-                            <p class="listing-category">Service</p>
-                            <h3>Campus Cart</h3>
-                            <p>Convenient delivery and errand support for busy students and clubs.</p>
-                            <div class="listing-footer"><span>Student Centre</span><a href="contact.html" class="contact-link">Contact</a></div>
-                        </div>
-                    </article>
-
-                    <article class="listing-card">
-                        <div class="image-placeholder">Product</div>
-                        <div class="listing-content">
-                            <p class="listing-category">Product</p>
-                            <h3>Skincare Box</h3>
-                            <p>Student-ready self-care bundles and beauty supplies for campus life.</p>
-                            <div class="listing-footer"><span>Care Block</span><a href="contact.html" class="contact-link">Contact</a></div>
-                        </div>
-                    </article>
+                    <p class="empty-state">Loading published businesses…</p>
                 </div>
             </section>
 
-            <aside class="chat-request-column" id="chat-request">
-                <section class="chat-panel">
-                    <div class="chat-panel-heading">
-                        <h2>Chat with Others Online</h2>
-                        <span class="online-count">
-                            <span class="online-dot"></span>
-                            3 Online
-                        </span>
-                    </div>
-
-                    <button type="button" class="online-user">
-                        <span class="user-avatar">S</span>
-                        <span class="user-details">
-                            <strong>Student Seller</strong>
-                            <small>Available now</small>
-                        </span>
-                        <span class="user-arrow">›</span>
-                    </button>
-
-                    <button type="button" class="online-user">
-                        <span class="user-avatar">P</span>
-                        <span class="user-details">
-                            <strong>Service Provider</strong>
-                            <small>Available now</small>
-                        </span>
-                        <span class="user-arrow">›</span>
-                    </button>
-
-                    <button type="button" class="online-user">
-                        <span class="user-avatar">B</span>
-                        <span class="user-details">
-                            <strong>Business Owner</strong>
-                            <small>Available now</small>
-                        </span>
-                        <span class="user-arrow">›</span>
-                    </button>
-
-                    <div class="conversation-area">
-                        <p>Select a user to start chatting.</p>
-                    </div>
-
-                    <div class="message-area">
-                        <input type="text" placeholder="Write a message..." aria-label="Write a message">
-                        <button type="button" aria-label="Send message">➤</button>
-                    </div>
-                </section>
-
-                <section class="request-panel">
-                    <h2>Make a Request</h2>
-                    <p>Can't find what you need? Tell us what you're looking for.</p>
-
-                    <form class="request-form">
-                        <label for="request-type">Request Type</label>
-                        <select id="request-type" name="request-type" required>
-                            <option value="">Select Type</option>
-                            <option value="product">Product</option>
-                            <option value="service">Service</option>
-                        </select>
-
-                        <label for="request-description">Request Description</label>
-                        <textarea id="request-description" name="request-description" rows="3" placeholder="Describe what you need..." required></textarea>
-
-                        <label for="request-image">Attach Image (Optional)</label>
-                        <input type="file" id="request-image" name="request-image" accept="image/*">
-
-                        <button type="button" class="button submit-request">Submit Request</button>
-                    </form>
-                </section>
-            </aside>
         </section>
     </main>
 
@@ -214,5 +78,7 @@
             <a href="admin.html" class="admin-link">Admin portal</a>
         </div>
     </footer>
+    <script src="site-shell.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

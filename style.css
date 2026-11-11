@@ -783,6 +783,13 @@ nav a.active {
     color: #54234A;
 }
 
+.file-preview-image {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
 .remove-file {
     border: none;
     background: transparent;
@@ -809,6 +816,12 @@ nav a.active {
     color: #9d2a2a;
     background: #fff1f1;
     padding: 10px 12px;
+}
+
+.feedback.info {
+    display: block;
+    color: #245EC1;
+    background: #E8F0FF;
 }
 
 .admin-page {
@@ -1375,7 +1388,7 @@ tbody td {
         padding: 20px;
     }
 }
-    
+
 /* =========================================
    BISA EXPLORE PAGE - UPDATED WIREFRAME
 ========================================= */
@@ -1445,7 +1458,7 @@ tbody td {
 }
 
 
-/* THREE-COLUMN LAYOUT */
+/* MARKETPLACE LAYOUT */
 
 .marketplace-layout {
     display: grid;
@@ -1453,6 +1466,12 @@ tbody td {
     gap: 18px;
     align-items: start;
     padding-bottom: 40px;
+}
+
+.featured-home-section .listing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
 }
 
 
@@ -1886,6 +1905,155 @@ tbody td {
 
     .marketplace-listings .listing-grid {
         grid-template-columns: 1fr;
+    }
+
+    .marketplace-layout {
+        grid-template-columns: 190px minmax(0, 1fr);
+    }
+
+    .marketplace-listings .listing-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 7px;
+    }
+
+    .listing-offerings {
+        margin: 8px 0;
+        padding-left: 18px;
+        color: #665B62;
+        font-size: 13px;
+    }
+
+    .site-announcement {
+        max-width: 1200px;
+        margin: 0 auto 24px;
+        padding: 14px 20px;
+        border-radius: 8px;
+        background: #FFF1DA;
+        color: #54234A;
+        font-weight: 600;
+    }
+
+    .table-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .table-filters select,
+    .detail-panel select,
+    .detail-panel textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #DDD0D8;
+        border-radius: 8px;
+        background: #FFFFFF;
+    }
+
+    .detail-panel label {
+        display: block;
+        margin: 14px 0 6px;
+        color: #54234A;
+        font-weight: 600;
+    }
+
+    .detail-panel textarea {
+        resize: vertical;
+    }
+
+    .management-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .management-card {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid #EEE3E8;
+        border-radius: 8px;
+        background: #FFFFFF;
+    }
+
+    .management-card label {
+        display: grid;
+        gap: 6px;
+        color: #54234A;
+        font-weight: 600;
+    }
+
+    .management-card input,
+    .management-card textarea,
+    .management-card select,
+    .product-update-form input {
+        width: 100%;
+        padding: 10px 11px;
+        border: 1px solid #DDD0D8;
+        border-radius: 7px;
+    }
+
+    .management-card textarea {
+        resize: vertical;
+    }
+
+    .management-card p,
+    .management-card small {
+        color: #665B62;
+    }
+
+    .product-update-form {
+        display: grid;
+        gap: 8px;
+        margin: 12px 0;
+        padding: 12px;
+        border: 1px solid #EEE3E8;
+        border-radius: 8px;
+    }
+
+    .confirmation-label {
+        display: flex !important;
+        align-items: flex-start;
+        gap: 9px;
+    }
+
+    .confirmation-label input[type="checkbox"] {
+        width: auto !important;
+        margin-top: 4px;
+    }
+
+    .team-card {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+    }
+
+    .team-card small {
+        display: block;
+        margin-top: 4px;
+    }
+
+    .panel-shell[hidden] {
+        display: none !important;
+    }
+
+    .listing-offerings,
+    .detail-media ul {
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 650px) {
+        .marketplace-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .marketplace-listings .listing-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .featured-home-section .listing-grid {
+            grid-template-columns: 1fr;
+        }
     }
 
 }

@@ -24,7 +24,7 @@
         <section class="page-heading admin-intro">
             <p class="eyebrow">ADMINISTRATOR PORTAL</p>
             <h1>BISA dashboard</h1>
-            <p>Review applications, approve businesses, track activity and communicate with applicants.</p>
+            <p>Review applications, approve businesses, manage published listings and communicate with applicants.</p>
         </section>
 
         <div class="dashboard-toolbar">
@@ -65,7 +65,17 @@
                         <p class="eyebrow">Application management</p>
                         <h2>All applications</h2>
                     </div>
-                    <input id="applicationSearch" type="search" placeholder="Search applicants or businesses" aria-label="Search applications">
+                    <div class="table-filters">
+                        <input id="applicationSearch" type="search" placeholder="Search applicants or businesses" aria-label="Search applications">
+                        <select id="applicationStatusFilter" aria-label="Filter by application status">
+                            <option value="">All statuses</option>
+                            <option value="PENDING">Pending</option>
+                            <option value="UNDER REVIEW">Under review</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="REJECTED">Rejected</option>
+                            <option value="CHANGES REQUESTED">Changes requested</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="table-wrap">
@@ -98,8 +108,9 @@
                 </div>
 
                 <form id="smsForm" class="sms-form">
-                    <label for="smsPhone">Recipient phone</label>
-                    <input id="smsPhone" type="tel" placeholder="Select applicant phone number" required>
+                    <input id="smsApplicationId" type="hidden">
+                    <label for="smsPhone">Applicant phone (confirm before sending)</label>
+                    <input id="smsPhone" type="tel" readonly required>
 
                     <label for="smsTemplate">Message template</label>
                     <select id="smsTemplate">
@@ -107,32 +118,114 @@
                         <option>Application approved</option>
                         <option>Application rejected</option>
                         <option>Additional information required</option>
-                        <option>Correction requested</option>
+                        <option>Application correction requested</option>
+                        <option>Custom message</option>
                     </select>
 
                     <label for="smsMessage">Message body</label>
                     <textarea id="smsMessage" rows="6" required></textarea>
 
+                    <label class="confirmation-label">
+                        <input id="smsConfirm" type="checkbox" required>
+                        I confirm this recipient and message are correct.
+                    </label>
                     <button type="submit" class="btn btn-primary">Send SMS</button>
                     <div id="smsResult" class="feedback" aria-live="polite"></div>
+                    <div id="smsHistory" class="management-list" aria-live="polite"></div>
                 </form>
             </div>
 
             <div class="panel-shell">
                 <div class="panel-header compact-header">
                     <div>
-                        <p class="eyebrow">Operations</p>
+                        <p class="eyebrow">Approved listings</p>
                         <h2>Business management</h2>
                     </div>
                 </div>
+                <form id="businessCreateForm" class="sms-form business-create-form">
+                    <h3>Create a business listing</h3>
+                    <label for="newBusinessName">Business name</label>
+                    <input id="newBusinessName" name="business_name" required>
+                    <label for="newBusinessCategory">Category</label>
+                    <select id="newBusinessCategory" name="category_id" required></select>
+                    <label for="newBusinessDescription">Description</label>
+                    <textarea id="newBusinessDescription" name="description" rows="3" required></textarea>
+                    <label for="newBusinessOfferings">Products or services</label>
+                    <textarea id="newBusinessOfferings" name="offerings" rows="2" required></textarea>
+                    <label for="newBusinessLocation">Location</label>
+                    <input id="newBusinessLocation" name="campus_location">
+                    <label for="newBusinessPhone">Contact phone</label>
+                    <input id="newBusinessPhone" name="contact_phone" required>
+                    <label for="newBusinessEmail">Contact email</label>
+                    <input id="newBusinessEmail" name="contact_email" type="email" required>
+                    <button type="submit" class="btn btn-primary">Create draft listing</button>
+                    <div id="businessCreateResult" class="feedback" aria-live="polite"></div>
+                </form>
+                <div id="businessManagementList" class="management-list" aria-live="polite"></div>
+            </div>
+        </section>
 
-                <ul class="operations-list">
-                    <li>Review approved and pending listings.</li>
-                    <li>Manage featured businesses and products.</li>
-                    <li>Publish approved student businesses.</li>
-                    <li>Request corrections before publishing.</li>
-                    <li>Track notes and internal activity logs.</li>
-                </ul>
+        <section class="admin-grid secondary-grid">
+            <div class="panel-shell">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="eyebrow">Homepage content</p>
+                        <h2>Website content management</h2>
+                    </div>
+                </div>
+                <form id="websiteContentForm" class="sms-form">
+                    <label for="heroTitle">Homepage headline</label>
+                    <input id="heroTitle" name="hero_title" maxlength="160" required>
+                    <label for="heroText">Homepage introduction</label>
+                    <textarea id="heroText" name="hero_text" rows="3" maxlength="500" required></textarea>
+                    <label for="announcement">Homepage announcement (optional)</label>
+                    <input id="announcement" name="announcement" maxlength="250">
+                    <label for="contactEmailContent">Public contact email</label>
+                    <input id="contactEmailContent" name="contact_email" type="email">
+                    <label for="contactPhoneContent">Public contact phone</label>
+                    <input id="contactPhoneContent" name="contact_phone" type="tel">
+                    <label for="contactLocationContent">Public contact location</label>
+                    <input id="contactLocationContent" name="contact_location">
+                    <button type="submit" class="btn btn-primary">Save homepage content</button>
+                    <div id="contentResult" class="feedback" aria-live="polite"></div>
+                </form>
+            </div>
+        </section>
+
+        <section class="admin-grid secondary-grid">
+            <div class="panel-shell">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="eyebrow">Authorized access</p>
+                        <h2>Administrator team</h2>
+                    </div>
+                </div>
+                <form id="teamInviteForm" class="sms-form">
+                    <label for="teamFullName">Team member name</label>
+                    <input id="teamFullName" name="fullName" type="text" required>
+                    <label for="teamEmail">Email address</label>
+                    <input id="teamEmail" name="email" type="email" required>
+                    <label for="teamRole">Role</label>
+                    <select id="teamRole" name="role" required>
+                        <option value="application_manager">Application Manager</option>
+                        <option value="content_manager">Content Manager</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="super_admin">Super Administrator</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Invite administrator</button>
+                    <div id="teamResult" class="feedback" aria-live="polite"></div>
+                </form>
+                <div id="teamList" class="management-list"></div>
+            </div>
+
+            <div class="panel-shell">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="eyebrow">Audit trail</p>
+                        <h2>Recent activity</h2>
+                    </div>
+                </div>
+                <div id="activityList" class="management-list" aria-live="polite"></div>
             </div>
         </section>
     </main>
@@ -152,6 +245,7 @@
         </div>
     </footer>
 
+    <script src="site-shell.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

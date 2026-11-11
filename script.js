@@ -1,629 +1,385 @@
 (function () {
-  const appStorageKey = 'bisaApplications';
-  const activityStorageKey = 'bisaActivityLog';
-  const smsStorageKey = 'bisaSmsLog';
+  const sessionKey = 'bisaAdminAccessToken';
+  let configPromise;
+  let contactEmail = 'hello@bisa-campus.com';
 
-  function readJson(key, fallback) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
-    } catch (error) {
-      return fallback;
+  function loadConfig() {
+    if (!configPromise) {
+      configPromise = fetch('/api/config')
+        .then(async (response) => {
+          const config = await response.json();
+          if (!response.ok) throw new Error(config.error || 'BISA backend configuration is unavailable.');
+          return config;
+        });
     }
+    return configPromise;
   }
 
-  function saveJson(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  }
-
-  function formatDate(dateValue) {
-    return new Date(dateValue).toLocaleString([], {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    });
-  }
-
-  function generateReference() {
-    const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    const random = Math.random().toString(36).slice(2, 8).toUpperCase();
-    return `BISA-${stamp}-${random}`;
-  }
-
-  function allowedImageFormat(file) {
-    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-    return allowed.includes(file.type) || /\.(jpe?g|png|webp|gif)$/i.test(file.name);
-  }
-
-  function allowedVideoFormat(file) {
-    const allowed = ['video/mp4', 'video/webm', 'video/quicktime'];
-    return allowed.includes(file.type) || /\.(mp4|webm|mov)$/i.test(file.name);
-  }
-
-  function validPhone(phone) {
-    const normalized = String(phone || '').trim().replace(/[^\d+]/g, '');
-    if (!normalized) return false;
-    if (normalized.startsWith('+')) {
-      return /^\+233\d{9}$/.test(normalized);
-    }
-    return /^(233|0)\d{9}$/.test(normalized);
-  }
-
-  function getStoredApplications() {
-    const apps = readJson(appStorageKey, []);
-    if (!apps.length) {
-      const seeded = [
-        {
-          reference: 'BISA-20261110-ALPHA',
-          applicantName: 'Mawusi Boakye',
-          businessName: 'Fruitful Bites',
-          phone: '+233 245 112 345',
-          email: 'mawusi@example.com',
-          category: 'Food and Drinks',
-          location: 'Main Campus',
-          description: 'Healthy smoothies and fast campus snacks prepared daily by student entrepreneurs.',
-          offerings: 'Smoothies, wraps, snack packs',
-          submissionDate: '2026-11-10T08:30:00.000Z',
-          status: 'PENDING',
-          media: [{ name: 'fruitful-bites-1.jpg', type: 'image' }, { name: 'fruitful-bites-2.jpg', type: 'image' }, { name: 'fruitful-bites-3.jpg', type: 'image' }],
-          notes: 'Waiting for business verification.'
-        },
-        {
-          reference: 'BISA-20261109-BRAVO',
-          applicantName: 'Ama Mensah',
-          businessName: 'Glow Studio',
-          phone: '+233 591 768 902',
-          email: 'ama@example.com',
-          category: 'Beauty and Personal Care',
-          location: 'Hostel Zone',
-          description: 'Beauty and grooming services tailored to student schedules.',
-          offerings: 'Braiding, makeup, facials',
-          submissionDate: '2026-11-09T13:05:00.000Z',
-          status: 'APPROVED',
-          media: [{ name: 'glow-studio-1.jpg', type: 'image' }, { name: 'glow-studio-2.jpg', type: 'image' }, { name: 'glow-studio-3.jpg', type: 'image' }],
-          notes: 'Approved and published.'
-        },
-        {
-          reference: 'BISA-20261108-CHARLIE',
-          applicantName: 'Kojo Osei',
-          businessName: 'FixHub Campus',
-          phone: '+233 200 998 221',
-          email: 'kojo@example.com',
-          category: 'Technology',
-          location: 'Engineering Block',
-          description: 'Repairs, accessories and student tech support for everyday gadgets.',
-          offerings: 'Phone repairs, charger sales, laptop support',
-          submissionDate: '2026-11-08T11:55:00.000Z',
-          status: 'REJECTED',
-          media: [{ name: 'fixhub-1.jpg', type: 'image' }, { name: 'fixhub-2.jpg', type: 'image' }, { name: 'fixhub-3.jpg', type: 'image' }],
-          notes: 'Missing operating details and location proof.'
-        }
-      ];
-      saveJson(appStorageKey, seeded);
-      return seeded;
-    }
-    return apps;
-  }
-
-  function recordActivity(text) {
-    const logs = readJson(activityStorageKey, []);
-    logs.unshift({
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      text,
-      timestamp: new Date().toISOString()
-    });
-    if (logs.length > 12) {
-      logs.length = 12;
-    }
-    saveJson(activityStorageKey, logs);
-  }
-
-  function recordSms(message, phone, status, template) {
-    const logs = readJson(smsStorageKey, []);
-    logs.unshift({
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      phone,
-      status,
-      template,
-      message,
-      date: new Date().toISOString()
-    });
-    if (logs.length > 20) {
-      logs.length = 20;
-    }
-    saveJson(smsStorageKey, logs);
-  }
-
-  function setFeedback(elementId, message, type) {
-    const target = document.getElementById(elementId);
+  function showFeedback(id, message, type) {
+    const target = document.getElementById(id);
     if (!target) return;
     target.className = `feedback ${type}`;
     target.textContent = message;
   }
 
-  function populateBusinessFormPreview(files, previewTargetId) {
-    const previewTarget = document.getElementById(previewTargetId);
-    if (!previewTarget) return;
-    previewTarget.innerHTML = '';
-
-    files.forEach((file, index) => {
-      const item = document.createElement('div');
-      item.className = 'file-preview-item';
-      item.innerHTML = `
-        <span>${file.name}</span>
-        <button type="button" data-remove-file="${index}" class="remove-file">Remove</button>
-      `;
-      previewTarget.appendChild(item);
-    });
-
-    previewTarget.querySelectorAll('[data-remove-file]').forEach((button) => {
-      button.addEventListener('click', () => {
-        const removeIndex = Number(button.getAttribute('data-remove-file'));
-        const updatedFiles = Array.from(files);
-        updatedFiles.splice(removeIndex, 1);
-        const input = document.getElementById(previewTargetId === 'imagePreviews' ? 'businessPhotos' : 'businessVideo');
-        const dataTransfer = new DataTransfer();
-        updatedFiles.forEach((file) => dataTransfer.items.add(file));
-        if (input) {
-          input.files = dataTransfer.files;
-        }
-        populateBusinessFormPreview(updatedFiles, previewTargetId);
-      });
-    });
-  }
-
-  function handleBusinessFormSubmit(event) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const imageInput = document.getElementById('businessPhotos');
-    const videoInput = document.getElementById('businessVideo');
-    const imageFiles = Array.from(imageInput?.files || []);
-    const videoFiles = Array.from(videoInput?.files || []);
-
-    if (imageFiles.length < 3) {
-      setFeedback('submissionResult', 'Please upload at least three business photos before submitting.', 'error');
-      return;
-    }
-
-    const invalidImage = imageFiles.find((file) => !allowedImageFormat(file) || file.size > 5 * 1024 * 1024);
-    if (invalidImage) {
-      setFeedback('submissionResult', 'Image uploads must be JPG, JPEG, PNG, WEBP or GIF and under 5MB each.', 'error');
-      return;
-    }
-
-    if (videoFiles.length > 1) {
-      setFeedback('submissionResult', 'Please upload only one optional video for your business profile.', 'error');
-      return;
-    }
-
-    if (videoFiles[0] && (!allowedVideoFormat(videoFiles[0]) || videoFiles[0].size > 25 * 1024 * 1024)) {
-      setFeedback('submissionResult', 'Video uploads must be MP4, WEBM or MOV and under 25MB.', 'error');
-      return;
-    }
-
-    const applicantName = form.owner.value.trim();
-    const businessName = form.businessName.value.trim();
-    const phone = form.phone.value.trim();
-    const email = form.email.value.trim();
-    const location = form.location.value.trim();
-    const description = form.description.value.trim();
-    const offerings = form.offering.value.trim();
-
-    if (!applicantName || !businessName || !email || !phone || !location || !description || !offerings) {
-      setFeedback('submissionResult', 'Please complete every required business detail before submitting.', 'error');
-      return;
-    }
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setFeedback('submissionResult', 'Please enter a valid email address for contact purposes.', 'error');
-      return;
-    }
-
-    if (!validPhone(phone)) {
-      setFeedback('submissionResult', 'Please enter a valid Ghanaian phone number (for example +233 24 123 4567).', 'error');
-      return;
-    }
-
-    const app = {
-      reference: generateReference(),
-      applicantName,
-      businessName,
-      phone,
-      email,
-      category: form.category.value,
-      location,
-      description,
-      offerings,
-      submissionDate: new Date().toISOString(),
-      status: 'PENDING',
-      media: imageFiles.map((file) => ({ name: file.name, type: 'image', size: file.size })),
-      video: videoFiles[0] ? { name: videoFiles[0].name, type: 'video', size: videoFiles[0].size } : null,
-      notes: 'Application received and awaiting administrator review.'
-    };
-
-    const apps = readJson(appStorageKey, []);
-    apps.unshift(app);
-    saveJson(appStorageKey, apps);
-    recordActivity(`${app.applicantName} submitted a new application reference ${app.reference}.`);
-
-    setFeedback('submissionResult', `Application submitted successfully. Your reference is ${app.reference}.`, 'success');
-    form.reset();
-    const imagePreview = document.getElementById('imagePreviews');
-    if (imagePreview) imagePreview.innerHTML = '';
-    const videoPreview = document.getElementById('videoPreview');
-    if (videoPreview) videoPreview.textContent = 'No video selected';
-  }
-
-  function handleFileInputChange(event) {
-    const input = event.currentTarget;
-    const files = Array.from(input.files || []);
-    const previewTargetId = input.id === 'businessPhotos' ? 'imagePreviews' : 'videoPreview';
-
-    if (input.id === 'businessPhotos') {
-      const previewList = document.getElementById('imagePreviews');
-      if (previewList) {
-        previewList.innerHTML = '';
-        files.forEach((file) => {
-          const item = document.createElement('div');
-          item.className = 'file-preview-item';
-          item.innerHTML = `<span>${file.name}</span>`;
-          previewList.appendChild(item);
-        });
-      }
-      return;
-    }
-
-    const target = document.getElementById(previewTargetId);
-    if (target) {
-      target.textContent = files[0] ? files[0].name : 'No video selected';
-    }
-  }
-
-  function renderOverviewCards() {
-    const summaryMap = document.querySelectorAll('[data-summary]');
-    if (!summaryMap.length) return;
-
-    const applications = getStoredApplications();
-    const totals = {
-      total: applications.length,
-      pending: applications.filter((app) => app.status === 'PENDING').length,
-      approved: applications.filter((app) => app.status === 'APPROVED').length,
-      rejected: applications.filter((app) => app.status === 'REJECTED').length,
-      published: applications.filter((app) => app.status === 'APPROVED').length
-    };
-
-    const map = {
-      totalApplications: totals.total,
-      pendingApplications: totals.pending,
-      approvedBusinesses: totals.approved,
-      rejectedApplications: totals.rejected,
-      publishedListings: totals.published,
-      recentActivities: readJson(activityStorageKey, []).length
-    };
-
-    summaryMap.forEach((node) => {
-      const key = node.dataset.summary;
-      if (map[key] !== undefined) {
-        node.textContent = map[key];
+  async function request(path, options) {
+    const token = sessionStorage.getItem(sessionKey);
+    const response = await fetch(path, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options && options.headers ? options.headers : {})
       }
     });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (response.status === 401) sessionStorage.removeItem(sessionKey);
+      throw new Error(result.error || 'The request could not be completed.');
+    }
+    return result;
   }
 
-  function renderAdminTable() {
-    const tableBody = document.getElementById('applicationsTableBody');
-    const searchInput = document.getElementById('applicationSearch');
-    if (!tableBody) return;
-
-    const applications = getStoredApplications();
-    const filterValue = (searchInput ? searchInput.value : '').trim().toLowerCase();
-
-    const filtered = applications.filter((app) => {
-      const haystack = `${app.applicantName} ${app.businessName} ${app.category} ${app.reference}`.toLowerCase();
-      return haystack.includes(filterValue);
-    });
-
-    if (!filtered.length) {
-      tableBody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No applications match your search.</div></td></tr>';
-      return;
-    }
-
-    tableBody.innerHTML = filtered.map((app) => `
-      <tr>
-        <td>
-          <div class="applicant-meta">
-            <strong>${app.applicantName}</strong>
-            <small>${app.businessName}</small>
-          </div>
-        </td>
-        <td>${app.category}</td>
-        <td>${app.location || 'Not provided'}</td>
-        <td><span class="status-pill status-${String(app.status).toLowerCase().replace(/\s+/g, '-')}">${app.status}</span></td>
-        <td>${formatDate(app.submissionDate)}</td>
-        <td>
-          <div class="table-actions">
-            <button type="button" class="table-button" data-app-action="view" data-reference="${app.reference}">View</button>
-            <button type="button" class="table-button subtle" data-app-action="approve" data-reference="${app.reference}">Approve</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-  }
-
-  function renderDetailPanel(reference) {
-    const detailPanel = document.getElementById('applicationDetailPanel');
-    const applications = getStoredApplications();
-    const app = applications.find((item) => item.reference === reference) || applications[0];
-    if (!app || !detailPanel) return;
-
-    detailPanel.innerHTML = `
-      <div class="detail-header">
-        <div>
-          <p class="eyebrow">Application details</p>
-          <h3>${app.businessName}</h3>
-        </div>
-        <span class="status-pill status-${String(app.status).toLowerCase().replace(/\s+/g, '-')}">${app.status}</span>
-      </div>
-      <dl class="detail-list">
-        <div><dt>Reference</dt><dd>${app.reference}</dd></div>
-        <div><dt>Applicant</dt><dd>${app.applicantName}</dd></div>
-        <div><dt>Email</dt><dd>${app.email}</dd></div>
-        <div><dt>Phone</dt><dd>${app.phone}</dd></div>
-        <div><dt>Category</dt><dd>${app.category}</dd></div>
-        <div><dt>Location</dt><dd>${app.location}</dd></div>
-        <div class="span-two"><dt>Offerings</dt><dd>${app.offerings || 'Not provided'}</dd></div>
-        <div class="span-two"><dt>About</dt><dd>${app.description || 'No description provided yet.'}</dd></div>
-      </dl>
-      <div class="detail-media">
-        <h4>Submitted media</h4>
-        <ul>
-          ${(app.media || []).map((media) => `<li>${media.name}</li>`).join('') || '<li>No uploaded media</li>'}
-        </ul>
-      </div>
-      <div class="detail-actions">
-        <button type="button" class="table-button" data-app-action="approve" data-reference="${app.reference}">Approve</button>
-        <button type="button" class="table-button warning" data-app-action="reject" data-reference="${app.reference}">Reject</button>
-        <button type="button" class="table-button subtle" data-app-action="changes" data-reference="${app.reference}">Request changes</button>
-      </div>
-    `;
-
-    const smsPhoneInput = document.getElementById('smsPhone');
-    if (smsPhoneInput) {
-      smsPhoneInput.value = app.phone || '';
-    }
-
-    const smsTemplateInput = document.getElementById('smsTemplate');
-    if (smsTemplateInput) {
-      const template = smsTemplateInput.value || 'Application received';
-      const message = buildSmsMessage(template, app.applicantName, 'Thank you for your patience.');
-      const smsMessage = document.getElementById('smsMessage');
-      if (smsMessage) {
-        smsMessage.value = message;
-      }
-    }
-  }
-
-  function buildSmsMessage(template, applicantName, reasonText) {
-    const name = applicantName || 'Applicant';
-    const templates = {
-      'Application received': `Hello ${name}, your BISA business application has been received and is currently under review. We will update you soon.`,
-      'Application approved': `Hello ${name}, congratulations! Your business application to BISA has been approved. Your business can now be published on our campus marketplace. Thank you for choosing BISA!`,
-      'Application rejected': `Hello ${name}, thank you for applying to BISA. Unfortunately, your application has not been approved at this time. Reason: ${reasonText || 'Please contact us for more information.'} You may contact us for further clarification.`,
-      'Additional information required': `Hello ${name}, we need a little more information before we can process your BISA application. Please review the missing details and send them back to us.`,
-      'Correction requested': `Hello ${name}, your BISA application needs a few corrections before we can continue. Please update the highlighted details and resubmit.`,
-      'Application update': `Hello ${name}, an update has been made to your BISA application. Please check your dashboard or contact our team for details.`
+  function selectedMimeType(file) {
+    if (file.type) return file.type;
+    const extension = file.name.split('.').pop().toLowerCase();
+    const types = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      webp: 'image/webp',
+      gif: 'image/gif',
+      mp4: 'video/mp4',
+      webm: 'video/webm',
+      mov: 'video/quicktime'
     };
-
-    return templates[template] || templates['Application received'];
+    return types[extension] || '';
   }
 
-  function updateApplicationStatus(reference, status, noteText) {
-    const apps = getStoredApplications();
-    const target = apps.find((app) => app.reference === reference);
+  function previewFiles(input, targetId) {
+    const target = document.getElementById(targetId);
     if (!target) return;
-
-    target.status = status;
-    target.notes = noteText || target.notes || 'Status updated by administrator.';
-    saveJson(appStorageKey, apps);
-    recordActivity(`Application ${reference} was marked as ${status}.`);
-    renderOverviewCards();
-    renderAdminTable();
-    renderDetailPanel(reference);
+    target.querySelectorAll('img').forEach((image) => URL.revokeObjectURL(image.src));
+    target.replaceChildren();
+    const files = Array.from(input.files || []);
+    files.forEach((file, index) => {
+      const row = document.createElement('div');
+      row.className = 'file-preview-item';
+      const name = document.createElement('span');
+      name.textContent = file.name;
+      if (selectedMimeType(file).startsWith('image/')) {
+        const image = document.createElement('img');
+        image.src = URL.createObjectURL(file);
+        image.alt = `Preview of ${file.name}`;
+        image.className = 'file-preview-image';
+        row.appendChild(image);
+      }
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'remove-file';
+      remove.textContent = 'Remove';
+      remove.addEventListener('click', () => {
+        const updated = Array.from(input.files || []);
+        updated.splice(index, 1);
+        const transfer = new DataTransfer();
+        updated.forEach((selected) => transfer.items.add(selected));
+        input.files = transfer.files;
+        previewFiles(input, targetId);
+      });
+      row.append(name, remove);
+      target.appendChild(row);
+    });
   }
 
-  function attachAdminActions() {
-    document.body.addEventListener('click', (event) => {
-      const button = event.target.closest('[data-app-action]');
-      if (!button) return;
+  async function uploadFile(batchId, file) {
+    const contentType = selectedMimeType(file);
+    const signed = await request('/api/upload-url', {
+      method: 'POST',
+      body: JSON.stringify({ batchId, contentType, size: file.size })
+    });
+    const upload = await fetch(signed.signedUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': contentType, 'x-upsert': 'false' },
+      body: file
+    });
+    if (!upload.ok) {
+      const result = await upload.json().catch(() => ({}));
+      throw new Error(result.message || 'A file could not be uploaded. Check your connection and try again.');
+    }
+    return { path: signed.path, name: file.name };
+  }
 
-      const reference = button.dataset.reference;
-      const action = button.dataset.appAction;
-      const apps = getStoredApplications();
-      const app = apps.find((item) => item.reference === reference);
-      if (!app) return;
+  function attachBusinessForm() {
+    const form = document.getElementById('businessForm');
+    if (!form) return;
+    const images = document.getElementById('businessPhotos');
+    const video = document.getElementById('businessVideo');
+    images?.addEventListener('change', () => previewFiles(images, 'imagePreviews'));
+    video?.addEventListener('change', () => {
+      const target = document.getElementById('videoPreview');
+      if (target) target.textContent = video.files[0]?.name || 'No video selected';
+    });
 
-      if (action === 'view') {
-        renderDetailPanel(reference);
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const imageFiles = Array.from(images?.files || []);
+      const videoFiles = Array.from(video?.files || []);
+      const allFiles = [...imageFiles, ...videoFiles];
+      if (imageFiles.length < 3) {
+        showFeedback('submissionResult', 'Please upload at least three business photos before submitting.', 'error');
+        return;
+      }
+      if (videoFiles.length > 1) {
+        showFeedback('submissionResult', 'Please upload only one optional business video.', 'error');
+        return;
+      }
+      const allowedImages = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+      const allowedVideos = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
+      if (imageFiles.some((file) => !allowedImages.has(selectedMimeType(file)) || file.size > 5 * 1024 * 1024)) {
+        showFeedback('submissionResult', 'Photos must be JPG, PNG, WEBP or GIF and no larger than 5MB each.', 'error');
+        return;
+      }
+      if (videoFiles.some((file) => !allowedVideos.has(selectedMimeType(file)) || file.size > 25 * 1024 * 1024)) {
+        showFeedback('submissionResult', 'The optional video must be MP4, WEBM or MOV and no larger than 25MB.', 'error');
         return;
       }
 
-      if (action === 'approve') {
-        updateApplicationStatus(reference, 'APPROVED', 'Approved by the administrator and ready for publication.');
-        return;
-      }
-
-      if (action === 'reject') {
-        updateApplicationStatus(reference, 'REJECTED', 'Rejected after review.');
-        return;
-      }
-
-      if (action === 'changes') {
-        updateApplicationStatus(reference, 'CHANGES REQUESTED', 'Applicant asked to update details before approval.');
+      const button = form.querySelector('[type="submit"]');
+      button.disabled = true;
+      showFeedback('submissionResult', 'Uploading your files securely…', 'success');
+      try {
+        await loadConfig();
+        const batchId = crypto.randomUUID();
+        const media = [];
+        for (const file of allFiles) {
+          media.push(await uploadFile(batchId, file));
+        }
+        const values = {
+          applicantName: form.elements.owner.value.trim(),
+          businessName: form.elements.businessName.value.trim(),
+          email: form.elements.email.value.trim(),
+          phone: form.elements.phone.value.trim(),
+          category: form.elements.category.value,
+          location: form.elements.location.value.trim(),
+          description: form.elements.description.value.trim(),
+          offerings: form.elements.offering.value.trim(),
+          batchId,
+          media
+        };
+        const result = await request('/api/applications', {
+          method: 'POST',
+          body: JSON.stringify(values)
+        });
+        showFeedback('submissionResult', `Application received. Your reference is ${result.reference}. It is pending administrator review.`, 'success');
+        form.reset();
+        previewFiles(images, 'imagePreviews');
+        const videoPreview = document.getElementById('videoPreview');
+        if (videoPreview) videoPreview.textContent = 'No video selected';
+      } catch (error) {
+        showFeedback('submissionResult', error.message, 'error');
+      } finally {
+        button.disabled = false;
       }
     });
   }
 
-  function attachApplicationForm() {
-    const businessForm = document.getElementById('businessForm');
-    if (!businessForm) return;
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[character]));
+  }
 
-    businessForm.addEventListener('submit', handleBusinessFormSubmit);
+  function attachExplore() {
+    const grid = document.querySelector('.listing-grid');
+    if (!grid) return;
+    const search = document.querySelector('.market-search input[type="search"]');
+    const searchButton = document.querySelector('.market-search button');
+    const filterButton = document.querySelector('.filter-panel .full-button');
+    const sort = document.querySelector('.listings-heading select');
+    let businesses = [];
 
-    const photoInput = document.getElementById('businessPhotos');
-    if (photoInput) {
-      photoInput.addEventListener('change', handleFileInputChange);
+    function render() {
+      const term = (search?.value || '').trim().toLowerCase();
+      const locations = Array.from(document.querySelectorAll('input[name="location"]:checked'))
+        .map((input) => input.value);
+      let filtered = businesses.filter((business) => {
+        const searchable = [
+          business.business_name,
+          business.description,
+          business.offerings,
+          business.categories?.name,
+          business.campus_location
+        ].join(' ').toLowerCase();
+        const locationMatch = !locations.length || locations.some((location) =>
+          location === 'campus' ? /campus/i.test(business.campus_location || '') : !/campus/i.test(business.campus_location || '')
+        );
+        return searchable.includes(term) && locationMatch;
+      });
+      if (sort?.value === 'Newest') {
+        filtered = filtered.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      }
+      if (sort?.value === 'Featured') {
+        filtered = filtered.slice().sort((a, b) => Number(b.is_featured) - Number(a.is_featured));
+      }
+      if (!filtered.length) {
+        grid.innerHTML = '<p class="empty-state">No approved businesses match your search yet.</p>';
+        return;
+      }
+      grid.innerHTML = filtered.map((business) => {
+        const image = business.business_media?.[0];
+        const products = (business.products_services || []).map((product) =>
+          `<li>${escapeHtml(product.title)}${product.price != null ? ` — ${escapeHtml(product.price)}` : ''}</li>`
+        ).join('');
+        return `
+          <article class="listing-card">
+            ${image ? `<img class="listing-image" src="${escapeHtml(image.url)}" alt="${escapeHtml(business.business_name)}" loading="lazy">` : '<div class="image-placeholder">BISA business</div>'}
+            <div class="listing-content">
+              <p class="listing-category">${escapeHtml(business.categories?.name || 'Student business')}</p>
+              <h3>${escapeHtml(business.business_name)}</h3>
+              <p>${escapeHtml(business.description)}</p>
+              ${products ? `<ul class="listing-offerings">${products}</ul>` : `<p>${escapeHtml(business.offerings)}</p>`}
+              <div class="listing-footer">
+                <span>${escapeHtml(business.campus_location || 'Campus')}</span>
+                <a class="contact-link" href="mailto:${encodeURIComponent(business.contact_email)}">Contact</a>
+              </div>
+            </div>
+          </article>`;
+      }).join('');
     }
 
-    const videoInput = document.getElementById('businessVideo');
-    if (videoInput) {
-      videoInput.addEventListener('change', handleFileInputChange);
+    search?.addEventListener('search', render);
+    searchButton?.addEventListener('click', render);
+    filterButton?.addEventListener('click', render);
+    sort?.addEventListener('change', render);
+    search?.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') render();
+    });
+
+    request('/api/businesses')
+      .then((result) => {
+        businesses = result.businesses || [];
+        render();
+      })
+      .catch((error) => {
+        grid.innerHTML = `<p class="empty-state">${escapeHtml(error.message)}</p>`;
+      });
+  }
+
+  function attachHomeContent() {
+    const home = Boolean(document.querySelector('.home-hero'));
+    const contact = Boolean(document.querySelector('.contact-info'));
+    if (!home && !contact) return;
+    request('/api/content')
+      .then(({ content }) => {
+        const title = document.querySelector('.home-hero h1');
+        const text = document.querySelector('.home-hero .hero-text');
+        const announcement = document.querySelector('[data-site-announcement]');
+        if (content['home.hero_title'] && title) title.textContent = content['home.hero_title'];
+        if (content['home.hero_text'] && text) text.textContent = content['home.hero_text'];
+        if (content['home.announcement'] && announcement) {
+          announcement.textContent = content['home.announcement'];
+          announcement.hidden = false;
+        }
+        if (content['contact.email']) {
+          contactEmail = content['contact.email'];
+          const email = document.querySelector('.contact-info .contact-item:nth-of-type(1) p');
+          if (email) email.textContent = contactEmail;
+        }
+        const phone = document.querySelector('.contact-info .contact-item:nth-of-type(2) p');
+        const location = document.querySelector('.contact-info .contact-item:nth-of-type(3) p');
+        if (content['contact.phone'] && phone) phone.textContent = content['contact.phone'];
+        if (content['contact.location'] && location) location.textContent = content['contact.location'];
+      })
+      .catch((error) => console.error('Could not load BISA site content:', error));
+
+    const featured = document.querySelector('[data-featured-list]');
+    if (featured) {
+      request('/api/businesses')
+        .then(({ businesses }) => {
+          const selected = (businesses || []).filter((business) => business.is_featured).slice(0, 3);
+          featured.innerHTML = selected.length ? selected.map((business) => `
+            <article class="listing-card">
+              ${business.business_media?.[0] ? `<img class="listing-image" src="${escapeHtml(business.business_media[0].url)}" alt="${escapeHtml(business.business_name)}" loading="lazy">` : '<div class="image-placeholder">BISA business</div>'}
+              <div class="listing-content">
+                <p class="listing-category">${escapeHtml(business.categories?.name || 'Student business')}</p>
+                <h3>${escapeHtml(business.business_name)}</h3>
+                <p>${escapeHtml(business.description)}</p>
+                <div class="listing-footer"><span>${escapeHtml(business.campus_location || 'Campus')}</span><a href="mailto:${encodeURIComponent(business.contact_email)}">Contact</a></div>
+              </div>
+            </article>`).join('') : '<p class="empty-state">Featured businesses will appear here after the BISA team publishes them.</p>';
+        })
+        .catch((error) => {
+          featured.innerHTML = `<p class="empty-state">${escapeHtml(error.message)}</p>`;
+        });
     }
+  }
+
+  async function attachAdminLogin() {
+    const form = document.getElementById('adminLoginForm');
+    if (!form) return;
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const button = form.querySelector('[type="submit"]');
+      button.disabled = true;
+      try {
+        const config = await loadConfig();
+        const response = await fetch(`${config.url}/auth/v1/token?grant_type=password`, {
+          method: 'POST',
+          headers: { apikey: config.anonKey, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('adminEmail').value.trim(),
+            password: document.getElementById('adminPassword').value
+          })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.msg || result.message || 'Sign-in failed. Check your email and password.');
+        sessionStorage.setItem(sessionKey, result.access_token);
+        await request('/api/admin?resource=overview');
+        window.location.href = 'admin.html';
+      } catch (error) {
+        sessionStorage.removeItem(sessionKey);
+        showFeedback('loginResult', error.message, 'error');
+      } finally {
+        button.disabled = false;
+      }
+    });
   }
 
   function attachContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    if (!contactForm) return;
-
-    contactForm.addEventListener('submit', (event) => {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+    form.addEventListener('submit', (event) => {
       event.preventDefault();
-      const name = document.getElementById('contactName').value.trim();
-      const email = document.getElementById('contactEmail').value.trim();
-      const message = document.getElementById('contactMessage').value.trim();
-
-      if (!name || !email || !message) {
-        setFeedback('contactResult', 'Please complete all contact form fields before sending your message.', 'error');
-        return;
-      }
-
-      setFeedback('contactResult', `Thanks ${name}! Your message has been prepared and can be sent to the BISA team via your preferred inbox.`, 'success');
-      contactForm.reset();
+      if (!form.reportValidity()) return;
+      const subject = form.elements.subject?.value.trim() || 'BISA website enquiry';
+      const body = [
+        `Name: ${form.elements.name.value.trim()}`,
+        `Email: ${form.elements.email.value.trim()}`,
+        '',
+        form.elements.message.value.trim()
+      ].join('\n');
+      const link = document.createElement('a');
+      link.href = `mailto:${encodeURIComponent(contactEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      link.click();
+      showFeedback('contactResult', 'Your email app has been opened with the message ready to send.', 'success');
     });
   }
 
-  function attachAdminDashboard() {
-    const searchInput = document.getElementById('applicationSearch');
-    if (searchInput) {
-      searchInput.addEventListener('input', renderAdminTable);
-    }
-
-    const smsForm = document.getElementById('smsForm');
-    if (smsForm) {
-      smsForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const apps = getStoredApplications();
-        const phone = document.getElementById('smsPhone').value;
-        const template = document.getElementById('smsTemplate').value;
-        const message = document.getElementById('smsMessage').value.trim();
-        const app = apps.find((item) => item.phone === phone) || apps[0];
-
-        if (!app) {
-          setFeedback('smsResult', 'No application matched the selected recipient.', 'error');
-          return;
-        }
-
-        if (!phone || !validPhone(phone)) {
-          setFeedback('smsResult', 'Please select a valid Ghanaian phone number before sending the SMS.', 'error');
-          return;
-        }
-
-        const isSuccess = !(phone.includes('000') || phone.includes('999'));
-        if (!isSuccess) {
-          setFeedback('smsResult', 'SMS provider returned an error. The message was not sent.', 'error');
-          recordSms(message, phone, 'failed', template);
-          return;
-        }
-
-        recordSms(message, phone, 'sent', template);
-        setFeedback('smsResult', `SMS sent successfully to ${phone}.`, 'success');
-        recordActivity(`SMS sent to ${app.applicantName} (${phone}) using the ${template} template.`);
-      });
-    }
-
-    const smsTemplate = document.getElementById('smsTemplate');
-    if (smsTemplate) {
-      smsTemplate.addEventListener('change', () => {
-        const apps = getStoredApplications();
-        const currentPhone = document.getElementById('smsPhone')?.value || apps[0]?.phone || '';
-        const app = apps.find((item) => item.phone === currentPhone) || apps[0];
-        const name = app?.applicantName || 'Applicant';
-        const message = buildSmsMessage(smsTemplate.value, name, 'Please contact us for clarification.');
-        const smsMessage = document.getElementById('smsMessage');
-        if (smsMessage) {
-          smsMessage.value = message;
-        }
-        if (currentPhone) {
-          document.getElementById('smsPhone').value = currentPhone;
-        }
-      });
-    }
+  attachBusinessForm();
+  attachExplore();
+  attachHomeContent();
+  attachAdminLogin();
+  attachContactForm();
+  if (document.getElementById('applicationsTableBody')) {
+    const script = document.createElement('script');
+    script.src = 'admin-dashboard.js';
+    script.defer = true;
+    document.body.appendChild(script);
   }
-
-  function attachAdminLogin() {
-    const loginForm = document.getElementById('adminLoginForm');
-    if (!loginForm) return;
-
-    loginForm.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const email = document.getElementById('adminEmail').value.trim();
-      const password = document.getElementById('adminPassword').value;
-
-      if (email === 'admin@bisa.com' && password === 'BISAadmin!') {
-        localStorage.setItem('bisaAdminSession', 'true');
-        window.location.href = 'admin.html';
-        return;
-      }
-
-      setFeedback('loginResult', 'Invalid administrator credentials. Please use the demo admin login.', 'error');
-    });
-  }
-
-  function attachAdminLogout() {
-    const logoutButton = document.getElementById('adminLogoutButton');
-    if (!logoutButton) return;
-
-    logoutButton.addEventListener('click', () => {
-      localStorage.removeItem('bisaAdminSession');
-      window.location.href = 'admin-login.html';
-    });
-  }
-
-  function initialise() {
-    const isAdminPage = document.body.dataset.page === 'admin';
-    const isAdminLoginPage = document.body.dataset.page === 'admin-login';
-
-    if (isAdminPage && localStorage.getItem('bisaAdminSession') !== 'true') {
-      window.location.href = 'admin-login.html';
-      return;
-    }
-
-    const businessForm = document.getElementById('businessForm');
-    if (businessForm) {
-      attachApplicationForm();
-    }
-
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-      attachContactForm();
-    }
-
-    if (isAdminLoginPage) {
-      attachAdminLogin();
-      return;
-    }
-
-    renderOverviewCards();
-    if (document.getElementById('applicationsTableBody')) {
-      attachAdminDashboard();
-      attachAdminActions();
-      attachAdminLogout();
-      renderAdminTable();
-      const firstApp = getStoredApplications()[0];
-      if (firstApp) {
-        renderDetailPanel(firstApp.reference);
-      }
-    }
-  }
-
-  initialise();
 })();
