@@ -43,8 +43,12 @@
   }
 
   function validPhone(phone) {
-    const digits = String(phone || '').replace(/[^\d+]/g, '').replace(/\s+/g, '');
-    return /^(\+233|233|0)\d{9}$/.test(digits);
+    const normalized = String(phone || '').trim().replace(/[^\d+]/g, '');
+    if (!normalized) return false;
+    if (normalized.startsWith('+')) {
+      return /^\+233\d{9}$/.test(normalized);
+    }
+    return /^(233|0)\d{9}$/.test(normalized);
   }
 
   function getStoredApplications() {
@@ -199,16 +203,39 @@
       return;
     }
 
+    const applicantName = form.owner.value.trim();
+    const businessName = form.businessName.value.trim();
+    const phone = form.phone.value.trim();
+    const email = form.email.value.trim();
+    const location = form.location.value.trim();
+    const description = form.description.value.trim();
+    const offerings = form.offering.value.trim();
+
+    if (!applicantName || !businessName || !email || !phone || !location || !description || !offerings) {
+      setFeedback('submissionResult', 'Please complete every required business detail before submitting.', 'error');
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setFeedback('submissionResult', 'Please enter a valid email address for contact purposes.', 'error');
+      return;
+    }
+
+    if (!validPhone(phone)) {
+      setFeedback('submissionResult', 'Please enter a valid Ghanaian phone number (for example +233 24 123 4567).', 'error');
+      return;
+    }
+
     const app = {
       reference: generateReference(),
-      applicantName: form.owner.value.trim(),
-      businessName: form.businessName.value.trim(),
-      phone: form.phone.value.trim(),
-      email: form.email.value.trim(),
+      applicantName,
+      businessName,
+      phone,
+      email,
       category: form.category.value,
-      location: form.location.value.trim(),
-      description: form.description.value.trim(),
-      offerings: form.offering.value.trim(),
+      location,
+      description,
+      offerings,
       submissionDate: new Date().toISOString(),
       status: 'PENDING',
       media: imageFiles.map((file) => ({ name: file.name, type: 'image', size: file.size })),
@@ -518,7 +545,8 @@
       smsTemplate.addEventListener('change', () => {
         const apps = getStoredApplications();
         const currentPhone = document.getElementById('smsPhone')?.value || apps[0]?.phone || '';
-        const name = apps[0]?.applicantName || 'Applicant';
+        const app = apps.find((item) => item.phone === currentPhone) || apps[0];
+        const name = app?.applicantName || 'Applicant';
         const message = buildSmsMessage(smsTemplate.value, name, 'Please contact us for clarification.');
         const smsMessage = document.getElementById('smsMessage');
         if (smsMessage) {
