@@ -9,20 +9,19 @@
 </head>
 <body>
 
-<header class="header">
+<header class="site-header">
     <a href="index.html" class="logo">BISA<span>.</span></a>
 
-    <nav>
+    <nav class="main-nav">
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="business.html">List Your Business</a>
         <a href="about.html">About Us</a>
-        <a href="contact.html" class="active">Contact</a>
+        <a href="contact.html" class="active">Contact Us</a>
     </nav>
 </header>
 
 <main>
-
     <section class="page-heading">
         <p class="eyebrow">WE ARE HERE TO HELP</p>
         <h1>Get in touch with BISA.</h1>
@@ -30,7 +29,6 @@
     </section>
 
     <section class="contact-layout">
-
         <div class="contact-info">
             <h2>Let's talk.</h2>
 
@@ -41,53 +39,56 @@
 
             <div class="contact-item">
                 <h3>Email</h3>
-                <p>your-email@example.com</p>
+                <p>hello@bisa-campus.com</p>
             </div>
 
             <div class="contact-item">
                 <h3>Phone</h3>
-                <p>Your contact number</p>
+                <p>+233 20 000 0000</p>
             </div>
 
             <div class="contact-item">
                 <h3>Location</h3>
-                <p>Your campus location</p>
+                <p>Main Campus, Student Centre</p>
             </div>
         </div>
 
-        <form class="bisa-form">
-
+        <form id="contactForm" class="bisa-form">
             <h2>Send us a message</h2>
 
-            <label for="name">Full name</label>
-            <input type="text" id="name" placeholder="Your name" required>
+            <label for="contactName">Full name</label>
+            <input type="text" id="contactName" name="name" placeholder="Your name" required>
 
-            <label for="email">Email address</label>
-            <input type="email" id="email" placeholder="Your email" required>
+            <label for="contactEmail">Email address</label>
+            <input type="email" id="contactEmail" name="email" placeholder="Your email" required>
 
-            <label for="subject">Subject</label>
-            <input type="text" id="subject" placeholder="What is your message about?">
+            <label for="contactSubject">Subject</label>
+            <input type="text" id="contactSubject" name="subject" placeholder="What is your message about?">
 
-            <label for="message">Your message</label>
-            <textarea id="message" rows="5"
-                      placeholder="Write your message here..."
-                      required></textarea>
+            <label for="contactMessage">Your message</label>
+            <textarea id="contactMessage" name="message" rows="5" placeholder="Write your message here..." required></textarea>
 
-            <button type="button" class="btn btn-primary full-button">
-                Send Message
-            </button>
-
+            <button type="submit" class="btn btn-primary full-button">Send Message</button>
+            <div id="contactResult" class="feedback" aria-live="polite"></div>
         </form>
-
     </section>
-
 </main>
 
 <footer class="footer">
     <a href="index.html" class="logo footer-logo">BISA<span>.</span></a>
     <p>Find What You Need. Connect with Student Businesses.</p>
-    <p class="copyright">© 2026 BISA. All rights reserved.</p>
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="explore.html">Explore</a>
+        <a href="business.html">List Your Business</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+    <div class="footer-meta">
+        <p class="copyright">© 2026 BISA. All rights reserved.</p>
+        <a href="admin.html" class="admin-link">Admin portal</a>
+    </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>

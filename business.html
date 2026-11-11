@@ -9,20 +9,19 @@
 </head>
 <body>
 
-<header class="header">
+<header class="site-header">
     <a href="index.html" class="logo">BISA<span>.</span></a>
 
-    <nav>
+    <nav class="main-nav">
         <a href="index.html">Home</a>
         <a href="explore.html">Explore</a>
         <a href="business.html" class="active">List Your Business</a>
         <a href="about.html">About Us</a>
-        <a href="contact.html">Contact</a>
+        <a href="contact.html">Contact Us</a>
     </nav>
 </header>
 
 <main>
-
     <section class="page-heading">
         <p class="eyebrow">GROW YOUR BUSINESS</p>
         <h1>Let students discover what you offer.</h1>
@@ -30,72 +29,105 @@
     </section>
 
     <section class="form-section">
-
         <div class="form-intro">
-            <h2>Business information</h2>
-            <p>Complete the details below to prepare your business listing.</p>
+            <h2>Business application</h2>
+            <p>Complete the details below and upload at least three photos. Every application is reviewed before publication.</p>
         </div>
 
-        <form class="bisa-form">
+        <form id="businessForm" class="bisa-form">
+            <div class="form-grid">
+                <div>
+                    <label for="owner">Applicant full name</label>
+                    <input type="text" id="owner" name="owner" placeholder="Enter your full name" required>
+                </div>
 
-            <label for="owner">Your full name</label>
-            <input type="text" id="owner" name="owner"
-                   placeholder="Enter your full name" required>
+                <div>
+                    <label for="businessName">Business name</label>
+                    <input type="text" id="businessName" name="businessName" placeholder="Enter your business name" required>
+                </div>
+            </div>
 
-            <label for="business-name">Business name</label>
-            <input type="text" id="business-name" name="business-name"
-                   placeholder="Enter your business name" required>
+            <div class="form-grid">
+                <div>
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                </div>
 
-            <label for="category">Business category</label>
-            <select id="category" name="category" required>
-                <option value="">Select a category</option>
-                <option>Fashion</option>
-                <option>Food and Drinks</option>
-                <option>Graphic Design</option>
-                <option>Photography</option>
-                <option>Technology</option>
-                <option>Beauty and Personal Care</option>
-                <option>Education and Tutoring</option>
-                <option>Other Services</option>
-            </select>
+                <div>
+                    <label for="phone">Active phone number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your contact number" required>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div>
+                    <label for="category">Business category</label>
+                    <select id="category" name="category" required>
+                        <option value="">Select a category</option>
+                        <option>Fashion</option>
+                        <option>Food and Drinks</option>
+                        <option>Graphic Design</option>
+                        <option>Photography</option>
+                        <option>Technology</option>
+                        <option>Beauty and Personal Care</option>
+                        <option>Education and Tutoring</option>
+                        <option>Other Services</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="location">Business location or campus</label>
+                    <input type="text" id="location" name="location" placeholder="Where can customers find you?" required>
+                </div>
+            </div>
 
             <label for="description">Business description</label>
-            <textarea id="description" name="description" rows="5"
-                      placeholder="Describe your products or services..."
-                      required></textarea>
+            <textarea id="description" name="description" rows="5" placeholder="Describe your products or services..." required></textarea>
 
-            <label for="phone">Phone number</label>
-            <input type="tel" id="phone" name="phone"
-                   placeholder="Enter your contact number" required>
+            <label for="offering">Products or services offered</label>
+            <textarea id="offering" name="offering" rows="4" placeholder="List the products or services you offer..." required></textarea>
 
-            <label for="location">Campus location</label>
-            <input type="text" id="location" name="location"
-                   placeholder="Where can customers find you?">
+            <div class="upload-panel">
+                <div>
+                    <label for="businessPhotos">Business photo gallery (minimum 3 images)</label>
+                    <input id="businessPhotos" name="businessPhotos" type="file" accept=".jpg,.jpeg,.png,.webp,.gif,image/jpeg,image/png,image/webp,image/gif" multiple required>
+                    <small>Accepted: JPG, JPEG, PNG, WEBP, GIF. Maximum 5MB per image.</small>
+                    <div id="imagePreviews" class="file-previews" aria-live="polite"></div>
+                </div>
 
-            <label for="whatsapp">WhatsApp number</label>
-            <input type="tel" id="whatsapp" name="whatsapp"
-                   placeholder="Enter your WhatsApp number">
+                <div>
+                    <label for="businessVideo">Business introduction video (optional)</label>
+                    <input id="businessVideo" name="businessVideo" type="file" accept=".mp4,.webm,.mov,video/mp4,video/webm,video/quicktime">
+                    <small>Accepted: MP4, WEBM, MOV. Maximum 25MB.</small>
+                    <div id="videoPreview" class="file-preview-inline">No video selected</div>
+                </div>
+            </div>
 
-            <button type="button" class="btn btn-primary full-button">
-                Submit Business Listing
-            </button>
+            <button type="submit" class="btn btn-primary full-button">Submit Application</button>
+            <div id="submissionResult" class="feedback" aria-live="polite"></div>
 
             <p class="form-note">
-                Your information will need to be reviewed before your
-                business is published on BISA.
+                Your business will not appear publicly until an administrator approves it.
             </p>
-
         </form>
-
     </section>
-
 </main>
 
 <footer class="footer">
     <a href="index.html" class="logo footer-logo">BISA<span>.</span></a>
     <p>Find What You Need. Connect with Student Businesses.</p>
-    <p class="copyright">© 2026 BISA. All rights reserved.</p>
+    <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="explore.html">Explore</a>
+        <a href="business.html">List Your Business</a>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+    <div class="footer-meta">
+        <p class="copyright">© 2026 BISA. All rights reserved.</p>
+        <a href="admin.html" class="admin-link">Admin portal</a>
+    </div>
 </footer>
 
+<script src="script.js"></script>
 </body>
 </html>

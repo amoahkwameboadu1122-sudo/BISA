@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BISA administrator dashboard for application review and business management.">
+    <title>Admin Dashboard | BISA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="admin">
+    <header class="site-header">
+        <a href="index.html" class="logo" aria-label="BISA home">BISA<span>.</span></a>
+
+        <nav class="main-nav" aria-label="Main navigation">
+            <a href="index.html">Home</a>
+            <a href="explore.html">Explore</a>
+            <a href="business.html">List Your Business</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+    </header>
+
+    <main class="admin-page">
+        <section class="page-heading admin-intro">
+            <p class="eyebrow">ADMINISTRATOR PORTAL</p>
+            <h1>BISA dashboard</h1>
+            <p>Review applications, approve businesses, track activity and communicate with applicants.</p>
+        </section>
+
+        <div class="dashboard-toolbar">
+            <button id="adminLogoutButton" type="button" class="btn btn-outline">Log out</button>
+        </div>
+
+        <section class="dashboard-overview panel-shell">
+            <article class="summary-card">
+                <span class="summary-label">Total applications</span>
+                <strong data-summary="totalApplications">0</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Pending</span>
+                <strong data-summary="pendingApplications">0</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Approved businesses</span>
+                <strong data-summary="approvedBusinesses">0</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Rejected</span>
+                <strong data-summary="rejectedApplications">0</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Published listings</span>
+                <strong data-summary="publishedListings">0</strong>
+            </article>
+            <article class="summary-card">
+                <span class="summary-label">Recent activities</span>
+                <strong data-summary="recentActivities">0</strong>
+            </article>
+        </section>
+
+        <section class="admin-grid">
+            <div class="panel-shell app-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Application management</p>
+                        <h2>All applications</h2>
+                    </div>
+                    <input id="applicationSearch" type="search" placeholder="Search applicants or businesses" aria-label="Search applications">
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applicationsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <aside id="applicationDetailPanel" class="panel-shell detail-panel"></aside>
+        </section>
+
+        <section class="admin-grid secondary-grid">
+            <div class="panel-shell">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="eyebrow">Communication</p>
+                        <h2>Send SMS update</h2>
+                    </div>
+                </div>
+
+                <form id="smsForm" class="sms-form">
+                    <label for="smsPhone">Recipient phone</label>
+                    <input id="smsPhone" type="tel" placeholder="Select applicant phone number" required>
+
+                    <label for="smsTemplate">Message template</label>
+                    <select id="smsTemplate">
+                        <option>Application received</option>
+                        <option>Application approved</option>
+                        <option>Application rejected</option>
+                        <option>Additional information required</option>
+                        <option>Correction requested</option>
+                    </select>
+
+                    <label for="smsMessage">Message body</label>
+                    <textarea id="smsMessage" rows="6" required></textarea>
+
+                    <button type="submit" class="btn btn-primary">Send SMS</button>
+                    <div id="smsResult" class="feedback" aria-live="polite"></div>
+                </form>
+            </div>
+
+            <div class="panel-shell">
+                <div class="panel-header compact-header">
+                    <div>
+                        <p class="eyebrow">Operations</p>
+                        <h2>Business management</h2>
+                    </div>
+                </div>
+
+                <ul class="operations-list">
+                    <li>Review approved and pending listings.</li>
+                    <li>Manage featured businesses and products.</li>
+                    <li>Publish approved student businesses.</li>
+                    <li>Request corrections before publishing.</li>
+                    <li>Track notes and internal activity logs.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <a href="index.html" class="logo footer-logo">BISA<span>.</span></a>
+        <p>Find What You Need. Connect with Student Businesses.</p>
+        <nav class="footer-nav" aria-label="Footer navigation">
+            <a href="explore.html">Explore</a>
+            <a href="business.html">List Your Business</a>
+            <a href="about.html">About Us</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
+        <div class="footer-meta">
+            <p class="copyright">&copy; 2026 BISA. All rights reserved.</p>
+            <a href="admin.html" class="admin-link">Admin portal</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
