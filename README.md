@@ -9,13 +9,13 @@ BISA (Let's Do Business & Share Ideas) connects student entrepreneurs with campu
 - `site-shell.js` — shared header and footer rendered across all pages
 - `script.js`, `admin-dashboard.js` — public application/listing interactions and admin dashboard
 - `api/` — server-only Vercel endpoints for Supabase, private file uploads, SMS and administration
-- `supabase/schema.sql` — fresh-project schema and policies
+- `supabase/schema.sql` — schema and policies for the confirmed empty BISA `public` schema
 - `supabase/migrations/` — migration for an existing BISA demo database
 - `supabase/README.md` — setup, permissions, environment and local development
 
 ## Setup
 
-Follow [`supabase/README.md`](./supabase/README.md) to apply the SQL, create the primary administrator, and configure Vercel and Arkesel. The website intentionally shows backend errors instead of claiming local-only submissions or demo SMS sends succeeded.
+Follow [`supabase/README.md`](./supabase/README.md) to apply the SQL, preserve and verify the existing primary administrator account, and configure Vercel and Arkesel. The website intentionally shows backend errors instead of claiming local-only submissions or demo SMS sends succeeded.
 
 The official BISA logo variations and compact favicon are in `assets/`. The public footer logo opens the administrator login discreetly; administrator access is protected by Supabase Auth and server-checked roles.
 

@@ -1,6 +1,5 @@
--- BISA marketplace schema. Run in the Supabase SQL Editor.
-create extension if not exists "uuid-ossp";
-
+-- BISA application schema. Run after confirming the public schema has no BISA tables.
+-- This does not create, update or delete Supabase Auth users.
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text unique not null,
@@ -11,7 +10,7 @@ create table if not exists public.profiles (
 );
 
 create table if not exists public.categories (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   name text not null unique,
   created_at timestamptz not null default now()
 );
@@ -33,7 +32,7 @@ insert into public.site_content (key, value) values
 on conflict (key) do nothing;
 
 create table if not exists public.business_applications (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   applicant_profile_id uuid references public.profiles(id) on delete set null,
   applicant_name text not null,
   business_name text not null,
@@ -52,7 +51,7 @@ create table if not exists public.business_applications (
 );
 
 create table if not exists public.businesses (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   application_id uuid references public.business_applications(id) on delete set null,
   owner_profile_id uuid references public.profiles(id) on delete set null,
   business_name text not null,
@@ -69,7 +68,7 @@ create table if not exists public.businesses (
 );
 
 create table if not exists public.business_media (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   application_id uuid references public.business_applications(id) on delete cascade,
   business_id uuid references public.businesses(id) on delete cascade,
   media_type text not null check (media_type in ('image', 'video')),
@@ -81,7 +80,7 @@ create table if not exists public.business_media (
 );
 
 create table if not exists public.products_services (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   business_id uuid not null references public.businesses(id) on delete cascade,
   title text not null,
   description text,
@@ -92,7 +91,7 @@ create table if not exists public.products_services (
 );
 
 create table if not exists public.admin_roles (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references public.profiles(id) on delete cascade,
   role_name text not null check (
     role_name in ('super_admin', 'application_manager', 'content_manager', 'moderator')
@@ -102,7 +101,7 @@ create table if not exists public.admin_roles (
 );
 
 create table if not exists public.notifications (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   recipient_profile_id uuid references public.profiles(id) on delete set null,
   application_id uuid references public.business_applications(id) on delete set null,
   recipient_phone text,
@@ -117,7 +116,7 @@ create table if not exists public.notifications (
 );
 
 create table if not exists public.application_activity_logs (
-  id uuid primary key default uuid_generate_v4(),
+  id uuid primary key default gen_random_uuid(),
   application_id uuid references public.business_applications(id) on delete cascade,
   actor_profile_id uuid references public.profiles(id) on delete set null,
   action text not null,
@@ -125,34 +124,6 @@ create table if not exists public.application_activity_logs (
   created_at timestamptz not null default now()
 );
 
--- Existing installations may have profiles created independently of Supabase Auth.
-alter table public.profiles drop constraint if exists profiles_id_fkey;
-alter table public.profiles add constraint profiles_id_fkey
-  foreign key (id) references auth.users(id) on delete cascade not valid;
-
-alter table public.businesses add column if not exists application_id uuid
-  references public.business_applications(id) on delete set null;
-alter table public.business_media add column if not exists storage_path text;
-alter table public.business_media add column if not exists bucket_name text not null default 'business-media';
-alter table public.business_media alter column application_id drop not null;
-alter table public.business_media add column if not exists business_id uuid
-  references public.businesses(id) on delete cascade;
-alter table public.notifications add column if not exists application_id uuid
-  references public.business_applications(id) on delete set null;
-alter table public.notifications add column if not exists recipient_phone text;
-alter table public.notifications add column if not exists template text;
-alter table public.notifications add column if not exists provider_message_id text;
-alter table public.notifications add column if not exists provider_response jsonb;
-alter table public.products_services add column if not exists updated_at timestamptz not null default now();
-alter table public.business_applications drop constraint if exists business_applications_status_check;
-alter table public.business_applications add constraint business_applications_status_check
-  check (status in ('PENDING', 'UNDER REVIEW', 'APPROVED', 'REJECTED', 'CHANGES REQUESTED'));
-alter table public.businesses drop constraint if exists businesses_status_check;
-alter table public.businesses add constraint businesses_status_check
-  check (status in ('draft', 'published', 'archived'));
-alter table public.business_media drop constraint if exists business_media_check;
-alter table public.business_media add constraint business_media_check
-  check (application_id is not null or business_id is not null) not valid;
 create unique index if not exists businesses_application_id_key
   on public.businesses(application_id) where application_id is not null;
 create unique index if not exists business_media_storage_path_key
@@ -161,11 +132,12 @@ create index if not exists idx_businesses_status on public.businesses(status, is
 create index if not exists idx_business_applications_status on public.business_applications(status, created_at desc);
 create index if not exists idx_business_media_application on public.business_media(application_id);
 create index if not exists idx_business_media_business on public.business_media(business_id);
+create index if not exists idx_products_services_business on public.products_services(business_id, is_featured);
 create index if not exists idx_admin_roles_profile on public.admin_roles(profile_id, role_name);
 create index if not exists idx_activity_application on public.application_activity_logs(application_id, created_at desc);
 create index if not exists idx_notifications_application on public.notifications(application_id, created_at desc);
 
-create or replace function public.set_updated_at()
+create or replace function public.bisa_set_updated_at()
 returns trigger language plpgsql set search_path = '' as $$
 begin
   new.updated_at := now();
@@ -173,23 +145,23 @@ begin
 end;
 $$;
 
-drop trigger if exists profiles_set_updated_at on public.profiles;
-create trigger profiles_set_updated_at before update on public.profiles
-for each row execute function public.set_updated_at();
-drop trigger if exists applications_set_updated_at on public.business_applications;
-create trigger applications_set_updated_at before update on public.business_applications
-for each row execute function public.set_updated_at();
-drop trigger if exists businesses_set_updated_at on public.businesses;
-create trigger businesses_set_updated_at before update on public.businesses
-for each row execute function public.set_updated_at();
-drop trigger if exists products_services_set_updated_at on public.products_services;
-create trigger products_services_set_updated_at before update on public.products_services
-for each row execute function public.set_updated_at();
-drop trigger if exists site_content_set_updated_at on public.site_content;
-create trigger site_content_set_updated_at before update on public.site_content
-for each row execute function public.set_updated_at();
+drop trigger if exists bisa_profiles_set_updated_at on public.profiles;
+create trigger bisa_profiles_set_updated_at before update on public.profiles
+for each row execute function public.bisa_set_updated_at();
+drop trigger if exists bisa_applications_set_updated_at on public.business_applications;
+create trigger bisa_applications_set_updated_at before update on public.business_applications
+for each row execute function public.bisa_set_updated_at();
+drop trigger if exists bisa_businesses_set_updated_at on public.businesses;
+create trigger bisa_businesses_set_updated_at before update on public.businesses
+for each row execute function public.bisa_set_updated_at();
+drop trigger if exists bisa_products_services_set_updated_at on public.products_services;
+create trigger bisa_products_services_set_updated_at before update on public.products_services
+for each row execute function public.bisa_set_updated_at();
+drop trigger if exists bisa_site_content_set_updated_at on public.site_content;
+create trigger bisa_site_content_set_updated_at before update on public.site_content
+for each row execute function public.bisa_set_updated_at();
 
-create or replace function public.create_profile_for_auth_user()
+create or replace function public.bisa_create_profile_for_auth_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   insert into public.profiles (id, email, full_name)
@@ -198,7 +170,7 @@ begin
     new.email,
     coalesce(nullif(new.raw_user_meta_data ->> 'full_name', ''), split_part(new.email, '@', 1))
   )
-  on conflict (id) do update set email = excluded.email;
+  on conflict (id) do nothing;
   return new;
 end;
 $$;
@@ -282,9 +254,24 @@ $$;
 revoke all on function public.review_business_application(uuid, text, text, uuid) from public, anon, authenticated;
 grant execute on function public.review_business_application(uuid, text, text, uuid) to service_role;
 
-drop trigger if exists on_auth_user_created on auth.users;
-create trigger on_auth_user_created after insert on auth.users
-for each row execute function public.create_profile_for_auth_user();
+drop trigger if exists bisa_auth_user_created_profile on auth.users;
+create trigger bisa_auth_user_created_profile after insert on auth.users
+for each row execute function public.bisa_create_profile_for_auth_user();
+
+insert into public.profiles (id, email, full_name)
+select
+  id,
+  email,
+  coalesce(nullif(raw_user_meta_data ->> 'full_name', ''), split_part(email, '@', 1))
+from auth.users
+where email is not null
+on conflict (id) do nothing;
+
+insert into public.admin_roles (profile_id, role_name)
+select id, 'super_admin'
+from public.profiles
+where lower(email) = lower('amoahkwameboadu1122@gmail.com')
+on conflict (profile_id, role_name) do nothing;
 
 insert into public.categories (name) values
   ('Fashion'),
@@ -343,7 +330,4 @@ values (
   26214400,
   array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime']
 )
-on conflict (id) do update set
-  public = false,
-  file_size_limit = excluded.file_size_limit,
-  allowed_mime_types = excluded.allowed_mime_types;
+on conflict (id) do nothing;
