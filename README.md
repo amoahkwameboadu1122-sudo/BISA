@@ -17,6 +17,8 @@ BISA (Let's Do Business & Share Ideas) connects student entrepreneurs with campu
 
 Follow [`supabase/README.md`](./supabase/README.md) to apply the SQL, create the primary administrator, and configure Vercel and Arkesel. The website intentionally shows backend errors instead of claiming local-only submissions or demo SMS sends succeeded.
 
+The official BISA logo variations and compact favicon are in `assets/`. The public footer logo opens the administrator login discreetly; administrator access is protected by Supabase Auth and server-checked roles.
+
 Preview static layouts with:
 
 ```powershell

@@ -16,13 +16,18 @@
       return `<a href="${href}"${current ? ' class="active" aria-current="page"' : ''}>${label}</a>`;
     }).join('');
     header.innerHTML = `
-      <a href="index.html" class="logo" aria-label="BISA home">BISA<span>.</span></a>
+      <a href="index.html" class="logo site-brand" aria-label="BISA home">
+        <img src="assets/bisa-logo-mark.png" alt="">
+        <span>BISA<span class="brand-dot">.</span></span>
+      </a>
       <nav class="main-nav" aria-label="Main navigation">${navigation}</nav>`;
   }
 
   if (footer) {
     footer.innerHTML = `
-      <a href="index.html" class="logo footer-logo" aria-label="BISA home">BISA<span>.</span></a>
+      <a href="admin-login.html" class="footer-logo" aria-label="BISA">
+        <img src="assets/bisa-logo-full.png" alt="BISA — Let's do business and share ideas">
+      </a>
       <p>Find What You Need. Connect with Student Businesses.</p>
       <nav class="footer-nav" aria-label="Footer navigation">
         <a href="explore.html">Explore</a>
@@ -32,7 +37,6 @@
       </nav>
       <div class="footer-meta">
         <p class="copyright">&copy; ${new Date().getFullYear()} BISA. All rights reserved.</p>
-        <a href="${currentPage === 'admin.html' ? 'admin.html' : 'admin-login.html'}" class="admin-link">${currentPage === 'admin.html' ? 'Admin dashboard' : 'Admin portal'}</a>
       </div>`;
   }
 })();
