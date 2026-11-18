@@ -1,0 +1,35 @@
+# See http://help.github.com/items/gitignore for full gitignore guide
+# Docker
+Dockerfile*
+*.dockerignore
+
+# Gradle build folder
+.gradle
+
+# Maven target folder
+target/
+
+# OS X
+.DS_Store
+
+# Visual Studio
+*.suo
+*.user
+*.sln
+*.lockbit
+
+# Cloud9
+.c9/
+
+# Vercel
+.vercel
+
+# Production
+.output
+
+# Static publish
+/out
+/publish
+
+# Package json deps
+node_modules/
