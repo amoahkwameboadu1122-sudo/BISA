@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>BISA - Homepage | Let's Do Business & Share Ideas</title>
+    
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER: The top container holding the brand logo and navigation menu -->
+    <header class="header">
+        <!-- CONTAINER: Wraps header contents to keep them centered and aligned -->
+        <div class="container header-container">
+            
+            <!-- LOGO: Displays the brand name BISA -->
+            <a href="index.html" class="logo">BISA</a>
+
+            <!-- NAV: Contains the main website navigation links -->
+            <nav class="nav">
+                <!-- href tells the browser which HTML file to open when clicked -->
+                <a href="index.html" class="nav-link active">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="business.html" class="nav-link">List Your Business</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- MAIN: Wraps the core unique content of the homepage -->
+    <main class="main">
+
+        <!-- HERO SECTION: The introductory banner at the top of the homepage (Reference: Wireframe Screenshot 1) -->
+        <section class="hero">
+            <div class="container hero-grid">
+                
+                <!-- HERO TEXT: Holds the main headline, tagline, and call-to-action buttons -->
+                <div class="hero-text">
+                    <!-- H1: The primary heading of the page; crucial for SEO and visitors -->
+                    <h1 class="hero-title">Connect, Discover, and Grow with BISA</h1>
+                    
+                    <!-- PARAGRAPH: Explains what BISA stands for: Let's Do Business & Share Ideas -->
+                    <p class="hero-description">
+                        Welcome to BISA (Let's Do Business & Share Ideas). Discover trusted campus and local student businesses, services, and products instantly.
+                    </p>
+
+                    <!-- HERO BUTTONS: Grouping container for action buttons -->
+                    <div class="hero-buttons">
+                        <a href="explore.html" class="button button-primary">Explore Now</a>
+                        <a href="business.html" class="button button-secondary">List a Business</a>
+                    </div>
+                </div>
+
+                <!-- HERO IMAGE: Visual placeholder matching the wireframe sketch -->
+                <div class="hero-image-box">
+                    <span class="image-placeholder-text">HERO IMAGE</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SEARCH SECTION: Quick search bar matching the wireframe layout -->
+        <section class="search-section">
+            <div class="container">
+                <!-- FORM: Static visual search form -->
+                <form class="search-form" action="explore.html" method="GET">
+                    <!-- INPUT: Text field for searching products or services -->
+                    <input type="text" class="input search-input" placeholder="Search products, services or businesses...">
+                    <!-- BUTTON: Triggers search action -->
+                    <button type="submit" class="button button-search">Search</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- FEATURED CATEGORIES: Displays categories in a row of cards as per wireframe -->
+        <section class="section categories-section">
+            <div class="container">
+                <h2 class="section-title">Featured Categories</h2>
+                
+                <!-- GRID: Arranges category cards horizontally -->
+                <div class="categories-grid">
+                    <!-- CARD 1 -->
+                    <div class="card category-card">
+                        <div class="category-icon"></div>
+                        <h3 class="category-name">Food & Snacks</h3>
+                    </div>
+                    <!-- CARD 2 -->
+                    <div class="card category-card">
+                        <div class="category-icon"></div>
+                        <h3 class="category-name">Graphics & Art</h3>
+                    </div>
+                    <!-- CARD 3 -->
+                    <div class="card category-card">
+                        <div class="category-icon"></div>
+                        <h3 class="category-name">Tech & Web</h3>
+                    </div>
+                    <!-- CARD 4 -->
+                    <div class="card category-card">
+                        <div class="category-icon"></div>
+                        <h3 class="category-name">Campus Services</h3>
+                    </div>
+                    <!-- CARD 5 -->
+                    <div class="card category-card">
+                        <div class="category-icon"></div>
+                        <h3 class="category-name">Fashion & Wear</h3>
+                    </div>
+                    <!-- CARD 6 -->
+                    <div class="card category-card">
+                        <div class="category-icon"></div>
+                        <h3 class="category-name">Books & Notes</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURED BUSINESSES: Grid showcasing popular student listings -->
+        <section class="section businesses-section">
+            <div class="container">
+                <h2 class="section-title">Featured Businesses</h2>
+                
+                <div class="businesses-grid">
+                    <!-- BUSINESS CARD 1 -->
+                    <article class="card business-card">
+                        <div class="business-img-box"></div>
+                        <h3 class="business-name">Campus Fresh Chop</h3>
+                        <p class="business-desc">Delicious local meals and snacks delivered right to your hostel.</p>
+                        <a href="explore.html" class="business-link">View Details</a>
+                    </article>
+
+                    <!-- BUSINESS CARD 2 -->
+                    <article class="card business-card">
+                        <div class="business-img-box"></div>
+                        <h3 class="business-name">Luminex Creative Lab</h3>
+                        <p class="business-desc">Professional brand identity, flyer design, and motion graphics.</p>
+                        <a href="explore.html" class="business-link">View Details</a>
+                    </article>
+
+                    <!-- BUSINESS CARD 3 -->
+                    <article class="card business-card">
+                        <div class="business-img-box"></div>
+                        <h3 class="business-name">Amoah Web Solutions</h3>
+                        <p class="business-desc">Responsive websites, debugging, and Cloudflare deployments.</p>
+                        <a href="explore.html" class="business-link">View Details</a>
+                    </article>
+
+                    <!-- BUSINESS CARD 4 -->
+                    <article class="card business-card">
+                        <div class="business-img-box"></div>
+                        <h3 class="business-name">Bamboo Craft & Art</h3>
+                        <p class="business-desc">Handmade bamboo flutes, musical instruments, and traditional art.</p>
+                        <a href="explore.html" class="business-link">View Details</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- CALL TO ACTION BANNER: Matches wireframe bottom callout banner -->
+        <section class="cta-banner-section">
+            <div class="container cta-banner">
+                <div class="cta-text">
+                    <h3>Are you a student entrepreneur or business owner?</h3>
+                    <p>Showcase your products and services to the entire campus community today.</p>
+                </div>
+                <a href="business.html" class="button button-primary">List Your Business</a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER: Bottom section with links and copyright information -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>BISA</h4>
+                <p>Let's Do Business & Share Ideas.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="explore.html">Explore</a>
+                <a href="business.html">List Your Business</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="footer-col">
+                <h4>Socials</h4>
+                <div class="social-circles">
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

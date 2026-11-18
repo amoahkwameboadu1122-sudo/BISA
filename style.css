@@ -1,0 +1,819 @@
+/* ==========================================================
+   1. GOOGLE FONTS IMPORT & CSS VARIABLES
+   ========================================================== */
+/* @import loads external fonts from Google Fonts for your website typography */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+/* :root defines global CSS custom properties (variables) representing your BISA brand identity */
+:root {
+    --primary: #54234A;     /* Berry Plum: Primary brand color used for headers, buttons, and titles */
+    --secondary: #FFB02E;   /* Mango Gold: Secondary color used for highlights and badges */
+    --accent: #F16B4B;      /* Hot Coral: Accent color used for interactive hover states */
+    --bg-warm: #FFF1DA;     /* Warm Vanilla: Background color for the overall website */
+    --white: #FFFFFF;       /* Pure white used for cards and container backgrounds */
+    --dark: #222222;        /* Dark charcoal used for body text */
+    --gray: #666666;        /* Muted gray used for descriptions and secondary text */
+    --light-gray: #E5E5E5;  /* Light gray used for subtle borders and lines */
+    --border-radius: 8px;   /* Standard rounded corner radius for cards and buttons */
+}
+
+
+/* ==========================================================
+   2. GLOBAL RESET AND BASIC SETTINGS
+   ========================================================== */
+/* The asterisk (*) targets every single element on the webpage */
+* {
+    margin: 0;          /* Removes default browser spacing around elements */
+    padding: 0;         /* Removes default browser inner spacing */
+    box-sizing: border-box; /* Includes padding and borders inside the total width/height calculation */
+}
+
+body {
+    font-family: 'Montserrat', sans-serif; /* Sets Montserrat as the primary font face */
+    background-color: var(--bg-warm);      /* Sets the page background to Warm Vanilla */
+    color: var(--dark);                   /* Sets the default text color to dark charcoal */
+    line-height: 1.6;                     /* Sets comfortable vertical spacing between lines of text */
+}
+
+/* .container centers your page content and sets a maximum content width of 1200px */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;       /* Centers the container horizontally on the screen */
+    padding: 0 20px;      /* Adds breathing room on the left and right edges */
+}
+
+
+/* ==========================================================
+   3. BODY AND TYPOGRAPHY
+   ========================================================== */
+h1, h2, h3, h4 {
+    color: var(--primary); /* Applies Berry Plum color to all major headings */
+    font-weight: 700;      /* Makes headings bold */
+}
+
+a {
+    text-decoration: none; /* Removes the default ugly underline from text links */
+    color: inherit;        /* Inherits text color from parent element */
+}
+
+
+/* ==========================================================
+   4. HEADER AND NAVIGATION
+   ========================================================== */
+.header {
+    background-color: var(--white);       /* Gives the navigation bar a clean white background */
+    border-bottom: 2px solid var(--light-gray); /* Adds a subtle dividing line underneath */
+    position: sticky;                     /* Locks the header at the top of the screen when scrolling */
+    top: 0;                               /* Distance from top when sticky kicks in */
+    z-index: 1000;                        /* Ensures header stays on top of other page contents */
+}
+
+.header-container {
+    display: flex;             /* Activates Flexbox to arrange child elements horizontally */
+    justify-content: space-between; /* Pushes logo to the far left and navigation links to the far right */
+    align-items: center;       /* Vertically centers the logo and links in the middle of the header */
+    height: 70px;              /* Sets a fixed height for the navigation bar */
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 1px;       /* Adds a small tracking space between letters */
+}
+
+.nav {
+    display: flex;
+    gap: 25px;                 /* Controls the horizontal space between navigation links */
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--dark);
+    transition: color 0.3s ease; /* Smoothly animates color changes over 0.3 seconds on hover */
+}
+
+/* Hover and active states: changes text color to Hot Coral */
+.nav-link:hover, 
+.nav-link.active {
+    color: var(--accent);
+}
+
+
+/* ==========================================================
+   5. BUTTONS AND REUSABLE ELEMENTS
+   ========================================================== */
+.button {
+    display: inline-block;
+    padding: 12px 24px;        /* Adds vertical and horizontal padding inside buttons */
+    border-radius: var(--border-radius); /* Rounds the corners using our CSS variable */
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;           /* Changes mouse cursor to a pointing hand on hover */
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Primary Button: Uses Berry Plum background with white text */
+.button-primary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.button-primary:hover {
+    background-color: #3e1937; /* Darkens Berry Plum slightly when hovered */
+}
+
+/* Secondary Button: Uses Mango Gold background with dark text */
+.button-secondary {
+    background-color: var(--secondary);
+    color: var(--dark);
+}
+
+.button-secondary:hover {
+    background-color: #e59b20; /* Darkens Mango Gold slightly when hovered */
+}
+
+/* CARD: Reusable white container box with subtle border and shadow */
+.card {
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+    overflow: hidden;          /* Clips any child content that overflows the rounded corners */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Adds a soft drop shadow for depth */
+}
+
+/* INPUT: Reusable form text input styling */
+.input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    font-family: inherit;
+    font-size: 14px;
+    background-color: var(--white);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary); /* Highlights the border with Berry Plum when clicked/focused */
+}
+
+
+/* ==========================================================
+   6. HOMEPAGE SECTIONS
+   ========================================================== */
+.hero {
+    padding: 60px 0;           /* Adds generous vertical spacing above and below hero */
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Creates two equal columns (50% width each) on desktop */
+    gap: 40px;                      /* Controls the gap space between the text column and image column */
+    align-items: center;            /* Vertically aligns text and image in the middle */
+}
+
+.hero-title {
+    font-size: 40px;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.hero-description {
+    font-size: 16px;
+    color: var(--gray);
+    margin-bottom: 30px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 15px;                 /* Space between the two call-to-action buttons */
+}
+
+/* HERO IMAGE STYLING: Updated to handle real images nicely inside the grid */
+.hero-image-box {
+    width: 100%;
+    height: 320px;
+    border-radius: var(--border-radius);
+    overflow: hidden;          /* Crops any image edges that extend past the rounded corners */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;         /* Scales and crops the image to fill the box without distorting proportions */
+}
+
+/* Search Section */
+.search-section {
+    padding: 20px 0 40px 0;
+}
+
+.search-form {
+    display: flex;
+    gap: 15px;
+    background-color: var(--white);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+}
+
+.button-search {
+    background-color: var(--accent);
+    color: var(--white);
+    padding: 0 30px;
+}
+
+/* Sections General */
+.section {
+    padding: 40px 0;
+}
+
+.section-title {
+    font-size: 26px;
+    margin-bottom: 25px;
+}
+
+/* Categories Grid */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* Creates 6 equal columns across the screen */
+    gap: 20px;
+}
+
+.category-card {
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.category-icon {
+    width: 40px;
+    height: 40px;
+    background-color: var(--bg-warm);
+    border-radius: 50%;         /* Makes the icon wrapper a perfect circle */
+    margin: 0 auto 10px auto;
+}
+
+.category-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Businesses Grid */
+.businesses-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates 4 columns for business cards */
+    gap: 20px;
+}
+
+.business-card {
+    padding: 15px;
+}
+
+.business-img-box {
+    width: 100%;
+    height: 150px;
+    background-color: #e2d2db;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.business-name {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.business-desc {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 15px;
+}
+
+.business-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* CTA Banner Section */
+.cta-banner-section {
+    padding: 40px 0 60px 0;
+}
+
+.cta-banner {
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cta-text h3 {
+    color: var(--secondary);
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.cta-text p {
+    color: var(--white);
+    font-size: 14px;
+}
+
+
+/* ==========================================================
+   7. EXPLORE PAGE SECTIONS
+   ========================================================== */
+.page-header-section {
+    background-color: var(--white);
+    padding: 40px 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.breadcrumb {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 8px;
+}
+
+.page-title {
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+.page-subtitle {
+    font-size: 15px;
+    color: var(--gray);
+}
+
+.explore-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr; /* Sidebar fixed at 280px width, results take remaining space (1fr) */
+    gap: 30px;
+    padding-top: 30px;
+}
+
+.filters-sidebar {
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+    height: fit-content;        /* Height adjusts automatically to fit its contents */
+}
+
+.filters-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.checkbox-wrapper label {
+    display: block;
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.price-slider {
+    width: 100%;
+}
+
+.apply-btn {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.explore-top-bar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.sort-select {
+    padding: 0 15px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+    background-color: var(--white);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Creates 3 columns for explore result cards */
+    gap: 20px;
+}
+
+.explore-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.explore-img-box {
+    width: 100%;
+    height: 140px;
+    background-color: #e2d2db;
+}
+
+.explore-card-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;               /* Expands to fill available vertical space */
+}
+
+.explore-card-content h3 {
+    font-size: 15px;
+    margin-bottom: 5px;
+}
+
+.explore-card-content p {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    flex-grow: 1;
+}
+
+.location-tag {
+    font-size: 11px;
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.card-btn {
+    padding: 8px;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.page-num {
+    width: 35px;
+    height: 35px;
+    background-color: var(--white);
+    border: 1px solid var(--light-gray);
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.page-num.active {
+    background-color: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+.explore-page-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  max-width: 1280px;
+  margin: 20px auto;
+  padding: 0 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+@media (max-width: 850px) {
+  .explore-page-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* Trigger Buttons */
+
+.policy-modal {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 440px;
+  width: 90%;
+  background: #ffffff;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  font-family: 'Montserrat', sans-serif;
+}
+
+.policy-modal::backdrop {
+  background: rgba(17, 24, 39, 0.65);
+  backdrop-filter: blur(2px);
+}
+
+.policy-content {
+  padding: 24px;
+}
+
+.policy-alert {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #dc2626;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.policy-text {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.policy-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-close {
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-agree {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-agree:hover {
+  background: #1d4ed8;
+}
+
+
+
+
+/* ==========================================================
+   8. BUSINESS PAGE SECTIONS (List Your Business)
+   ========================================================== */
+.form-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.business-form, .contact-form {
+    background-color: var(--white);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.textarea {
+    resize: vertical;           /* Allows users to resize the text area height vertically only */
+}
+
+.file-input {
+    padding: 8px;
+}
+
+.submit-btn {
+    width: 100%;
+}
+
+
+/* ==========================================================
+   9. ABOUT PAGE SECTIONS
+   ========================================================== */
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns for text and image */
+    gap: 40px;
+    align-items: center;
+}
+
+.about-text-content h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.about-text-content p {
+    color: var(--gray);
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+.about-image-box {
+    width: 100%;
+    height: 300px;
+    background-color: #e2d2db;
+    border: 2px dashed var(--primary);
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-placeholder-text {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+
+/* ==========================================================
+   10. CONTACT PAGE SECTIONS
+   ========================================================== */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* Contact info column is smaller, form column is wider */
+    gap: 40px;
+}
+
+.contact-info {
+    background-color: var(--white);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--light-gray);
+    height: fit-content;
+}
+
+.contact-info h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.contact-info p {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 12px;
+}
+
+
+/* ==========================================================
+   11. FOOTER
+   ========================================================== */
+.footer {
+    background-color: var(--primary);
+    color: var(--white);
+    padding: 60px 0 20px 0;
+    margin-top: 60px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Creates 4 equal columns for footer content */
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.footer-col h4 {
+    color: var(--secondary);
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.footer-col p, .footer-col a {
+    display: block;
+    font-size: 13px;
+    color: #e0d0db;
+    margin-bottom: 10px;
+    transition: color 0.3s ease;
+}
+
+.footer-col a:hover {
+    color: var(--white);
+}
+
+.social-circles {
+    display: flex;
+    gap: 10px;
+}
+
+.circle {
+    width: 32px;
+    height: 32px;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 50%;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    font-size: 12px;
+    color: #ccaec7;
+}
+
+
+/* ==========================================================
+   12. RESPONSIVE MEDIA QUERIES
+   ========================================================== */
+
+/* Tablet Screens (Max Width: 1024px) */
+@media (max-width: 1024px) {
+    /* Converts multi-column layouts into single stacked columns so content doesn't squeeze */
+    .hero-grid, .explore-grid, .about-grid, .contact-grid {
+        grid-template-columns: 1fr; 
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr); /* Reduces category grid to 3 columns on tablets */
+    }
+
+    .businesses-grid {
+        grid-template-columns: repeat(2, 1fr); /* Reduces business cards to 2 columns */
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(2, 1fr); /* Reduces explore results to 2 columns */
+    }
+
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr); /* Reduces footer columns to 2 */
+    }
+}
+
+/* Mobile Phones (Max Width: 768px) */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;    /* Stacks logo on top and navigation underneath on small phones */
+        height: auto;
+        padding: 15px 0;
+    }
+
+    .nav {
+        margin-top: 10px;
+        gap: 15px;
+        flex-wrap: wrap;           /* Allows links to wrap to the next line if screen is too narrow */
+        justify-content: center;
+    }
+
+    .hero-title {
+        font-size: 28px;           /* Scales down large hero title to fit mobile screens */
+    }
+
+    .hero-buttons {
+        flex-direction: column;    /* Stacks action buttons vertically on mobile phones */
+    }
+
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr); /* Reduces categories to 2 columns on phones */
+    }
+
+    .businesses-grid, .results-grid {
+        grid-template-columns: 1fr; /* Displays 1 card per row on narrow phone screens */
+    }
+
+    .cta-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr; /* Stacks all footer columns into 1 single column */
+        text-align: center;
+    }
+
+    .social-circles {
+        justify-content: center;
+    }
+}

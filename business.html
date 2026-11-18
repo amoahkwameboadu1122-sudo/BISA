@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BISA - List Your Business</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">BISA</a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="business.html" class="nav-link active">List Your Business</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="page-header-section">
+            <div class="container">
+                <p class="breadcrumb">Home / List Your Business</p>
+                <h1 class="page-title">Register Your Business</h1>
+                <p class="page-subtitle">Fill out the form below to add your enterprise to the BISA directory.</p>
+            </div>
+        </div>
+
+        <!-- FORM SECTION -->
+        <section class="section form-section">
+            <div class="container form-container">
+                
+                <!-- FORM: Collects business submission details -->
+                <form class="business-form">
+                    
+                    <div class="form-group">
+                        <label for="biz-name" class="form-label">Business Name</label>
+                        <input type="text" id="biz-name" class="input" placeholder="e.g., Campus Fresh Chop" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="biz-category" class="form-label">Category</label>
+                        <select id="biz-category" class="input" required>
+                            <option value="">Select a category</option>
+                            <option value="food">Food & Snacks</option>
+                            <option value="graphics">Graphics & Art</option>
+                            <option value="tech">Tech & Web</option>
+                            <option value="services">Campus Services</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="biz-location" class="form-label">Location / Hostel</label>
+                        <input type="text" id="biz-location" class="input" placeholder="e.g., Hall 2, Room 14" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="biz-desc" class="form-label">Short Description</label>
+                        <textarea id="biz-desc" class="input textarea" placeholder="Describe your products or services..." rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="biz-image" class="form-label">Upload Image / Logo</label>
+                        <input type="file" id="biz-image" class="input file-input">
+                    </div>
+
+                    <button type="submit" class="button button-primary submit-btn">Submit Business Listing</button>
+
+                </form>
+
+            </div>
+        </section>
+
+
+<!-- Vendor Policy Popup (Auto-triggers when business.html opens) -->
+<dialog id="vendorPolicy" class="policy-modal">
+  <div class="policy-content">
+    <p class="policy-alert"><strong>Read Our Policy</strong></p>
+    <p class="policy-text">
+      By listing your business on BISA, you confirm that your goods or services are legal, safe, 
+      and appropriate for the campus community. You are solely responsible for fulfilling customer orders 
+      accurately, maintaining fair pricing, and delivering quality service. False listings will be removed.
+    </p>
+    <div class="policy-actions">
+      <!-- "Go Back" sends them back to Explore if they disagree -->
+      <button type="button" class="btn-close" onclick="window.history.back()">Go Back</button>
+      <!-- "Agree & Proceed" closes the popup so they can fill the form -->
+      <button type="button" class="btn-agree" onclick="document.getElementById('vendorPolicy').close()">Agree &amp; Proceed</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  // Automatically open the vendor policy as soon as business.html finishes loading
+  window.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('vendorPolicy').showModal();
+  });
+</script>
+
+
+
+        
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4>BISA</h4>
+                <p>Let's Do Business & Share Ideas.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="explore.html">Explore</a>
+                <a href="business.html">List Your Business</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="footer-col">
+                <h4>Socials</h4>
+                <div class="social-circles">
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
