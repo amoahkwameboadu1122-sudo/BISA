@@ -817,3 +817,4 @@ a {
         justify-content: center;
     }
 }
+-notice-banner { background-color: var(--primary); color: var(--white); padding: 15px 20px; margin-bottom: 20px; border-radius: var(--border-radius); text-align: center; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); width: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; }
