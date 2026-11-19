@@ -376,20 +376,43 @@
                 </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 BISA. All rights reserved.</p>
-        </div>
-    </footer>
-
 <div class="footer-bottom">
             <p>&copy; 2026 BISA. All rights reserved.</p>
         </div>
     </footer>
 
-    <div class="footer-col">
-    <h4><a href="admin.html" class="footer-admin-trigger">BISA</a></h4>
-    <p>Let's Do Business &amp; Share Ideas.</p>
-</div>
-
+    <script>
+        // Admin login via footer BISA logo
+        (function() {
+            const adminEmail = 'admin@bisa.edu.gh';
+            const footerAdminLink = document.getElementById('footer-admin-link');
+            
+            if (footerAdminLink) {
+                footerAdminLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (session) {
+                        // User is logged in, show admin dashboard
+                        window.location.href = '/admin';
+                    } else {
+                        // Show login prompt
+                        const password = prompt('Enter admin credentials:\n\nAdmin Email: admin@bisa.edu.gh\n\nPassword:');
+                        if (password) {
+                            const { data, error } = await supabase.auth.signInWithPassword({
+                                email: adminEmail,
+                                password: password
+                            });
+                            if (error) {
+                                alert('Invalid credentials. Please try again.');
+                            } else {
+                                window.location.href = '/admin';
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
