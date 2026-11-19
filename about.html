@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - About Us</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client
+        const supabase = window.supabase = createSupabaseClient(
+            'https://vrgbataasdiyyhtsmjsp.supabase.co',
+            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
+        );
+    </script>
 </head>
 <body>
 
@@ -58,7 +66,7 @@
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4>BISA</h4>
+                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
                 <p>Let's Do Business & Share Ideas.</p>
             </div>
             <div class="footer-col">
@@ -86,5 +94,38 @@
         </div>
     </footer>
 
+    <script>
+        // Admin login via footer BISA logo
+        (function() {
+            const adminEmail = 'admin@bisa.edu.gh';
+            const footerAdminLink = document.getElementById('footer-admin-link');
+            
+            if (footerAdminLink) {
+                footerAdminLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (session) {
+                        // User is logged in, show admin dashboard
+                        window.location.href = '/admin';
+                    } else {
+                        // Show login prompt
+                        const password = prompt('Enter admin credentials:\n\nAdmin Email: admin@bisa.edu.gh\n\nPassword:');
+                        if (password) {
+                            const { data, error } = await supabase.auth.signInWithPassword({
+                                email: adminEmail,
+                                password: password
+                            });
+                            if (error) {
+                                alert('Invalid credentials. Please try again.');
+                            } else {
+                                window.location.href = '/admin';
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

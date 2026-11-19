@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - List Your Business</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client
+        const supabase = window.supabase = createSupabaseClient(
+            'https://vrgbataasdiyyhtsmjsp.supabase.co',
+            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
+        );
+    </script>
 </head>
 <body>
 
@@ -36,10 +44,10 @@
         <!-- FORM SECTION -->
         <section class="section form-section">
             <div class="container form-container">
-                
+
                 <!-- FORM: Collects business submission details -->
                 <form class="business-form">
-                    
+
                     <div class="form-group">
                         <label for="biz-name" class="form-label">Business Name</label>
                         <input type="text" id="biz-name" class="input" placeholder="e.g., Campus Fresh Chop" required>
@@ -78,35 +86,30 @@
             </div>
         </section>
 
+        <!-- Vendor Policy Popup (Auto-triggers when business.html opens) -->
+        <dialog id="vendorPolicy" class="policy-modal">
+          <div class="policy-content">
+            <p class="policy-alert"><strong>Read Our Policy</strong></p>
+            <p class="policy-text">
+              By listing your business on BISA, you confirm that your goods or services are legal, safe, 
+              and appropriate for the campus community. You are solely responsible for fulfilling customer orders 
+              accurately, maintaining fair pricing, and delivering quality service. False listings will be removed.
+            </p>
+            <div class="policy-actions">
+              <!-- "Go Back" sends them back to Explore if they disagree -->
+              <button type="button" class="btn-close" onclick="window.history.back()">Go Back</button>
+              <!-- "Agree & Proceed" closes the popup so they can fill the form -->
+              <button type="button" class="btn-agree" onclick="document.getElementById('vendorPolicy').close()">Agree &amp; Proceed</button>
+            </div>
+          </div>
+        </dialog>
 
-<!-- Vendor Policy Popup (Auto-triggers when business.html opens) -->
-<dialog id="vendorPolicy" class="policy-modal">
-  <div class="policy-content">
-    <p class="policy-alert"><strong>Read Our Policy</strong></p>
-    <p class="policy-text">
-      By listing your business on BISA, you confirm that your goods or services are legal, safe, 
-      and appropriate for the campus community. You are solely responsible for fulfilling customer orders 
-      accurately, maintaining fair pricing, and delivering quality service. False listings will be removed.
-    </p>
-    <div class="policy-actions">
-      <!-- "Go Back" sends them back to Explore if they disagree -->
-      <button type="button" class="btn-close" onclick="window.history.back()">Go Back</button>
-      <!-- "Agree & Proceed" closes the popup so they can fill the form -->
-      <button type="button" class="btn-agree" onclick="document.getElementById('vendorPolicy').close()">Agree &amp; Proceed</button>
-    </div>
-  </div>
-</dialog>
-
-<script>
-  // Automatically open the vendor policy as soon as business.html finishes loading
-  window.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('vendorPolicy').showModal();
-  });
-</script>
-
-
-
-        
+        <script>
+          // Automatically open the vendor policy as soon as business.html finishes loading
+          window.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('vendorPolicy').showModal();
+          });
+        </script>
 
     </main>
 
@@ -141,6 +144,16 @@
             <p>&copy; 2026 BISA. All rights reserved.</p>
         </div>
     </footer>
+
+<div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="footer-col">
+    <h4><a href="admin.html" class="footer-admin-trigger">BISA</a></h4>
+    <p>Let's Do Business &amp; Share Ideas.</p>
+</div>
 
 </body>
 </html>

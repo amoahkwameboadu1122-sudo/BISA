@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - Explore Businesses & Services</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client
+        const supabase = window.supabase = createSupabaseClient(
+            'https://vrgbataasdiyyhtsmjsp.supabase.co',
+            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
+        );
+    </script>
 </head>
 <body>
 
@@ -25,19 +33,22 @@
     <!-- MAIN -->
     <main class="main">
 
-        <!-- PAGE HEADER / BREADCRUMB -->
-        <div class="page-header-section">
+        <!-- EXPLORE HERO BANNER -->
+        <section class="explore-hero-banner">
             <div class="container">
+                <div class="explore-hero-notice">
+                    <strong>Notice:</strong> Welcome to BISA - Your campus marketplace for buying, selling, and connecting.
+                </div>
                 <p class="breadcrumb">Home / Explore</p>
                 <h1 class="page-title">Explore Businesses</h1>
                 <p class="page-subtitle">Browse verified student enterprises, services, and products.</p>
             </div>
-        </div>
+        </section>
 
-        <!-- EXPLORE LAYOUT: Uses a two-column grid (Sidebar filters + Main results) as seen in wireframe -->
+        <!-- EXPLORE LAYOUT: Uses a two-column grid (Sidebar filters + Main results) -->
         <section class="section explore-main-section">
             <div class="container explore-grid">
-                
+
                 <!-- ASIDE: Sidebar containing filter options (Category, Price, Location) -->
                 <aside class="filters-sidebar">
                     <h3 class="filters-title">Filters</h3>
@@ -72,7 +83,7 @@
 
                 <!-- RESULTS CONTAINER -->
                 <div class="explore-results-area">
-                    
+
                     <!-- TOP BAR FOR SEARCH & SORT -->
                     <div class="explore-top-bar">
                         <input type="text" class="input" placeholder="Search explore...">
@@ -85,63 +96,111 @@
 
                     <!-- CARDS GRID -->
                     <div class="results-grid">
-                        <article class="card explore-card">
+                        <article class="card explore-card"
+                            data-business="Campus Fresh Chop"
+                            data-description="Delicious local meals and snacks delivered right to your hostel."
+                            data-location="Campus"
+                            data-find-us="Campus Food Court & Hostel Delivery"
+                            data-phone="+233 20 123 4567"
+                            data-email="campusfresh@bisa.edu.gh"
+                            data-image="bisa-flyer.png.png"
+                            data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Campus Fresh Chop</h3>
                                 <p>Short description of meals and snacks...</p>
                                 <span class="location-tag">📍 Campus</span>
-                                <a href="contact.html" class="button button-secondary card-btn">Contact</a>
+                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
-                        <article class="card explore-card">
+                        <article class="card explore-card"
+                            data-business="Luminex Creative Lab"
+                            data-description="Professional brand identity, flyer design, and motion graphics services."
+                            data-location="Campus"
+                            data-find-us="CCTU Design Studio / Campus Hub"
+                            data-phone="+233 20 987 6543"
+                            data-email="luminex@bisa.edu.gh"
+                            data-image="bisa-logo-full.png"
+                            data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Luminex Creative Lab</h3>
                                 <p>Professional brand identity & flyer design...</p>
                                 <span class="location-tag">📍 Campus</span>
-                                <a href="contact.html" class="button button-secondary card-btn">Contact</a>
+                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
-                        <article class="card explore-card">
+                        <article class="card explore-card"
+                            data-business="Amoah Web Solutions"
+                            data-description="Responsive websites, debugging, and Cloudflare deployments for students."
+                            data-location="Nearby"
+                            data-find-us="Cape Coast / Elmina Tech Desk"
+                            data-phone="+233 24 555 0123"
+                            data-email="amoahweb@bisa.edu.gh"
+                            data-image="bisa-logo-mark.png"
+                            data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Amoah Web Solutions</h3>
                                 <p>Responsive websites and technical support...</p>
                                 <span class="location-tag">📍 Nearby</span>
-                                <a href="contact.html" class="button button-secondary card-btn">Contact</a>
+                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
-                        <article class="card explore-card">
+                        <article class="card explore-card"
+                            data-business="Bamboo Craft & Art"
+                            data-description="Handmade musical bamboo flutes, instruments, and traditional art pieces."
+                            data-location="Campus"
+                            data-find-us="Campus Arts & Craft Corner"
+                            data-phone="+233 24 111 2233"
+                            data-email="bamboo@bisa.edu.gh"
+                            data-image="bisa-flyer.png.png"
+                            data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Bamboo Craft & Art</h3>
                                 <p>Handmade musical bamboo flutes...</p>
                                 <span class="location-tag">📍 Campus</span>
-                                <a href="contact.html" class="button button-secondary card-btn">Contact</a>
+                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
-                        <article class="card explore-card">
+                        <article class="card explore-card"
+                            data-business="Student Bookstore"
+                            data-description="Research notes, past questions, textbooks, and study guides for all courses."
+                            data-location="Campus"
+                            data-find-us="Main Campus Academic Block"
+                            data-phone="+233 20 555 0199"
+                            data-email="bookstore@bisa.edu.gh"
+                            data-image="bisa-logo-full.png"
+                            data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Student Bookstore</h3>
                                 <p>Research notes, past questions & books...</p>
                                 <span class="location-tag">📍 Campus</span>
-                                <a href="contact.html" class="button button-secondary card-btn">Contact</a>
+                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
-                        <article class="card explore-card">
+                        <article class="card explore-card"
+                            data-business="Hostel Laundry Hub"
+                            data-description="Fast and reliable express laundry service with pickup and delivery to your hostel."
+                            data-location="Nearby"
+                            data-find-us="Nearby Hostel Zone Pickup Point"
+                            data-phone="+233 24 777 8899"
+                            data-email="laundry@bisa.edu.gh"
+                            data-image="bisa-logo-mark.png"
+                            data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Hostel Laundry Hub</h3>
                                 <p>Fast and reliable express laundry service...</p>
                                 <span class="location-tag">📍 Nearby</span>
-                                <a href="contact.html" class="button button-secondary card-btn">Contact</a>
+                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
                     </div>
@@ -159,13 +218,142 @@
 
             </div>
         </section>
+
     </main>
+
+    <!-- STEP 1: POLICY NOTICE BEFORE VIEWING BUSINESS / SERVICE DETAILS -->
+    <dialog id="connectPolicyModal" class="policy-modal">
+        <div class="policy-content">
+            <p class="policy-alert"><strong>Read Our Policy</strong></p>
+            <p class="policy-text">
+                Before viewing this campus business or service's contact details, location, and offerings, please note that BISA connects you with student and campus providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely on campus or at agreed public points.
+            </p>
+            <div class="policy-actions">
+                <button type="button" class="btn-close" id="cancelPolicyBtn">Cancel</button>
+                <button type="button" class="btn-agree" id="agreePolicyBtn">I Understand &amp; Continue</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- STEP 2: BUSINESS / SERVICE DETAILS MODAL (SHOWN ONLY AFTER POLICY AGREEMENT) -->
+    <dialog id="contactModal" class="policy-modal">
+        <div class="policy-content contact-modal-content">
+            <button type="button" class="modal-close-btn" id="closeContactModalBtn" aria-label="Close modal">&times;</button>
+            <div class="contact-modal-header">
+                <img id="contactModalImage" src="" alt="" class="contact-modal-image">
+                <div>
+                    <h3 id="contactModalName" class="contact-modal-name"></h3>
+                    <span id="contactModalLocation" class="location-tag"></span>
+                </div>
+            </div>
+            <p id="contactModalDescription" class="contact-modal-description"></p>
+            <div class="contact-modal-details">
+                <div class="contact-detail">
+                    <span class="contact-label">Where to find service:</span>
+                    <span id="contactModalFindUs" class="contact-value"></span>
+                </div>
+                <div class="contact-detail">
+                    <span class="contact-label">Tel / Phone:</span>
+                    <a id="contactModalPhone" href="#" class="contact-link"></a>
+                </div>
+                <div class="contact-detail">
+                    <span class="contact-label">Email:</span>
+                    <a id="contactModalEmail" href="#" class="contact-link"></a>
+                </div>
+                <div class="contact-detail" id="contactWebsiteRow" style="display: none;">
+                    <span class="contact-label">Main Page:</span>
+                    <a id="contactModalWebsite" href="#" target="_blank" rel="noopener noreferrer" class="contact-link">Visit Main Page</a>
+                </div>
+            </div>
+            <div class="contact-modal-actions">
+                <button type="button" class="btn-close" id="doneContactModalBtn">Close</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        const connectPolicyModal = document.getElementById('connectPolicyModal');
+        const contactModal = document.getElementById('contactModal');
+        const cancelPolicyBtn = document.getElementById('cancelPolicyBtn');
+        const agreePolicyBtn = document.getElementById('agreePolicyBtn');
+        const closeContactModalBtn = document.getElementById('closeContactModalBtn');
+        const doneContactModalBtn = document.getElementById('doneContactModalBtn');
+
+        let selectedCardData = null;
+
+        document.querySelectorAll('.contact-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const card = this.closest('.explore-card');
+                if (!card) return;
+
+                selectedCardData = {
+                    name: card.dataset.business || '',
+                    description: card.dataset.description || '',
+                    location: card.dataset.location || '',
+                    findUs: card.dataset.findUs || card.dataset.location || '',
+                    phone: card.dataset.phone || '',
+                    email: card.dataset.email || '',
+                    image: card.dataset.image || '',
+                    website: card.dataset.website || ''
+                };
+
+                connectPolicyModal.showModal();
+            });
+        });
+
+        cancelPolicyBtn.addEventListener('click', function () {
+            selectedCardData = null;
+            connectPolicyModal.close();
+        });
+
+        agreePolicyBtn.addEventListener('click', function () {
+            connectPolicyModal.close();
+            if (!selectedCardData) return;
+
+            document.getElementById('contactModalName').textContent = selectedCardData.name;
+            document.getElementById('contactModalLocation').textContent = selectedCardData.location ? `📍 ${selectedCardData.location}` : '';
+            document.getElementById('contactModalDescription').textContent = selectedCardData.description;
+            document.getElementById('contactModalFindUs').textContent = selectedCardData.findUs;
+
+            const imgEl = document.getElementById('contactModalImage');
+            if (selectedCardData.image) {
+                imgEl.src = selectedCardData.image;
+                imgEl.alt = selectedCardData.name;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            const phoneEl = document.getElementById('contactModalPhone');
+            const cleanTel = selectedCardData.phone.replace(/[^+\d]/g, '');
+            phoneEl.textContent = selectedCardData.phone;
+            phoneEl.href = cleanTel ? `tel:${cleanTel}` : '#';
+
+            const emailEl = document.getElementById('contactModalEmail');
+            emailEl.textContent = selectedCardData.email;
+            emailEl.href = selectedCardData.email ? `mailto:${selectedCardData.email}` : '#';
+
+            const websiteRow = document.getElementById('contactWebsiteRow');
+            const websiteEl = document.getElementById('contactModalWebsite');
+            if (selectedCardData.website) {
+                websiteEl.href = selectedCardData.website;
+                websiteRow.style.display = 'flex';
+            } else {
+                websiteRow.style.display = 'none';
+            }
+
+            contactModal.showModal();
+        });
+
+        closeContactModalBtn.addEventListener('click', () => contactModal.close());
+        doneContactModalBtn.addEventListener('click', () => contactModal.close());
+    </script>
 
     <!-- FOOTER -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4>BISA</h4>
+                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
                 <p>Let's Do Business & Share Ideas.</p>
             </div>
             <div class="footer-col">
@@ -192,6 +380,16 @@
             <p>&copy; 2026 BISA. All rights reserved.</p>
         </div>
     </footer>
+
+<div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div class="footer-col">
+    <h4><a href="admin.html" class="footer-admin-trigger">BISA</a></h4>
+    <p>Let's Do Business &amp; Share Ideas.</p>
+</div>
 
 </body>
 </html>

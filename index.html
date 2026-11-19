@@ -6,8 +6,15 @@
     
     <title>BISA - Homepage | Let's Do Business & Share Ideas</title>
     
-    
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase client
+        const supabase = window.supabase = createSupabaseClient(
+            'https://vrgbataasdiyyhtsmjsp.supabase.co',
+            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
+        );
+    </script>
 </head>
 <body>
 
@@ -39,31 +46,77 @@
         <section class="hero">
             <div class="container hero-grid">
                 
-                <!-- HERO TEXT: Holds the main headline, tagline, and call-to-action buttons -->
-                <div class="hero-text">
-                    <!-- H1: The primary heading of the page; crucial for SEO and visitors -->
-                    <h1 class="hero-title">Connect, Discover, and Grow with BISA</h1>
-                    
-                    <!-- PARAGRAPH: Explains what BISA stands for: Let's Do Business & Share Ideas -->
-                    <p class="hero-description">
-                        Welcome to BISA (Let's Do Business & Share Ideas). Discover trusted campus and local student businesses, services, and products instantly.
-                    </p>
-
-                    <!-- HERO BUTTONS: Grouping container for action buttons -->
-                    <div class="hero-buttons">
-                        <a href="explore.html" class="button button-primary">Explore Now</a>
-                        <a href="business.html" class="button button-secondary">List a Business</a>
+                <!-- HERO SLIDESHOW: Slideshow banner at the top of the homepage -->
+                <div class="hero-slideshow">
+                    <div class="slideshow-container">
+                        <!-- Slide 1 -->
+                        <div class="slide active">
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <h1 class="hero-title">Connect, Discover, and Grow with BISA</h1>
+                                    <p class="hero-description">
+                                        Welcome to BISA (Let's Do Business & Share Ideas). Discover trusted campus and local student businesses, services, and products instantly.
+                                    </p>
+                                    <div class="hero-buttons">
+                                        <a href="explore.html" class="button button-primary">Explore Now</a>
+                                        <a href="business.html" class="button button-secondary">List a Business</a>
+                                    </div>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="bisa-flyer.png.png" alt="African university campus" class="hero-img">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Slide 2 -->
+                        <div class="slide">
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <h1 class="hero-title">Student Entrepreneurs Welcome</h1>
+                                    <p class="hero-description">
+                                        Turn your passion into profit. Join thousands of student entrepreneurs showcasing their products and services on BISA.
+                                    </p>
+                                    <div class="hero-buttons">
+                                        <a href="business.html" class="button button-primary">List Your Business</a>
+                                        <a href="explore.html" class="button button-secondary">Explore Now</a>
+                                    </div>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="bisa-logo-full.png" alt="BISA Student Entrepreneurs" class="hero-img">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Slide 3 -->
+                        <div class="slide">
+                            <div class="slide-content">
+                                <div class="slide-text">
+                                    <h1 class="hero-title">Discover Campus Services</h1>
+                                    <p class="hero-description">
+                                        From tutoring to laundry, design to delivery. Find trusted student services right on your campus.
+                                    </p>
+                                    <div class="hero-buttons">
+                                        <a href="explore.html" class="button button-primary">Explore Services</a>
+                                        <a href="business.html" class="button button-secondary">Offer a Service</a>
+                                    </div>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="bisa-logo-mark.png" alt="BISA Campus Services" class="hero-img">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation arrows -->
+                        <button class="slide-arrow prev" aria-label="Previous slide">&#10094;</button>
+                        <button class="slide-arrow next" aria-label="Next slide">&#10095;</button>
+                        
+                        <!-- Slide indicators -->
+                        <div class="slide-indicators">
+                            <span class="indicator active" data-slide="0"></span>
+                            <span class="indicator" data-slide="1"></span>
+                            <span class="indicator" data-slide="2"></span>
+                        </div>
                     </div>
-                </div>
-
-                <!-- NOTICE BANNER: Centrally positioned notice/message -->
-                <div class="notice-banner">
-                    <p><strong>Notice: Welcome to BISA - Your campus marketplace for buying, selling, and connecting.</strong></p>
-                </div>
-
-                <!-- HERO IMAGE: Visual placeholder matching the wireframe sketch -->
-                <div class="hero-image-box">
-                    <span class="image-placeholder-text">HERO IMAGE</span>
                 </div>
 
             </div>
@@ -209,5 +262,91 @@
         </div>
     </footer>
 
-</body>
-</html>
+<div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Hero Slideshow Functionality
+        (function() {
+            const slides = document.querySelectorAll('.slide');
+            const prevBtn = document.querySelector('.slide-arrow.prev');
+            const nextBtn = document.querySelector('.slide-arrow.next');
+            const indicators = document.querySelectorAll('.indicator');
+            let currentSlide = 0;
+            let slideInterval;
+
+            function showSlide(index) {
+                // Remove active class from all slides and indicators
+                slides.forEach(slide => slide.classList.remove('active'));
+                document.querySelectorAll('.indicator').forEach(ind => ind.classList.remove('active'));
+                
+                // Add active class to current slide and indicator
+                slides[index].classList.add('active');
+                indicators[index].classList.add('active');
+                currentSlide = index;
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % 3;
+                showSlide(currentSlide);
+            }
+
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + 3) % 3;
+                showSlide(currentSlide);
+            }
+
+            function startAutoSlide() {
+                slideInterval = setInterval(nextSlide, 5000);
+            }
+
+            function stopAutoSlide() {
+                clearInterval(slideInterval);
+            }
+
+            // Event listeners
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                stopAutoSlide();
+                startAutoSlide();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                prevSlide();
+                stopAutoSlide();
+                startAutoSlide();
+            });
+
+            // Indicator clicks
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    showSlide(index);
+                    stopAutoSlide();
+                    startAutoSlide();
+                });
+            });
+
+            // Pause on hover
+            const slideshowContainer = document.querySelector('.slideshow-container');
+            slideshowContainer.addEventListener('mouseenter', stopAutoSlide);
+            slideshowContainer.addEventListener('mouseleave', startAutoSlide);
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevSlide();
+                    stopAutoSlide();
+                    startAutoSlide();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                    stopAutoSlide();
+                    startAutoSlide();
+                }
+            });
+
+            // Initialize
+            showSlide(0);
+            startAutoSlide();
+        })();
