@@ -515,6 +515,61 @@
       background: #eee;
     }
 
+    /* CSS: Contact message cards inside the Messages tab */
+    .messages-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .message-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      background: #fffcf8;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .message-sender {
+      color: var(--plum);
+      font-weight: 800;
+      font-size: 0.98rem;
+    }
+
+    .message-email {
+      color: var(--coral);
+      font-weight: 600;
+      font-size: 0.84rem;
+    }
+
+    .message-date {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .message-body {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .message-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -535,7 +590,7 @@
   <section id="loginView" class="login-wrapper">
     <div class="login-card">
       <h1>BISA Admin</h1>
-      <p>Sign in with your Supabase admin credentials to manage listings, site media, and notices.</p>
+      <p>Sign in with your Supabase admin credentials to manage listings, site media, messages, and notices.</p>
       <div id="loginAlert" class="status-banner"></div>
       <form id="loginForm">
         <div class="form-group">
@@ -568,6 +623,7 @@
         <button type="button" class="tab-btn" data-tab="siteAssetsTab">Category Icons &amp; Site Images</button>
         <button type="button" class="tab-btn" data-tab="mediaLibraryTab">All Uploaded Media</button>
         <button type="button" class="tab-btn" data-tab="noticesTab">Policy Notices</button>
+        <button type="button" class="tab-btn" data-tab="messagesTab">Messages</button>
       </div>
 
       <!-- TAB 1: BUSINESS LISTINGS, MODIFY/UPDATE & IMAGE MODERATION -->
@@ -757,6 +813,20 @@
           </form>
         </div>
       </div>
+
+      <!-- TAB 7: CONTACT MESSAGES FROM contact.html -->
+      <div id="messagesTab" class="tab-panel">
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h2>Contact Messages</h2>
+              <p class="panel-sub" style="margin-bottom: 0;">Messages submitted from <code>contact.html</code>.</p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="refreshMessagesBtn">Refresh Messages</button>
+          </div>
+          <div id="messagesListContainer" class="messages-list"></div>
+        </div>
+      </div>
     </main>
   </section>
 
@@ -842,6 +912,7 @@
     const LS_CONFIG_KEY = 'bisa_admin_config_v1';
     const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
     const LS_MEDIA_KEY = 'bisa_media_cache';
+    const LS_MESSAGES_KEY = 'bisa_messages_cache';
 
     const DEFAULT_CATEGORIES = [
       'Food & Snacks',
@@ -875,6 +946,7 @@
 
     let allBusinesses = [];
     let mediaLibrary = [];
+    let contactMessages = [];
 
     // JS: Helper to display transient feedback banners
     function showAlert(elementId, message, type = 'success') {
@@ -956,7 +1028,7 @@
     async function enterDashboard() {
       loginView.classList.add('hidden');
       dashboardView.classList.remove('hidden');
-      await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary()]);
+      await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary(), loadMessages()]);
     }
 
     // JS: Converts selected image file to base64 data URL for localStorage fallback
@@ -1683,6 +1755,96 @@
         });
       });
     }
+
+    // JS: Loads and renders contact messages from `bisa_messages` with localStorage fallback
+    async function loadMessages() {
+      const cached = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]');
+      let merged = Array.isArray(cached) ? [...cached] : [];
+
+      const { data, error } = await supabaseClient
+        .from('bisa_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data)) {
+        const seen = new Set(data.map((m) => m.id || `${m.email}-${m.created_at}-${m.message}`));
+        const localOnly = merged.filter((m) => !seen.has(m.id || `${m.email}-${m.created_at}-${m.message}`));
+        merged = [...data, ...localOnly];
+      }
+
+      contactMessages = merged;
+      renderMessages();
+    }
+
+    function renderMessages() {
+      const container = document.getElementById('messagesListContainer');
+      if (!container) return;
+
+      if (!contactMessages.length) {
+        container.innerHTML = '<p class="panel-sub">No messages received yet.</p>';
+        return;
+      }
+
+      container.innerHTML = contactMessages
+        .map((msg, idx) => {
+          const dateLabel = msg.created_at ? new Date(msg.created_at).toLocaleString() : 'Recent';
+          return `
+            <article class="message-card">
+              <div class="message-header">
+                <div>
+                  <div class="message-sender">${escapeHtml(msg.name || 'Visitor')}</div>
+                  <div class="message-email">${escapeHtml(msg.email || 'No email')}</div>
+                </div>
+                <span class="message-date">${escapeHtml(dateLabel)}</span>
+              </div>
+              <p class="message-body">${escapeHtml(msg.message || '')}</p>
+              <div class="message-actions">
+                ${
+                  msg.email
+                    ? `<button type="button" class="btn btn-outline btn-sm" data-copy-msg-email="${escapeHtml(msg.email)}">Copy Email</button>
+                       <a href="mailto:${escapeHtml(msg.email)}" class="btn btn-primary btn-sm">Reply via Email</a>`
+                    : ''
+                }
+                <button type="button" class="btn btn-coral btn-sm" data-delete-msg="${idx}">Delete</button>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      container.querySelectorAll('[data-copy-msg-email]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(btn.dataset.copyMsgEmail);
+          showAlert('globalAlert', 'Sender email copied.', 'success');
+        });
+      });
+
+      container.querySelectorAll('[data-delete-msg]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.dataset.deleteMsg);
+          const target = contactMessages[idx];
+          if (!target) return;
+
+          if (target.id !== undefined && target.id !== null) {
+            await supabaseClient.from('bisa_messages').delete().eq('id', target.id);
+          }
+
+          const updatedCache = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]').filter(
+            (m) => !(m.email === target.email && m.message === target.message && m.created_at === target.created_at)
+          );
+          localStorage.setItem(LS_MESSAGES_KEY, JSON.stringify(updatedCache));
+
+          contactMessages.splice(idx, 1);
+          renderMessages();
+          showAlert('globalAlert', 'Message deleted.', 'success');
+        });
+      });
+    }
+
+    document.getElementById('refreshMessagesBtn').addEventListener('click', async () => {
+      await loadMessages();
+      showAlert('globalAlert', 'Messages refreshed.', 'success');
+    });
 
     // JS: Bootstraps session state when admin.html loads
     checkSession();
