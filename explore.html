@@ -1,25 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- HTML: Page metadata, stylesheet, and Supabase v2 SDK -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - Explore Businesses &amp; Services</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .footer-admin-trigger {
-            color: inherit;
-            text-decoration: none;
+        /* CSS: Search bar, active filter pills, empty state, and modal slideshow */
+        .explore-top-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .explore-top-bar .input {
+            flex: 1 1 220px;
+        }
+        .active-filters-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+        .clear-filters-link {
+            background: none;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
         }
-        .contact-value {
-            color: var(--dark);
+        .clear-filters-link:hover {
+            background-color: var(--primary);
+            color: var(--white);
         }
-        .explore-img-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
+        .empty-state-box {
+            grid-column: 1 / -1;
+            background-color: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 36px 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+        .empty-state-box h3 {
+            margin-bottom: 8px;
+        }
+        .empty-state-box p {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 16px;
         }
         .biz-modal-slideshow {
             position: relative;
@@ -66,12 +105,8 @@
         .biz-slide-nav:hover {
             background-color: var(--accent);
         }
-        .biz-slide-prev {
-            left: 10px;
-        }
-        .biz-slide-next {
-            right: 10px;
-        }
+        .biz-slide-prev { left: 10px; }
+        .biz-slide-next { right: 10px; }
         .biz-slide-dots {
             position: absolute;
             bottom: 8px;
@@ -152,7 +187,7 @@
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- HTML: Site navigation header -->
     <header class="header">
         <div class="container header-container">
             <a href="index.html" class="logo" id="siteLogoText">BISA</a>
@@ -166,10 +201,9 @@
         </div>
     </header>
 
-    <!-- MAIN -->
+    <!-- HTML: Main Explore content -->
     <main class="main">
 
-        <!-- EXPLORE HERO BANNER -->
         <section class="explore-hero-banner">
             <div class="container">
                 <div class="explore-hero-notice">
@@ -177,38 +211,35 @@
                 </div>
                 <p class="breadcrumb">Home / Explore</p>
                 <h1 class="page-title" id="exploreMainHeadline">Explore Businesses</h1>
-                <p class="page-subtitle" id="exploreHeroSubtext">Browse verified student enterprises, services, and products across Ghana.</p>
+                <p class="page-subtitle" id="exploreHeroSubtext">Browse approved student enterprises, services, and products across Ghana.</p>
             </div>
         </section>
 
-        <!-- EXPLORE LAYOUT: Uses a two-column grid (Sidebar filters + Main results) -->
         <section class="section explore-main-section">
             <div class="container explore-grid">
 
-                <!-- ASIDE: Sidebar containing filter options (Category, Price, Location) -->
+                <!-- HTML: Sidebar filters for category and location -->
                 <aside class="filters-sidebar">
                     <h3 class="filters-title">Filters</h3>
 
-                    <!-- CATEGORY FILTER -->
                     <div class="filter-group">
                         <label class="filter-label">Category</label>
-                        <div class="checkbox-wrapper">
-                            <label><input type="checkbox"> Products</label>
-                            <label><input type="checkbox"> Services</label>
-                            <label><input type="checkbox"> Businesses</label>
+                        <div class="checkbox-wrapper" id="categoryFilterGroup">
+                            <label><input type="checkbox" value="Products"> Products</label>
+                            <label><input type="checkbox" value="Services"> Services</label>
+                            <label><input type="checkbox" value="Businesses"> Businesses</label>
+                            <label><input type="checkbox" value="Food & Snacks"> Food &amp; Snacks</label>
+                            <label><input type="checkbox" value="Graphics & Art"> Graphics &amp; Art</label>
+                            <label><input type="checkbox" value="Web & Tech"> Web &amp; Tech</label>
+                            <label><input type="checkbox" value="Books & Notes"> Books &amp; Notes</label>
+                            <label><input type="checkbox" value="Laundry"> Laundry</label>
+                            <label><input type="checkbox" value="Campus Services"> Campus Services</label>
                         </div>
                     </div>
 
-                    <!-- PRICE FILTER -->
-                    <div class="filter-group">
-                        <label class="filter-label">Price Range</label>
-                        <input type="range" class="price-slider" min="1" max="100">
-                    </div>
-
-                    <!-- LOCATION FILTER (GHANA TOWNS & CITIES) -->
                     <div class="filter-group">
                         <label class="filter-label">Location (Ghana)</label>
-                        <div class="checkbox-wrapper">
+                        <div class="checkbox-wrapper" id="locationFilterGroup">
                             <label><input type="checkbox" value="Elmina"> Elmina</label>
                             <label><input type="checkbox" value="Cape Coast"> Cape Coast</label>
                             <label><input type="checkbox" value="Accra"> Accra</label>
@@ -217,141 +248,29 @@
                         </div>
                     </div>
 
-                    <button type="button" class="button button-primary apply-btn">Apply Filters</button>
+                    <button type="button" class="button button-primary apply-btn" id="applyFiltersBtn">Apply Filters</button>
                 </aside>
 
-                <!-- RESULTS CONTAINER -->
+                <!-- HTML: Search bar, active filter status, sort select, and approved listings grid -->
                 <div class="explore-results-area">
 
-                    <!-- TOP BAR FOR SEARCH & SORT -->
-                    <div class="explore-top-bar">
-                        <input type="text" class="input" placeholder="Search explore...">
-                        <select class="sort-select">
-                            <option>Sort By: Newest</option>
-                            <option>Price: Low to High</option>
-                            <option>Price: High to Low</option>
+                    <form class="explore-top-bar" id="exploreSearchForm">
+                        <input type="text" id="exploreSearchInput" class="input" placeholder="Search approved businesses, services, or locations...">
+                        <button type="submit" class="button button-search" id="exploreSearchBtn">Search</button>
+                        <select id="exploreSortSelect" class="sort-select">
+                            <option value="newest">Sort By: Newest</option>
+                            <option value="name-asc">Name: A to Z</option>
+                            <option value="name-desc">Name: Z to A</option>
                         </select>
+                    </form>
+
+                    <div class="active-filters-bar">
+                        <span id="resultsCountLabel">Showing 0 approved businesses</span>
+                        <button type="button" class="clear-filters-link" id="clearFiltersBtn">Reset Search &amp; Filters</button>
                     </div>
 
-                    <!-- CARDS GRID -->
-                    <div class="results-grid" id="exploreResultsGrid">
-                        <article class="card explore-card"
-                            data-business="Campus Fresh Chop"
-                            data-description="Delicious local meals and snacks prepared fresh in Elmina and Cape Coast."
-                            data-location="Elmina, Central Region"
-                            data-find-us="Elmina Main Road near Benya Lagoon &amp; Campus Hub"
-                            data-phone="+233 20 123 4567"
-                            data-email="campusfresh@bisa.edu.gh"
-                            data-image="bisa-flyer.png.png"
-                            data-website="">
-                            <div class="explore-img-box"></div>
-                            <div class="explore-card-content">
-                                <h3>Campus Fresh Chop</h3>
-                                <p>Local meals and snacks around Elmina &amp; campus...</p>
-                                <span class="location-tag">&#128205; Elmina, Central Region</span>
-                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
-                            </div>
-                        </article>
-
-                        <article class="card explore-card"
-                            data-business="Luminex Creative Lab"
-                            data-description="Professional brand identity, flyer design, and motion graphics services."
-                            data-location="Cape Coast, Central Region"
-                            data-find-us="Cape Coast Central / CCTU Area"
-                            data-phone="+233 20 987 6543"
-                            data-email="luminex@bisa.edu.gh"
-                            data-image="bisa-logo-full.png"
-                            data-website="">
-                            <div class="explore-img-box"></div>
-                            <div class="explore-card-content">
-                                <h3>Luminex Creative Lab</h3>
-                                <p>Brand identity, flyers &amp; motion graphics...</p>
-                                <span class="location-tag">&#128205; Cape Coast, Central Region</span>
-                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
-                            </div>
-                        </article>
-
-                        <article class="card explore-card"
-                            data-business="Amoah Web Solutions"
-                            data-description="Responsive websites, web apps, and technical support across Ghana."
-                            data-location="Elmina &amp; Cape Coast, Central Region"
-                            data-find-us="Elmina - Cape Coast Corridor"
-                            data-phone="+233 24 555 0123"
-                            data-email="amoahweb@bisa.edu.gh"
-                            data-image="bisa-logo-mark.png"
-                            data-website="">
-                            <div class="explore-img-box"></div>
-                            <div class="explore-card-content">
-                                <h3>Amoah Web Solutions</h3>
-                                <p>Websites and technical support in Central Region...</p>
-                                <span class="location-tag">&#128205; Elmina &amp; Cape Coast</span>
-                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
-                            </div>
-                        </article>
-
-                        <article class="card explore-card"
-                            data-business="Bamboo Craft &amp; Art"
-                            data-description="Handmade musical bamboo flutes, instruments, and traditional craft pieces."
-                            data-location="Elmina, Central Region"
-                            data-find-us="Elmina Craft &amp; Cultural Spot"
-                            data-phone="+233 24 111 2233"
-                            data-email="bamboo@bisa.edu.gh"
-                            data-image="bisa-flyer.png.png"
-                            data-website="">
-                            <div class="explore-img-box"></div>
-                            <div class="explore-card-content">
-                                <h3>Bamboo Craft &amp; Art</h3>
-                                <p>Handmade bamboo flutes &amp; craft pieces...</p>
-                                <span class="location-tag">&#128205; Elmina, Central Region</span>
-                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
-                            </div>
-                        </article>
-
-                        <article class="card explore-card"
-                            data-business="Student Bookstore"
-                            data-description="Research notes, past questions, textbooks, and study guides for students."
-                            data-location="Cape Coast, Central Region"
-                            data-find-us="Cape Coast Academic &amp; Book Hub"
-                            data-phone="+233 20 555 0199"
-                            data-email="bookstore@bisa.edu.gh"
-                            data-image="bisa-logo-full.png"
-                            data-website="">
-                            <div class="explore-img-box"></div>
-                            <div class="explore-card-content">
-                                <h3>Student Bookstore</h3>
-                                <p>Notes, past questions &amp; textbooks...</p>
-                                <span class="location-tag">&#128205; Cape Coast, Central Region</span>
-                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
-                            </div>
-                        </article>
-
-                        <article class="card explore-card"
-                            data-business="Hostel Laundry Hub"
-                            data-description="Fast and reliable express laundry service with pickup and drop-off."
-                            data-location="Cape Coast, Central Region"
-                            data-find-us="Cape Coast Hostel &amp; Residential Zone"
-                            data-phone="+233 24 777 8899"
-                            data-email="laundry@bisa.edu.gh"
-                            data-image="bisa-logo-mark.png"
-                            data-website="">
-                            <div class="explore-img-box"></div>
-                            <div class="explore-card-content">
-                                <h3>Hostel Laundry Hub</h3>
-                                <p>Express laundry pickup &amp; delivery...</p>
-                                <span class="location-tag">&#128205; Cape Coast, Central Region</span>
-                                <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
-                            </div>
-                        </article>
-                    </div>
-
-                    <!-- PAGINATION -->
-                    <div class="pagination">
-                        <button class="button button-secondary">Previous</button>
-                        <span class="page-num active">1</span>
-                        <span class="page-num">2</span>
-                        <span class="page-num">3</span>
-                        <button class="button button-secondary">Next</button>
-                    </div>
+                    <!-- HTML: Only renders records with status === 'approved' -->
+                    <div class="results-grid" id="exploreResultsGrid"></div>
 
                 </div>
 
@@ -360,7 +279,7 @@
 
     </main>
 
-    <!-- STEP 1: POLICY NOTICE BEFORE VIEWING BUSINESS / SERVICE DETAILS -->
+    <!-- HTML: Step 1 Policy Modal -->
     <dialog id="connectPolicyModal" class="policy-modal">
         <div class="policy-content">
             <p class="policy-alert"><strong>Read Our Policy</strong></p>
@@ -374,7 +293,7 @@
         </div>
     </dialog>
 
-    <!-- STEP 2: BUSINESS / SERVICE DETAILS MODAL (SHOWN ONLY AFTER POLICY AGREEMENT) -->
+    <!-- HTML: Step 2 Business Contact & Slideshow Modal -->
     <dialog id="contactModal" class="policy-modal">
         <div class="policy-content contact-modal-content">
             <button type="button" class="modal-close-btn" id="closeContactModalBtn" aria-label="Close modal">&times;</button>
@@ -384,7 +303,6 @@
                 <span id="contactModalLocation" class="location-tag"></span>
             </div>
 
-            <!-- Business Image Slideshow -->
             <div class="biz-modal-slideshow" id="bizModalSlideshow">
                 <div class="biz-modal-slides" id="bizModalSlides"></div>
                 <button type="button" class="biz-slide-nav biz-slide-prev" id="bizSlidePrev" aria-label="Previous image">&#10094;</button>
@@ -438,7 +356,7 @@
         </div>
     </dialog>
 
-    <!-- FOOTER -->
+    <!-- HTML: Site Footer with Admin Portal link -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
@@ -471,6 +389,7 @@
     </footer>
 
     <script>
+        // JS: Loads ONLY approved businesses from Supabase/cache and runs live search + category/location filtering
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
@@ -487,6 +406,13 @@
             const closeContactModalBtn = document.getElementById('closeContactModalBtn');
             const doneContactModalBtn = document.getElementById('doneContactModalBtn');
             const resultsGrid = document.getElementById('exploreResultsGrid');
+            const resultsCountLabel = document.getElementById('resultsCountLabel');
+
+            const searchForm = document.getElementById('exploreSearchForm');
+            const searchInput = document.getElementById('exploreSearchInput');
+            const sortSelect = document.getElementById('exploreSortSelect');
+            const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
             const slideshowWrap = document.getElementById('bizModalSlideshow');
             const slidesTrack = document.getElementById('bizModalSlides');
@@ -494,28 +420,39 @@
             const slideNextBtn = document.getElementById('bizSlideNext');
             const slideDotsWrap = document.getElementById('bizSlideDots');
 
+            let approvedBusinesses = [];
             let selectedCardData = null;
             let currentSlides = [];
             let currentSlideIdx = 0;
 
-            function parseImageList(rawVal) {
-                if (!rawVal) return [];
-                if (Array.isArray(rawVal)) return rawVal.map(s => String(s).trim()).filter(Boolean);
-                return String(rawVal)
-                    .split(',')
-                    .map(s => s.trim())
-                    .filter(Boolean);
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialQuery = (urlParams.get('q') || '').trim();
+            const initialCategory = (urlParams.get('category') || '').trim().toLowerCase();
+            if (initialQuery && searchInput) {
+                searchInput.value = initialQuery;
             }
-
-            function renderCardThumbnails() {
-                document.querySelectorAll('.explore-card').forEach(card => {
-                    const box = card.querySelector('.explore-img-box');
-                    if (!box) return;
-                    const imgs = parseImageList(card.dataset.images || card.dataset.image || '');
-                    if (imgs.length) {
-                        box.innerHTML = `<img src="${imgs[0]}" alt="${card.dataset.business || 'Business'}">`;
+            if (initialCategory) {
+                document.querySelectorAll('#categoryFilterGroup input[type="checkbox"]').forEach(cb => {
+                    if (cb.value.toLowerCase() === initialCategory) {
+                        cb.checked = true;
                     }
                 });
+            }
+
+            function parseImageList(biz) {
+                const list = [];
+                if (biz.image_url && !String(biz.image_url).startsWith('data:')) {
+                    list.push(String(biz.image_url).trim());
+                }
+                if (biz.images) {
+                    const raw = Array.isArray(biz.images) ? biz.images : String(biz.images).split(',');
+                    raw.map(s => String(s).trim())
+                        .filter(u => u && !u.startsWith('data:'))
+                        .forEach(u => {
+                            if (!list.includes(u)) list.push(u);
+                        });
+                }
+                return list;
             }
 
             function renderModalSlideshow(images, businessName) {
@@ -610,63 +547,95 @@
                 }
             }
 
-            function bindContactButtons() {
-                document.querySelectorAll('.contact-btn').forEach(btn => {
-                    if (btn.dataset.bound === 'true') return;
-                    btn.dataset.bound = 'true';
-                    btn.addEventListener('click', function () {
-                        const card = this.closest('.explore-card');
-                        if (!card) return;
+            function getFilteredAndSortedBusinesses() {
+                const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+                const selectedCategories = Array.from(document.querySelectorAll('#categoryFilterGroup input:checked'))
+                    .map(i => i.value.trim().toLowerCase());
+                const selectedLocations = Array.from(document.querySelectorAll('#locationFilterGroup input:checked'))
+                    .map(i => i.value.trim().toLowerCase());
+                const sortMode = sortSelect ? sortSelect.value : 'newest';
 
-                        selectedCardData = {
-                            name: card.dataset.business || '',
-                            description: card.dataset.description || '',
-                            location: card.dataset.location || '',
-                            findUs: card.dataset.findUs || card.dataset.location || '',
-                            phone: card.dataset.phone || '',
-                            email: card.dataset.email || '',
-                            images: parseImageList(card.dataset.images || card.dataset.image || ''),
-                            website: card.dataset.website || ''
-                        };
+                let list = approvedBusinesses.filter(biz => {
+                    if ((biz.status || '').toLowerCase() !== 'approved') return false;
 
-                        connectPolicyModal.showModal();
-                    });
+                    const name = (biz.business_name || biz.name || '').toLowerCase();
+                    const desc = (biz.description || '').toLowerCase();
+                    const loc = (biz.location || '').toLowerCase();
+                    const cat = (biz.category || '').toLowerCase();
+                    const findUs = (biz.service_location || biz.where_to_find || biz.find_us || '').toLowerCase();
+
+                    if (query) {
+                        const haystack = `${name} ${desc} ${loc} ${cat} ${findUs}`;
+                        if (!haystack.includes(query)) return false;
+                    }
+
+                    if (selectedCategories.length > 0) {
+                        const matchesCat = selectedCategories.some(sc =>
+                            cat.includes(sc) || sc.includes(cat) || name.includes(sc) || desc.includes(sc)
+                        );
+                        if (!matchesCat) return false;
+                    }
+
+                    if (selectedLocations.length > 0) {
+                        const locHaystack = `${loc} ${findUs}`;
+                        const matchesLoc = selectedLocations.some(sl => locHaystack.includes(sl));
+                        if (!matchesLoc) return false;
+                    }
+
+                    return true;
                 });
+
+                if (sortMode === 'name-asc') {
+                    list.sort((a, b) => (a.business_name || a.name || '').localeCompare(b.business_name || b.name || ''));
+                } else if (sortMode === 'name-desc') {
+                    list.sort((a, b) => (b.business_name || b.name || '').localeCompare(a.business_name || a.name || ''));
+                }
+
+                return list;
             }
 
-            function renderApprovedBusinesses(rows) {
-                if (!Array.isArray(rows) || !rows.length || !resultsGrid) return;
+            function renderGrid() {
+                if (!resultsGrid) return;
+                const items = getFilteredAndSortedBusinesses();
 
-                rows.forEach(biz => {
-                    const rowId = biz.id || biz.business_name || biz.name;
-                    if (rowId && resultsGrid.querySelector(`[data-supabase-id="${CSS.escape(String(rowId))}"]`)) return;
+                if (resultsCountLabel) {
+                    resultsCountLabel.textContent = items.length === 1
+                        ? 'Showing 1 approved business'
+                        : `Showing ${items.length} approved businesses`;
+                }
 
-                    const bizName = biz.business_name || biz.name || '';
+                if (!items.length) {
+                    resultsGrid.innerHTML = `
+                        <div class="empty-state-box">
+                            <h3>No Approved Businesses Found</h3>
+                            <p>Only businesses approved on the Admin page appear here. Try adjusting your search or filters, or submit a business for review.</p>
+                            <a href="business.html" class="button button-primary">List Your Business</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                resultsGrid.innerHTML = '';
+                items.forEach(biz => {
+                    const bizName = biz.business_name || biz.name || 'Unnamed Business';
                     const desc = biz.description || '';
                     const loc = biz.location || 'Elmina, Central Region';
                     const findUs = biz.service_location || biz.where_to_find || biz.find_us || loc;
                     const phone = biz.phone || biz.tel || '';
                     const email = biz.email || '';
-                    const imgs = parseImageList(biz.images || biz.image_url || '');
+                    const imgs = parseImageList(biz);
                     const website = biz.website || biz.website_url || '';
 
                     const article = document.createElement('article');
                     article.className = 'card explore-card';
-                    if (rowId) article.dataset.supabaseId = String(rowId);
-                    article.dataset.business = bizName;
-                    article.dataset.description = desc;
-                    article.dataset.location = loc;
-                    article.dataset.findUs = findUs;
-                    article.dataset.phone = phone;
-                    article.dataset.email = email;
-                    article.dataset.image = imgs[0] || '';
-                    article.dataset.images = imgs.join(',');
-                    article.dataset.website = website;
 
                     const imgBox = document.createElement('div');
                     imgBox.className = 'explore-img-box';
                     if (imgs[0]) {
-                        imgBox.innerHTML = `<img src="${imgs[0]}" alt="${bizName}">`;
+                        const img = document.createElement('img');
+                        img.src = imgs[0];
+                        img.alt = bizName;
+                        imgBox.appendChild(img);
                     }
 
                     const content = document.createElement('div');
@@ -676,7 +645,7 @@
                     h3.textContent = bizName;
 
                     const p = document.createElement('p');
-                    p.textContent = desc.length > 52 ? desc.slice(0, 52) + '...' : desc;
+                    p.textContent = desc.length > 70 ? desc.slice(0, 70) + '...' : desc;
 
                     const locSpan = document.createElement('span');
                     locSpan.className = 'location-tag';
@@ -686,6 +655,19 @@
                     contactBtn.type = 'button';
                     contactBtn.className = 'button button-secondary card-btn contact-btn';
                     contactBtn.textContent = 'Contact';
+                    contactBtn.addEventListener('click', () => {
+                        selectedCardData = {
+                            name: bizName,
+                            description: desc,
+                            location: loc,
+                            findUs: findUs,
+                            phone: phone,
+                            email: email,
+                            images: imgs,
+                            website: website
+                        };
+                        connectPolicyModal.showModal();
+                    });
 
                     content.appendChild(h3);
                     content.appendChild(p);
@@ -696,8 +678,6 @@
                     article.appendChild(content);
                     resultsGrid.appendChild(article);
                 });
-
-                bindContactButtons();
             }
 
             async function syncSupabaseData() {
@@ -707,9 +687,11 @@
                 } catch (_) {}
 
                 try {
-                    const cachedBiz = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
-                    if (Array.isArray(cachedBiz) && cachedBiz.length) {
-                        renderApprovedBusinesses(cachedBiz.filter(b => (b.status || '').toLowerCase() === 'approved'));
+                    const rawBiz = localStorage.getItem(LS_BUSINESSES_KEY);
+                    const cachedBiz = rawBiz ? JSON.parse(rawBiz) : [];
+                    if (Array.isArray(cachedBiz)) {
+                        approvedBusinesses = cachedBiz.filter(b => (b.status || '').toLowerCase() === 'approved');
+                        renderGrid();
                     }
                 } catch (_) {}
 
@@ -724,14 +706,45 @@
                 } catch (_) {}
 
                 try {
-                    const { data: approvedRows } = await sb
+                    const { data: approvedRows, error } = await sb
                         .from('bisa_businesses')
                         .select('*')
                         .eq('status', 'approved')
                         .order('created_at', { ascending: false });
 
-                    if (approvedRows) renderApprovedBusinesses(approvedRows);
+                    if (!error && Array.isArray(approvedRows)) {
+                        approvedBusinesses = approvedRows;
+                        renderGrid();
+                    }
                 } catch (_) {}
+            }
+
+            if (searchForm) {
+                searchForm.addEventListener('submit', e => {
+                    e.preventDefault();
+                    renderGrid();
+                });
+            }
+            if (searchInput) {
+                searchInput.addEventListener('input', renderGrid);
+            }
+            if (sortSelect) {
+                sortSelect.addEventListener('change', renderGrid);
+            }
+            if (applyFiltersBtn) {
+                applyFiltersBtn.addEventListener('click', renderGrid);
+            }
+            document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]')
+                .forEach(cb => cb.addEventListener('change', renderGrid));
+
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    if (sortSelect) sortSelect.value = 'newest';
+                    document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]')
+                        .forEach(cb => { cb.checked = false; });
+                    renderGrid();
+                });
             }
 
             cancelPolicyBtn.addEventListener('click', function () {
@@ -797,8 +810,7 @@
             closeContactModalBtn.addEventListener('click', () => contactModal.close());
             doneContactModalBtn.addEventListener('click', () => contactModal.close());
 
-            renderCardThumbnails();
-            bindContactButtons();
+            renderGrid();
             syncSupabaseData();
         })();
     </script>
