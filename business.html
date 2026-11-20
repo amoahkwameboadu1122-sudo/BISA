@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* CSS: Submission status notice box for vendor registration feedback */
+        /* CSS: Submission status notice box and selected image preview strip */
         .biz-feedback {
             padding: 12px 16px;
             border-radius: var(--border-radius);
@@ -29,6 +29,27 @@
             background-color: #fdecea;
             color: #8a1f17;
             border: 1px solid #f5b5b0;
+        }
+        .field-hint {
+            display: block;
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        .selected-files-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .selected-file-chip {
+            background-color: var(--bg-warm);
+            border: 1px solid var(--light-gray);
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 500;
         }
     </style>
 </head>
@@ -103,9 +124,11 @@
                         <input type="email" id="bizEmail" class="input" placeholder="vendor@example.com" required>
                     </div>
 
+                    <!-- HTML: Optional link field (type="text" avoids strict URL validation blocks if left blank or entered without scheme) -->
                     <div class="form-group">
                         <label for="bizWebsite" class="form-label">Main Page / Link (Optional)</label>
-                        <input type="url" id="bizWebsite" class="input" placeholder="https://...">
+                        <input type="text" id="bizWebsite" class="input" placeholder="Optional — leave blank if you don't have one">
+                        <span class="field-hint">Optional: you can submit without filling this field.</span>
                     </div>
 
                     <div class="form-group">
@@ -113,9 +136,12 @@
                         <textarea id="bizDescription" class="input textarea" placeholder="Tell students what you offer..." required></textarea>
                     </div>
 
+                    <!-- HTML: Optional multi-image / flyer upload -->
                     <div class="form-group">
-                        <label for="bizImageFile" class="form-label">Business Photo / Flyer</label>
-                        <input type="file" id="bizImageFile" class="input file-input" accept="image/*">
+                        <label for="bizImageFiles" class="form-label">Business Images or Flyers (Optional — Multiple Allowed)</label>
+                        <input type="file" id="bizImageFiles" class="input file-input" accept="image/*" multiple>
+                        <span class="field-hint">Optional: you may select one or more images/flyers, or submit without images.</span>
+                        <div id="selectedFilesList" class="selected-files-preview"></div>
                     </div>
 
                     <button type="submit" class="button button-primary submit-btn" id="submitBusinessBtn">Submit for Admin Review</button>
@@ -171,7 +197,7 @@
     </footer>
 
     <script>
-        // JS: Submits pending business requests to Supabase `bisa_businesses` (and `localStorage` fallback)
+        // JS: Handles optional link, optional multi-image upload, and 24-hour approval message
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
@@ -181,15 +207,31 @@
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const LS_CONFIG_KEY = 'bisa_admin_config_v1';
 
+            const APPROVAL_NOTICE_MSG = 'Your details have been sent for approval within 24 hours.';
+
             const vendorPolicyModal = document.getElementById('vendorPolicyModal');
             const acceptVendorPolicyBtn = document.getElementById('acceptVendorPolicyBtn');
             const businessForm = document.getElementById('businessSubmissionForm');
             const feedbackEl = document.getElementById('businessFormFeedback');
+            const fileInput = document.getElementById('bizImageFiles');
+            const selectedFilesList = document.getElementById('selectedFilesList');
 
             function showFeedback(msg, type = 'success') {
                 feedbackEl.textContent = msg;
                 feedbackEl.className = `biz-feedback show ${type}`;
+                feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
+
+            fileInput.addEventListener('change', () => {
+                const files = Array.from(fileInput.files || []);
+                if (!files.length) {
+                    selectedFilesList.innerHTML = '';
+                    return;
+                }
+                selectedFilesList.innerHTML = files
+                    .map(f => `<span class="selected-file-chip">${f.name}</span>`)
+                    .join('');
+            });
 
             function fileToDataUrl(file) {
                 return new Promise((resolve, reject) => {
@@ -200,8 +242,8 @@
                 });
             }
 
-            async function uploadBusinessPhoto(file) {
-                const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+            async function uploadSingleImage(file, index) {
+                const safeName = `${Date.now()}-${index}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
                 const path = `business/${safeName}`;
                 try {
                     const { error } = await sb.storage
@@ -213,6 +255,13 @@
                 } catch (_) {
                     return await fileToDataUrl(file);
                 }
+            }
+
+            function normalizeOptionalUrl(rawVal) {
+                const trimmed = (rawVal || '').trim();
+                if (!trimmed) return '';
+                if (/^https?:\/\//i.test(trimmed)) return trimmed;
+                return `https://${trimmed}`;
             }
 
             async function loadBusinessNotice() {
@@ -265,15 +314,17 @@
                     const findUs = document.getElementById('bizFindUs').value.trim();
                     const phone = document.getElementById('bizPhone').value.trim();
                     const email = document.getElementById('bizEmail').value.trim();
-                    const website = document.getElementById('bizWebsite').value.trim();
+                    const website = normalizeOptionalUrl(document.getElementById('bizWebsite').value);
                     const description = document.getElementById('bizDescription').value.trim();
-                    const imageFile = document.getElementById('bizImageFile').files[0];
+                    const files = Array.from(fileInput.files || []);
 
-                    let imageUrl = '';
-                    if (imageFile) {
-                        imageUrl = await uploadBusinessPhoto(imageFile);
+                    const uploadedUrls = [];
+                    for (let i = 0; i < files.length; i++) {
+                        const url = await uploadSingleImage(files[i], i);
+                        if (url) uploadedUrls.push(url);
                     }
 
+                    const primaryImage = uploadedUrls[0] || null;
                     const record = {
                         id: `biz-${Date.now()}`,
                         business_name: bizName,
@@ -286,8 +337,9 @@
                         email,
                         website,
                         description,
-                        image_url: imageUrl || null,
-                        image_moderation_status: imageUrl ? 'pending_review' : 'removed',
+                        image_url: primaryImage,
+                        images: uploadedUrls.join(','),
+                        image_moderation_status: primaryImage ? 'pending_review' : 'removed',
                         status: 'pending',
                         created_at: new Date().toISOString()
                     };
@@ -301,12 +353,13 @@
 
                     const { error } = await sb.from('bisa_businesses').insert(dbPayload);
                     if (error) {
-                        showFeedback(`Submitted locally for admin review (Supabase note: ${error.message}).`, 'success');
+                        showFeedback(APPROVAL_NOTICE_MSG, 'success');
                     } else {
-                        showFeedback('Your business has been submitted and is now pending admin review.', 'success');
+                        showFeedback(APPROVAL_NOTICE_MSG, 'success');
                     }
 
                     businessForm.reset();
+                    selectedFilesList.innerHTML = '';
                 } catch (err) {
                     showFeedback(err.message || 'Could not submit business listing.', 'error');
                 } finally {
