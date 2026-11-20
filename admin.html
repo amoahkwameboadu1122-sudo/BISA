@@ -1,711 +1,1550 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BISA - Admin Portal</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .login-wrap {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 24px;
-            background: var(--bg-warm);
-        }
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-            background: var(--white);
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 28px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-        }
-        .login-card h1 {
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-        .login-card p {
-            font-size: 13px;
-            color: var(--gray);
-            margin-bottom: 20px;
-        }
-        .error-text {
-            color: #dc2626;
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 10px;
-            min-height: 18px;
-        }
-        .dashboard-shell {
-            display: none;
-            min-height: 100vh;
-            background: var(--bg-warm);
-        }
-        .admin-topbar {
-            background: var(--white);
-            border-bottom: 2px solid var(--light-gray);
-            padding: 14px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .admin-topbar-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-        .admin-main {
-            padding: 28px 0 48px;
-        }
-        .admin-head {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
-            margin-bottom: 22px;
-        }
-        .admin-panel {
-            background: var(--white);
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
-            margin-bottom: 22px;
-        }
-        .admin-grid .admin-panel {
-            margin-bottom: 0;
-        }
-        .admin-panel h2 {
-            font-size: 18px;
-            margin-bottom: 14px;
-        }
-        .field {
-            margin-bottom: 14px;
-        }
-        .field label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-        .field textarea {
-            min-height: 84px;
-            resize: vertical;
-        }
-        .approval-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 14px;
-        }
-        .approval-card {
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 14px;
-            background: #fafafa;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        .approval-card h3 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-        .approval-meta {
-            font-size: 12px;
-            color: var(--gray);
-            margin-bottom: 8px;
-        }
-        .approval-thumb {
-            width: 100%;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            border: 1px solid var(--light-gray);
-        }
-        .uploads-filter-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
-        .media-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-        }
-        .media-card {
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 10px;
-            background: var(--bg-warm);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .media-card img {
-            width: 100%;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 6px;
-            background: var(--white);
-        }
-        .media-info {
-            font-size: 11px;
-            color: var(--dark);
-            word-break: break-word;
-        }
-        .slide-box {
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 12px;
-            margin-top: 12px;
-            background: #fafafa;
-        }
-        .slide-box-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .btn-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        .btn-approve {
-            background: #15803d;
-            color: var(--white);
-        }
-        .btn-approve:hover {
-            background: #166534;
-        }
-        .btn-danger {
-            background: #dc2626;
-            color: var(--white);
-        }
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        .status-banner {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--primary);
-            min-height: 20px;
-            margin-bottom: 12px;
-        }
-        .empty-note {
-            font-size: 13px;
-            color: var(--gray);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BISA Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --plum: #54234A;
+      --plum-dark: #3d1836;
+      --gold: #FFB02E;
+      --coral: #F16B4B;
+      --vanilla: #FFF1DA;
+      --surface: #ffffff;
+      --border: #e6d7c3;
+      --text: #2a1625;
+      --muted: #6c5867;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--vanilla);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Login View */
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 2px solid var(--plum);
+      border-radius: 16px;
+      padding: 2.25rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 12px 30px rgba(84, 35, 74, 0.12);
+    }
+
+    .login-card h1 {
+      color: var(--plum);
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+    }
+
+    .login-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Logged-in Top Bar (Brand + Log Out ONLY) */
+    .admin-topbar {
+      background: var(--plum);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    .admin-brand {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--gold);
+    }
+
+    .admin-brand span {
+      color: #fff;
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Layout & Tabs */
+    .admin-container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 3rem;
+    }
+
+    .tab-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab-btn {
+      background: var(--surface);
+      color: var(--plum);
+      border: 1.5px solid var(--plum);
+      padding: 0.65rem 1.1rem;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .tab-btn.active,
+    .tab-btn:hover {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Cards & Forms */
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 16px rgba(84, 35, 74, 0.05);
+    }
+
+    .panel-card h2 {
+      color: var(--plum);
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--plum);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--plum);
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: 9px;
+      border: none;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .btn-primary {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--plum-dark);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--plum-dark);
+    }
+
+    .btn-coral {
+      background: var(--coral);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--plum);
+      color: var(--plum);
+    }
+
+    .btn-outline:hover {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 0.45rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    /* Status Toast */
+    .status-banner {
+      padding: 0.75rem 1rem;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .status-banner.show {
+      display: block;
+    }
+
+    .status-banner.success {
+      background: #e6f7ed;
+      color: #145c32;
+      border: 1px solid #9fd8b7;
+    }
+
+    .status-banner.error {
+      background: #fdecea;
+      color: #8a1f17;
+      border: 1px solid #f5b5b0;
+    }
+
+    /* Business Moderation Cards */
+    .biz-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .biz-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .biz-img-box {
+      position: relative;
+      background: #f6ede0;
+      height: 190px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .biz-img-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .biz-img-placeholder {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .img-review-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .img-review-badge.accepted {
+      background: #1c7c43;
+    }
+
+    .img-review-badge.removed {
+      background: var(--coral);
+    }
+
+    .biz-image-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      padding: 0.75rem 1rem;
+      background: #fff9ef;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .biz-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      font-size: 0.86rem;
+    }
+
+    .biz-body h3 {
+      color: var(--plum);
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .biz-meta {
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .biz-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.85rem 1rem;
+      border-top: 1px solid var(--border);
+      background: #fcfaf7;
+    }
+
+    /* Media & Category Asset Grids */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .media-item {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      background: #f5ece0;
+    }
+
+    .media-item-info {
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      flex: 1;
+    }
+
+    .badge-cat {
+      display: inline-block;
+      align-self: flex-start;
+      background: var(--vanilla);
+      color: var(--plum);
+      border: 1px solid var(--plum);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }
+
+    .category-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .category-slot-card {
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 1rem;
+      background: #fffcf7;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .category-slot-preview {
+      width: 68px;
+      height: 68px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .category-slot-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slide-row {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin-bottom: 0.85rem;
+      background: #fffcf8;
+    }
+
+    .slide-row img {
+      width: 120px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 680px) {
+      .slide-row {
+        grid-template-columns: 1fr;
+      }
+      .admin-topbar {
+        padding: 0.9rem 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- LOGIN SCREEN -->
-    <section class="login-wrap" id="loginScreen">
-        <form class="login-card" id="loginForm">
-            <h1>BISA Admin Login</h1>
-            <p>Enter your admin credentials to access the portal.</p>
-            <div class="field">
-                <label for="adminUsername">Username</label>
-                <input type="text" id="adminUsername" class="input" autocomplete="username" required>
-            </div>
-            <div class="field">
-                <label for="adminPassword">Password</label>
-                <input type="password" id="adminPassword" class="input" autocomplete="current-password" required>
-            </div>
-            <button type="submit" class="button button-primary" style="width: 100%;">Log In</button>
-            <p id="loginError" class="error-text"></p>
-        </form>
-    </section>
-
-    <!-- AUTHENTICATED ADMIN DASHBOARD (NO PAGE NAV LINKS, NO FOOTER) -->
-    <div class="dashboard-shell" id="adminDashboard">
-        <header class="admin-topbar">
-            <div class="container admin-topbar-inner">
-                <span class="logo" id="dashBrandLabel">BISA Admin</span>
-                <button type="button" id="logoutBtn" class="button button-secondary btn-sm">Log Out</button>
-            </div>
-        </header>
-
-        <main class="main admin-main">
-            <div class="container">
-                <div class="admin-head">
-                    <div>
-                        <h1 class="page-title">Admin Control Dashboard</h1>
-                        <p class="page-subtitle">Approve business listings, manage multi-category uploads, slideshows, and page notices.</p>
-                    </div>
-                    <div class="btn-row">
-                        <button type="button" id="saveAllBtn" class="button button-primary">Save All Changes</button>
-                        <button type="button" id="resetDefaultsBtn" class="button button-secondary">Reset Defaults</button>
-                    </div>
-                </div>
-
-                <p id="statusBanner" class="status-banner"></p>
-
-                <!-- PENDING BUSINESS APPROVALS -->
-                <section class="admin-panel">
-                    <h2>Business Listing Approvals</h2>
-                    <p class="empty-note" style="margin-bottom: 14px;">Review submitted businesses before they appear on the Explore page.</p>
-                    <div id="pendingApprovalsList" class="approval-list"></div>
-                </section>
-
-                <!-- HEADLINES, BRANDING & POLICY NOTICES -->
-                <div class="admin-grid">
-                    <section class="admin-panel">
-                        <h2>Headlines &amp; Brand Placement</h2>
-                        <div class="field">
-                            <label for="brandNameInput">Brand Name</label>
-                            <input type="text" id="brandNameInput" class="input">
-                        </div>
-                        <div class="field">
-                            <label for="logoPlacementSelect">Logo Placement</label>
-                            <select id="logoPlacementSelect" class="input">
-                                <option value="header-left">Header Left</option>
-                                <option value="header-center">Header Center</option>
-                                <option value="hero-top">Above Hero Content</option>
-                                <option value="footer-brand">Footer Brand Highlight</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label for="activeLogoSelect">Active Logo Asset</label>
-                            <select id="activeLogoSelect" class="input"></select>
-                        </div>
-                        <div class="field">
-                            <label for="mainHeadlineInput">Main Headline</label>
-                            <input type="text" id="mainHeadlineInput" class="input">
-                        </div>
-                        <div class="field">
-                            <label for="heroSubtextInput">Hero Subheadline / Description</label>
-                            <textarea id="heroSubtextInput" class="input"></textarea>
-                        </div>
-                    </section>
-
-                    <section class="admin-panel">
-                        <h2>Editable Page Notices</h2>
-                        <div class="field">
-                            <label for="exploreNoticeInput">Explore Contact Policy Notice (Before Viewing Details)</label>
-                            <textarea id="exploreNoticeInput" class="input"></textarea>
-                        </div>
-                        <div class="field">
-                            <label for="businessNoticeInput">List Your Business Page Policy Notice</label>
-                            <textarea id="businessNoticeInput" class="input"></textarea>
-                        </div>
-                    </section>
-                </div>
-
-                <!-- SLIDESHOW MANAGER -->
-                <section class="admin-panel">
-                    <h2>Slideshow Manager</h2>
-                    <div class="admin-grid" style="margin-bottom: 10px;">
-                        <div class="field">
-                            <label for="newSlideTitle">New Slide Title</label>
-                            <input type="text" id="newSlideTitle" class="input" placeholder="Slide title">
-                        </div>
-                        <div class="field">
-                            <label for="newSlideCaption">New Slide Caption</label>
-                            <input type="text" id="newSlideCaption" class="input" placeholder="Slide description">
-                        </div>
-                        <div class="field">
-                            <label for="newSlideImage">New Slide Image</label>
-                            <input type="file" id="newSlideImage" class="input" accept="image/*">
-                        </div>
-                    </div>
-                    <button type="button" id="addSlideBtn" class="button button-secondary btn-sm">+ Add Slide</button>
-                    <div id="slidesList"></div>
-                </section>
-
-                <!-- MULTI-UPLOAD MANAGER (ICONS, IMAGES, FLYERS, SLIDES, BUSINESS MEDIA) -->
-                <section class="admin-panel">
-                    <h2>Media &amp; Icon Uploads Manager</h2>
-                    <div class="admin-grid" style="margin-bottom: 12px;">
-                        <div class="field">
-                            <label for="uploadCategorySelect">Upload Category</label>
-                            <select id="uploadCategorySelect" class="input">
-                                <option value="Icon">Icons</option>
-                                <option value="Image">Images</option>
-                                <option value="Flyer">Flyers &amp; Banners</option>
-                                <option value="Slideshow">Slideshow Media</option>
-                                <option value="Business">Business Photos</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label for="multiFilesInput">Select File(s) to Upload</label>
-                            <input type="file" id="multiFilesInput" class="input" accept="image/*" multiple>
-                        </div>
-                    </div>
-
-                    <div class="uploads-filter-row" id="uploadFilterRow">
-                        <button type="button" class="button button-primary btn-sm upload-filter-btn" data-filter="All">All</button>
-                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Icon">Icons</button>
-                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Image">Images</button>
-                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Flyer">Flyers</button>
-                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Slideshow">Slideshow</button>
-                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Business">Business</button>
-                    </div>
-
-                    <div id="mediaGrid" class="media-grid"></div>
-                </section>
-            </div>
-        </main>
+  <!-- LOGIN VIEW -->
+  <section id="loginView" class="login-wrapper">
+    <div class="login-card">
+      <h1>BISA Admin</h1>
+      <p>Sign in with your Supabase admin credentials to manage listings, site media, and notices.</p>
+      <div id="loginAlert" class="status-banner"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="adminEmail">Admin Email</label>
+          <input type="email" id="adminEmail" placeholder="admin@bisa.com" required />
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Password</label>
+          <input type="password" id="adminPassword" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginSubmitBtn">Sign In</button>
+      </form>
     </div>
+  </section>
 
-    <script>
-        (function () {
-            // Update these credentials before deploying
-            const ADMIN_USER = 'admin';
-            const ADMIN_PASS = 'bisa2026';
+  <!-- LOGGED-IN DASHBOARD (NO NAV LINKS, NO FOOTER) -->
+  <section id="dashboardView" class="hidden">
+    <header class="admin-topbar">
+      <div class="admin-brand" id="topbarBrandLabel">BISA <span>Admin Console</span></div>
+      <button type="button" class="btn btn-gold btn-sm" id="logoutBtn">Log Out</button>
+    </header>
 
-            const AUTH_KEY = 'bisa_admin_logged_in_v1';
-            const CONFIG_KEY = 'bisa_admin_config_v1';
-            const PENDING_BIZ_KEY = 'bisa_pending_businesses_v1';
-            const APPROVED_BIZ_KEY = 'bisa_approved_businesses_v1';
+    <main class="admin-container">
+      <div id="globalAlert" class="status-banner"></div>
 
-            const defaultConfig = {
-                brandName: 'BISA',
-                logoPlacement: 'header-left',
-                activeLogo: 'bisa-logo-full.png',
-                mainHeadline: 'Explore Businesses',
-                heroSubtext: 'Browse verified student enterprises, services, and products.',
-                exploreNotice: 'Before viewing this campus business or service\'s contact details, location, and offerings, please note that BISA connects you with student and campus providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely on campus or at agreed public points.',
-                businessNotice: 'By listing your business on BISA, you confirm that your goods or services are legal, safe, and appropriate for the campus community. You are solely responsible for fulfilling customer orders accurately, maintaining fair pricing, and delivering quality service. False listings will be removed.',
-                slides: [
-                    { id: 's1', title: 'Campus Fresh Chop', caption: 'Fresh campus meals & snacks.', image: 'bisa-flyer.png.png' },
-                    { id: 's2', title: 'Luminex Creative Lab', caption: 'Brand identity, flyers & motion graphics.', image: 'bisa-logo-full.png' }
-                ],
-                uploads: [
-                    { id: 'u1', name: 'bisa-logo-full.png', category: 'Icon', src: 'bisa-logo-full.png' },
-                    { id: 'u2', name: 'bisa-logo-mark.png', category: 'Icon', src: 'bisa-logo-mark.png' },
-                    { id: 'u3', name: 'bisa-flyer.png.png', category: 'Flyer', src: 'bisa-flyer.png.png' }
-                ]
-            };
+      <div class="tab-bar">
+        <button type="button" class="tab-btn active" data-tab="businessesTab">Business Approvals &amp; Images</button>
+        <button type="button" class="tab-btn" data-tab="brandingTab">Branding &amp; Logo Upload</button>
+        <button type="button" class="tab-btn" data-tab="slideshowTab">Hero Slideshow</button>
+        <button type="button" class="tab-btn" data-tab="siteAssetsTab">Category Icons &amp; Site Images</button>
+        <button type="button" class="tab-btn" data-tab="mediaLibraryTab">All Uploaded Media</button>
+        <button type="button" class="tab-btn" data-tab="noticesTab">Policy Notices</button>
+      </div>
 
-            let config = loadJson(CONFIG_KEY, defaultConfig);
-            let activeUploadFilter = 'All';
+      <!-- TAB 1: BUSINESS LISTINGS & IMAGE MODERATION -->
+      <div id="businessesTab" class="tab-panel active">
+        <div class="panel-card">
+          <h2>Pending Vendor Submissions</h2>
+          <p class="panel-sub">Review vendor-uploaded business images (Accept, Change/Replace, or Remove) before approving or rejecting listings.</p>
+          <div id="pendingBusinessList" class="biz-grid"></div>
+        </div>
 
-            function loadJson(key, fallback) {
-                try {
-                    const raw = localStorage.getItem(key);
-                    return raw ? (Array.isArray(fallback) ? JSON.parse(raw) : { ...fallback, ...JSON.parse(raw) }) : structuredClone(fallback);
-                } catch {
-                    return structuredClone(fallback);
-                }
+        <div class="panel-card">
+          <h2>Approved &amp; Rejected Listings</h2>
+          <p class="panel-sub">Manage live businesses, swap or remove their photos, or update approval status.</p>
+          <div id="reviewedBusinessList" class="biz-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: BRANDING, HEADLINES & LOGO UPLOAD -->
+      <div id="brandingTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Brand Identity, Headlines &amp; Logo Asset</h2>
+          <p class="panel-sub">Upload a brand logo/icon directly to Supabase Storage or select from uploaded icons, and set where it appears.</p>
+
+          <form id="brandingForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="brandNameInput">Brand Name</label>
+                <input type="text" id="brandNameInput" value="BISA" required />
+              </div>
+
+              <div class="form-group">
+                <label for="logoPlacementInput">Logo Placement</label>
+                <select id="logoPlacementInput">
+                  <option value="header-left">Header Left</option>
+                  <option value="header-center">Header Center</option>
+                  <option value="hero-top">Hero Top</option>
+                  <option value="footer-brand">Footer Brand</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="mainHeadlineInput">Homepage Main Headline</label>
+              <input type="text" id="mainHeadlineInput" placeholder="Business, Ideas, Sharing and Action" required />
+            </div>
+
+            <div class="form-group">
+              <label for="heroSubtextInput">Homepage Hero Subtext</label>
+              <textarea id="heroSubtextInput" placeholder="Your campus marketplace for buying, selling, and connecting."></textarea>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="logoFileUpload">Upload New Logo / Icon File</label>
+                <input type="file" id="logoFileUpload" accept="image/*" />
+              </div>
+
+              <div class="form-group">
+                <label for="activeLogoUrlInput">Active Logo Image URL</label>
+                <input type="url" id="activeLogoUrlInput" placeholder="https://..." />
+              </div>
+            </div>
+
+            <div id="logoPreviewWrap" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+              <img id="activeLogoPreview" src="" alt="Active Logo" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 10px; background: #fff; display: none;" />
+              <button type="button" class="btn btn-outline btn-sm" id="clearLogoBtn">Remove Active Logo</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Branding &amp; Logo Settings</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 3: HERO SLIDESHOW -->
+      <div id="slideshowTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Add Hero Slideshow Slide</h2>
+          <p class="panel-sub">Upload a banner/slideshow image or paste an image URL to display on the homepage hero.</p>
+
+          <form id="addSlideForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="slideFileInput">Upload Slide Image</label>
+                <input type="file" id="slideFileInput" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label for="slideUrlInput">Or Image URL</label>
+                <input type="url" id="slideUrlInput" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="slideTitleInput">Slide Headline / Caption</label>
+                <input type="text" id="slideTitleInput" placeholder="Discover Campus Startups & Services" />
+              </div>
+              <div class="form-group">
+                <label for="slideSubtitleInput">Slide Subcaption</label>
+                <input type="text" id="slideSubtitleInput" placeholder="Connect directly with student entrepreneurs" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Slide</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2>Current Slideshow Items</h2>
+          <div id="slideshowList"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: CATEGORY ICONS & SITE AREA IMAGES -->
+      <div id="siteAssetsTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Category Icons &amp; Images</h2>
+          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category on the homepage and explore filters.</p>
+          <div id="categorySlotsContainer" class="category-slot-grid"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Site Area Banners &amp; Promo Flyers</h2>
+          <p class="panel-sub">Upload icons, promotional flyers, or default fallback images for site sections (excluding vendor business registration, where vendors upload their own photo).</p>
+          <div id="siteBannersContainer" class="category-slot-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 5: ALL MEDIA LIBRARY -->
+      <div id="mediaLibraryTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Upload Media to Storage (<code>bisa-media</code>)</h2>
+          <p class="panel-sub">Upload assets under Icon, Image, Flyer, Slideshow, or Business categories.</p>
+
+          <form id="mediaUploadForm" class="form-grid" style="align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="mediaCategorySelect">Asset Category</label>
+              <select id="mediaCategorySelect">
+                <option value="Icon">Icon</option>
+                <option value="Image">Image</option>
+                <option value="Flyer">Flyer</option>
+                <option value="Slideshow">Slideshow</option>
+                <option value="Business">Business</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="mediaFileInput">Select Image File</label>
+              <input type="file" id="mediaFileInput" accept="image/*" required />
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Asset</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h2>Media Library</h2>
+              <p class="panel-sub" style="margin-bottom: 0;">Copy asset URLs, set as site logo, or delete files from storage.</p>
+            </div>
+            <select id="mediaFilterSelect" style="max-width: 200px;">
+              <option value="ALL">All Categories</option>
+              <option value="Icon">Icon</option>
+              <option value="Image">Image</option>
+              <option value="Flyer">Flyer</option>
+              <option value="Slideshow">Slideshow</option>
+              <option value="Business">Business</option>
+            </select>
+          </div>
+          <div id="mediaLibraryGrid" class="media-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 6: POLICY NOTICES -->
+      <div id="noticesTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Policy Notice Modals</h2>
+          <p class="panel-sub">Edit the policy modal messages shown before viewing contact details on Explore and upon opening the Vendor Registration page.</p>
+          <form id="noticesForm">
+            <div class="form-group">
+              <label for="exploreNoticeInput">Explore Contact Policy Notice (<code>explore_notice</code>)</label>
+              <textarea id="exploreNoticeInput" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="businessNoticeInput">List Your Business Page Policy Notice (<code>business_notice</code>)</label>
+              <textarea id="businessNoticeInput" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Policy Notices</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <script>
+    // =========================================================================
+    // 1. SUPABASE INITIALIZATION
+    // =========================================================================
+    const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+    const STORAGE_BUCKET = 'bisa-media';
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // LocalStorage Fallback Keys
+    const LS_SETTINGS_KEY = 'bisa_settings_cache';
+    const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
+    const LS_MEDIA_KEY = 'bisa_media_cache';
+
+    const DEFAULT_CATEGORIES = [
+      'Food & Drinks',
+      'Fashion & Beauty',
+      'Tech & Gadgets',
+      'Academic & Tutoring',
+      'Graphics & Media',
+      'Events & Logistics',
+      'Repairs & Services'
+    ];
+
+    const SITE_BANNER_SLOTS = [
+      { key: 'explore_banner', label: 'Explore Page Hero Graphic / Icon' },
+      { key: 'featured_badge', label: 'Featured Business Badge Icon' },
+      { key: 'promo_flyer', label: 'Homepage / Campus Promo Flyer' },
+      { key: 'default_business_placeholder', label: 'Default Business Fallback Image (When Removed)' }
+    ];
+
+    let currentSettings = {
+      id: 1,
+      brand_name: 'BISA',
+      main_headline: 'Business, Ideas, Sharing and Action',
+      hero_subtext: 'Your campus marketplace for buying, selling, and connecting.',
+      logo_url: '',
+      logo_placement: 'header-left',
+      explore_notice: 'Please verify seller details and meet in safe, public campus locations before making payments.',
+      business_notice: 'All business listings are reviewed by BISA administrators before appearing publicly on Explore.',
+      slideshow: [],
+      category_media: {},
+      site_assets: {}
+    };
+
+    let allBusinesses = [];
+    let mediaLibrary = [];
+
+    // =========================================================================
+    // 2. UI HELPERS & ALERTS
+    // =========================================================================
+    function showAlert(elementId, message, type = 'success') {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      el.textContent = message;
+      el.className = `status-banner show ${type}`;
+      setTimeout(() => {
+        el.classList.remove('show');
+      }, 4500);
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Tab Navigation
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // =========================================================================
+    // 3. SUPABASE AUTHENTICATION
+    // =========================================================================
+    const loginView = document.getElementById('loginView');
+    const dashboardView = document.getElementById('dashboardView');
+
+    async function checkSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        enterDashboard();
+      } else {
+        loginView.classList.remove('hidden');
+        dashboardView.classList.add('hidden');
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const submitBtn = document.getElementById('loginSubmitBtn');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing In...';
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign In';
+
+      if (error) {
+        showAlert('loginAlert', error.message || 'Invalid login credentials.', 'error');
+        return;
+      }
+
+      if (data.session) {
+        enterDashboard();
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabaseClient.auth.signOut();
+      dashboardView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      document.getElementById('adminPassword').value = '';
+    });
+
+    async function enterDashboard() {
+      loginView.classList.add('hidden');
+      dashboardView.classList.remove('hidden');
+      await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary()]);
+    }
+
+    // =========================================================================
+    // 4. STORAGE UPLOAD HELPER (SUPABASE + LOCAL FALLBACK)
+    // =========================================================================
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadFileToMedia(file, category = 'Image') {
+      const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+      const folder = category.toLowerCase();
+      const storagePath = `${folder}/${safeName}`;
+
+      try {
+        const { error: uploadError } = await supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .upload(storagePath, file, { cacheControl: '3600', upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicData } = supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .getPublicUrl(storagePath);
+
+        const publicUrl = publicData.publicUrl;
+        recordMediaLocally({
+          id: storagePath,
+          name: file.name,
+          category,
+          url: publicUrl,
+          path: storagePath,
+          created_at: new Date().toISOString()
+        });
+        return publicUrl;
+      } catch (err) {
+        console.warn('Supabase storage upload fallback to localStorage:', err.message);
+        const dataUrl = await fileToDataUrl(file);
+        recordMediaLocally({
+          id: `local-${Date.now()}`,
+          name: file.name,
+          category,
+          url: dataUrl,
+          path: null,
+          created_at: new Date().toISOString()
+        });
+        return dataUrl;
+      }
+    }
+
+    function recordMediaLocally(item) {
+      const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
+      cached.unshift(item);
+      localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached.slice(0, 100)));
+    }
+
+    // =========================================================================
+    // 5. SETTINGS SYNC (bisa_settings row id = 1)
+    // =========================================================================
+    async function loadSettings() {
+      const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || 'null');
+      if (cached) {
+        currentSettings = { ...currentSettings, ...cached };
+      }
+
+      const { data, error } = await supabaseClient
+        .from('bisa_settings')
+        .select('*')
+        .eq('id', 1)
+        .maybeSingle();
+
+      if (!error && data) {
+        currentSettings = {
+          ...currentSettings,
+          ...data,
+          slideshow: Array.isArray(data.slideshow) ? data.slideshow : [],
+          category_media: data.category_media && typeof data.category_media === 'object' ? data.category_media : {},
+          site_assets: data.site_assets && typeof data.site_assets === 'object' ? data.site_assets : {}
+        };
+        localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
+      }
+
+      populateSettingsUI();
+    }
+
+    async function saveSettings(partialUpdates, successMessage = 'Settings saved.') {
+      currentSettings = { ...currentSettings, ...partialUpdates, id: 1 };
+      localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
+
+      const payload = {
+        id: 1,
+        brand_name: currentSettings.brand_name,
+        main_headline: currentSettings.main_headline,
+        hero_subtext: currentSettings.hero_subtext,
+        logo_url: currentSettings.logo_url,
+        logo_placement: currentSettings.logo_placement,
+        explore_notice: currentSettings.explore_notice,
+        business_notice: currentSettings.business_notice,
+        slideshow: currentSettings.slideshow,
+        category_media: currentSettings.category_media,
+        site_assets: currentSettings.site_assets
+      };
+
+      const { error } = await supabaseClient
+        .from('bisa_settings')
+        .upsert(payload, { onConflict: 'id' });
+
+      if (error) {
+        showAlert('globalAlert', `Saved locally (Supabase sync note: ${error.message})`, 'error');
+      } else {
+        showAlert('globalAlert', successMessage, 'success');
+      }
+
+      populateSettingsUI();
+    }
+
+    function populateSettingsUI() {
+      document.getElementById('topbarBrandLabel').innerHTML =
+        `${escapeHtml(currentSettings.brand_name || 'BISA')} <span>Admin Console</span>`;
+
+      document.getElementById('brandNameInput').value = currentSettings.brand_name || 'BISA';
+      document.getElementById('logoPlacementInput').value = currentSettings.logo_placement || 'header-left';
+      document.getElementById('mainHeadlineInput').value = currentSettings.main_headline || '';
+      document.getElementById('heroSubtextInput').value = currentSettings.hero_subtext || '';
+      document.getElementById('activeLogoUrlInput').value = currentSettings.logo_url || '';
+
+      const logoImg = document.getElementById('activeLogoPreview');
+      if (currentSettings.logo_url) {
+        logoImg.src = currentSettings.logo_url;
+        logoImg.style.display = 'block';
+      } else {
+        logoImg.style.display = 'none';
+      }
+
+      document.getElementById('exploreNoticeInput').value = currentSettings.explore_notice || '';
+      document.getElementById('businessNoticeInput').value = currentSettings.business_notice || '';
+
+      renderSlideshowList();
+      renderCategoryAndSiteAssets();
+    }
+
+    // Branding Form Submit
+    document.getElementById('brandingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let logoUrl = document.getElementById('activeLogoUrlInput').value.trim();
+      const logoFile = document.getElementById('logoFileUpload').files[0];
+
+      if (logoFile) {
+        logoUrl = await uploadFileToMedia(logoFile, 'Icon');
+        document.getElementById('logoFileUpload').value = '';
+      }
+
+      await saveSettings(
+        {
+          brand_name: document.getElementById('brandNameInput').value.trim() || 'BISA',
+          logo_placement: document.getElementById('logoPlacementInput').value,
+          main_headline: document.getElementById('mainHeadlineInput').value.trim(),
+          hero_subtext: document.getElementById('heroSubtextInput').value.trim(),
+          logo_url: logoUrl
+        },
+        'Branding and logo settings updated.'
+      );
+      await loadMediaLibrary();
+    });
+
+    document.getElementById('clearLogoBtn').addEventListener('click', async () => {
+      document.getElementById('activeLogoUrlInput').value = '';
+      await saveSettings({ logo_url: '' }, 'Active logo removed.');
+    });
+
+    // Notices Form Submit
+    document.getElementById('noticesForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await saveSettings(
+        {
+          explore_notice: document.getElementById('exploreNoticeInput').value.trim(),
+          business_notice: document.getElementById('businessNoticeInput').value.trim()
+        },
+        'Policy notices updated.'
+      );
+    });
+
+    // =========================================================================
+    // 6. HERO SLIDESHOW MANAGEMENT
+    // =========================================================================
+    document.getElementById('addSlideForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const file = document.getElementById('slideFileInput').files[0];
+      let imageUrl = document.getElementById('slideUrlInput').value.trim();
+
+      if (file) {
+        imageUrl = await uploadFileToMedia(file, 'Slideshow');
+      }
+
+      if (!imageUrl) {
+        showAlert('globalAlert', 'Please upload an image or enter a slide image URL.', 'error');
+        return;
+      }
+
+      const newSlide = {
+        id: `slide-${Date.now()}`,
+        image_url: imageUrl,
+        title: document.getElementById('slideTitleInput').value.trim(),
+        subtitle: document.getElementById('slideSubtitleInput').value.trim()
+      };
+
+      const updatedSlides = [...(currentSettings.slideshow || []), newSlide];
+      document.getElementById('addSlideForm').reset();
+      await saveSettings({ slideshow: updatedSlides }, 'Slide added to homepage slideshow.');
+      await loadMediaLibrary();
+    });
+
+    function renderSlideshowList() {
+      const container = document.getElementById('slideshowList');
+      const slides = currentSettings.slideshow || [];
+
+      if (!slides.length) {
+        container.innerHTML = '<p class="panel-sub">No custom slideshow slides added yet.</p>';
+        return;
+      }
+
+      container.innerHTML = slides
+        .map(
+          (slide, idx) => `
+        <div class="slide-row">
+          <img src="${escapeHtml(slide.image_url)}" alt="Slide ${idx + 1}" />
+          <div style="display: grid; gap: 0.45rem;">
+            <input type="text" value="${escapeHtml(slide.title || '')}" placeholder="Slide Title" data-slide-field="title" data-idx="${idx}" />
+            <input type="text" value="${escapeHtml(slide.subtitle || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <label class="btn btn-outline btn-sm" style="cursor: pointer;">
+                Replace Image
+                <input type="file" accept="image/*" hidden data-slide-replace="${idx}" />
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" data-slide-save="${idx}">Save Slide</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-coral btn-sm" data-slide-remove="${idx}">Remove</button>
+        </div>
+      `
+        )
+        .join('');
+
+      container.querySelectorAll('[data-slide-save]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.dataset.slideSave);
+          const titleVal = container.querySelector(`[data-slide-field="title"][data-idx="${idx}"]`).value.trim();
+          const subVal = container.querySelector(`[data-slide-field="subtitle"][data-idx="${idx}"]`).value.trim();
+          const updated = [...currentSettings.slideshow];
+          updated[idx] = { ...updated[idx], title: titleVal, subtitle: subVal };
+          await saveSettings({ slideshow: updated }, 'Slide updated.');
+        });
+      });
+
+      container.querySelectorAll('[data-slide-replace]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const idx = Number(input.dataset.slideReplace);
+          const file = input.files[0];
+          if (!file) return;
+          const newUrl = await uploadFileToMedia(file, 'Slideshow');
+          const updated = [...currentSettings.slideshow];
+          updated[idx] = { ...updated[idx], image_url: newUrl };
+          await saveSettings({ slideshow: updated }, 'Slide image replaced.');
+          await loadMediaLibrary();
+        });
+      });
+
+      container.querySelectorAll('[data-slide-remove]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.dataset.slideRemove);
+          const updated = currentSettings.slideshow.filter((_, i) => i !== idx);
+          await saveSettings({ slideshow: updated }, 'Slide removed.');
+        });
+      });
+    }
+
+    // =========================================================================
+    // 7. CATEGORY ICONS & SITE AREA IMAGES
+    // =========================================================================
+    function renderCategoryAndSiteAssets() {
+      const catContainer = document.getElementById('categorySlotsContainer');
+      const catMedia = currentSettings.category_media || {};
+
+      catContainer.innerHTML = DEFAULT_CATEGORIES.map((cat) => {
+        const imgUrl = catMedia[cat] || '';
+        return `
+          <div class="category-slot-card">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="category-slot-preview">
+                ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(cat)}" />` : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'}
+              </div>
+              <div>
+                <strong style="color: var(--plum); font-size: 0.92rem;">${escapeHtml(cat)}</strong>
+                <div style="font-size: 0.75rem; color: var(--muted);">Category Icon / Card Image</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <label class="btn btn-primary btn-sm" style="cursor: pointer;">
+                Upload Icon/Image
+                <input type="file" accept="image/*" hidden data-cat-upload="${escapeHtml(cat)}" />
+              </label>
+              ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-cat-remove="${escapeHtml(cat)}">Remove</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      catContainer.querySelectorAll('[data-cat-upload]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const cat = input.dataset.catUpload;
+          const file = input.files[0];
+          if (!file) return;
+          const url = await uploadFileToMedia(file, 'Icon');
+          const nextCatMedia = { ...(currentSettings.category_media || {}), [cat]: url };
+          await saveSettings({ category_media: nextCatMedia }, `Updated icon for ${cat}.`);
+          await loadMediaLibrary();
+        });
+      });
+
+      catContainer.querySelectorAll('[data-cat-remove]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const cat = btn.dataset.catRemove;
+          const nextCatMedia = { ...(currentSettings.category_media || {}) };
+          delete nextCatMedia[cat];
+          await saveSettings({ category_media: nextCatMedia }, `Removed icon for ${cat}.`);
+        });
+      });
+
+      // Site Banner / Flyer Slots
+      const bannerContainer = document.getElementById('siteBannersContainer');
+      const siteAssets = currentSettings.site_assets || {};
+
+      bannerContainer.innerHTML = SITE_BANNER_SLOTS.map((slot) => {
+        const imgUrl = siteAssets[slot.key] || '';
+        return `
+          <div class="category-slot-card">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="category-slot-preview">
+                ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(slot.label)}" />` : '<span style="font-size:0.7rem;color:#888;">Empty</span>'}
+              </div>
+              <div>
+                <strong style="color: var(--plum); font-size: 0.88rem;">${escapeHtml(slot.label)}</strong>
+                <div style="font-size: 0.74rem; color: var(--muted);">Key: <code>${escapeHtml(slot.key)}</code></div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <label class="btn btn-primary btn-sm" style="cursor: pointer;">
+                Upload Image
+                <input type="file" accept="image/*" hidden data-slot-upload="${escapeHtml(slot.key)}" />
+              </label>
+              ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-slot-remove="${escapeHtml(slot.key)}">Remove</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      bannerContainer.querySelectorAll('[data-slot-upload]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const key = input.dataset.slotUpload;
+          const file = input.files[0];
+          if (!file) return;
+          const category = key === 'promo_flyer' ? 'Flyer' : 'Image';
+          const url = await uploadFileToMedia(file, category);
+          const nextAssets = { ...(currentSettings.site_assets || {}), [key]: url };
+          await saveSettings({ site_assets: nextAssets }, `Updated ${key}.`);
+          await loadMediaLibrary();
+        });
+      });
+
+      bannerContainer.querySelectorAll('[data-slot-remove]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const key = btn.dataset.slotRemove;
+          const nextAssets = { ...(currentSettings.site_assets || {}) };
+          delete nextAssets[key];
+          await saveSettings({ site_assets: nextAssets }, `Removed ${key}.`);
+        });
+      });
+    }
+
+    // =========================================================================
+    // 8. BUSINESS LISTING APPROVALS & VENDOR IMAGE MODERATION
+    //    (Accept Vendor Image / Change Vendor Image / Remove Vendor Image)
+    // =========================================================================
+    async function loadBusinesses() {
+      const cached = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
+      if (cached.length) allBusinesses = cached;
+
+      const { data, error } = await supabaseClient
+        .from('bisa_businesses')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data)) {
+        allBusinesses = data;
+        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+      }
+
+      renderBusinesses();
+    }
+
+    async function updateBusinessRecord(id, updates, message) {
+      const idx = allBusinesses.findIndex((b) => String(b.id) === String(id));
+      if (idx !== -1) {
+        allBusinesses[idx] = { ...allBusinesses[idx], ...updates };
+        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+      }
+
+      const { error } = await supabaseClient
+        .from('bisa_businesses')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) {
+        showAlert('globalAlert', `Updated locally (Supabase sync note: ${error.message})`, 'error');
+      } else {
+        showAlert('globalAlert', message, 'success');
+      }
+
+      renderBusinesses();
+    }
+
+    function renderBusinessCard(biz) {
+      const imgUrl = biz.image_url || biz.logo_url || '';
+      const imgState = biz.image_moderation_status || (imgUrl ? 'pending_review' : 'removed');
+
+      let badgeText = 'Vendor Photo: Pending Review';
+      let badgeClass = '';
+      if (imgState === 'accepted') {
+        badgeText = 'Image Accepted';
+        badgeClass = 'accepted';
+      } else if (imgState === 'replaced') {
+        badgeText = 'Image Replaced by Admin';
+        badgeClass = 'accepted';
+      } else if (imgState === 'removed' || !imgUrl) {
+        badgeText = 'No Image / Removed';
+        badgeClass = 'removed';
+      }
+
+      return `
+        <article class="biz-card">
+          <div class="biz-img-box">
+            <span class="img-review-badge ${badgeClass}">${badgeText}</span>
+            ${
+              imgUrl
+                ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(biz.business_name || biz.name || 'Business')}" />`
+                : `<div class="biz-img-placeholder">No Business Image Attached</div>`
             }
+          </div>
 
-            function saveJson(key, value) {
-                localStorage.setItem(key, JSON.stringify(value));
+          <!-- Admin Image Moderation Bar: Accept / Change / Remove -->
+          <div class="biz-image-controls">
+            ${
+              imgUrl
+                ? `<button type="button" class="btn btn-primary btn-sm" data-biz-accept-img="${escapeHtml(biz.id)}">Accept Image</button>`
+                : ''
             }
-
-            function showStatus(msg) {
-                const el = document.getElementById('statusBanner');
-                if (!el) return;
-                el.textContent = msg;
-                clearTimeout(showStatus._t);
-                showStatus._t = setTimeout(() => { el.textContent = ''; }, 3500);
+            <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+              Change Image
+              <input type="file" accept="image/*" hidden data-biz-change-img="${escapeHtml(biz.id)}" />
+            </label>
+            ${
+              imgUrl
+                ? `<button type="button" class="btn btn-coral btn-sm" data-biz-remove-img="${escapeHtml(biz.id)}">Remove Image</button>`
+                : ''
             }
+          </div>
 
-            function esc(str) {
-                return String(str || '').replace(/[&<>"']/g, m => ({
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-                }[m]));
+          <div class="biz-body">
+            <h3>${escapeHtml(biz.business_name || biz.name || 'Unnamed Business')}</h3>
+            <div class="biz-meta">
+              <strong>Category:</strong> ${escapeHtml(biz.category || 'General')} &bull;
+              <strong>Status:</strong> ${escapeHtml((biz.status || 'pending').toUpperCase())}
+            </div>
+            <p>${escapeHtml(biz.description || 'No description provided.')}</p>
+            <div class="biz-meta"><strong>Location:</strong> ${escapeHtml(biz.location || 'N/A')}</div>
+            <div class="biz-meta"><strong>Where to find:</strong> ${escapeHtml(biz.service_location || biz.where_to_find || 'N/A')}</div>
+            <div class="biz-meta"><strong>Contact:</strong> ${escapeHtml(biz.phone || biz.tel || 'N/A')} | ${escapeHtml(biz.email || 'N/A')}</div>
+          </div>
+
+          <div class="biz-actions">
+            ${
+              biz.status !== 'approved'
+                ? `<button type="button" class="btn btn-primary btn-sm" style="flex:1;" data-biz-status="approved" data-biz-id="${escapeHtml(biz.id)}">Approve Business</button>`
+                : ''
             }
-
-            function readFile(file) {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
+            ${
+              biz.status !== 'rejected'
+                ? `<button type="button" class="btn btn-coral btn-sm" style="flex:1;" data-biz-status="rejected" data-biz-id="${escapeHtml(biz.id)}">Reject</button>`
+                : ''
             }
+          </div>
+        </article>
+      `;
+    }
 
-            function checkAuth() {
-                const isLoggedIn = sessionStorage.getItem(AUTH_KEY) === 'true';
-                document.getElementById('loginScreen').style.display = isLoggedIn ? 'none' : 'flex';
-                document.getElementById('adminDashboard').style.display = isLoggedIn ? 'block' : 'none';
-                if (isLoggedIn) {
-                    renderAll();
-                }
-            }
+    function renderBusinesses() {
+      const pendingContainer = document.getElementById('pendingBusinessList');
+      const reviewedContainer = document.getElementById('reviewedBusinessList');
 
-            document.getElementById('loginForm').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const u = document.getElementById('adminUsername').value.trim();
-                const p = document.getElementById('adminPassword').value;
-                const errEl = document.getElementById('loginError');
-                if (u === ADMIN_USER && p === ADMIN_PASS) {
-                    sessionStorage.setItem(AUTH_KEY, 'true');
-                    errEl.textContent = '';
-                    document.getElementById('adminPassword').value = '';
-                    checkAuth();
-                } else {
-                    errEl.textContent = 'Invalid admin username or password.';
-                }
+      const pending = allBusinesses.filter((b) => (b.status || 'pending') === 'pending');
+      const reviewed = allBusinesses.filter((b) => (b.status || 'pending') !== 'pending');
+
+      pendingContainer.innerHTML = pending.length
+        ? pending.map(renderBusinessCard).join('')
+        : '<p class="panel-sub">No pending business registrations right now.</p>';
+
+      reviewedContainer.innerHTML = reviewed.length
+        ? reviewed.map(renderBusinessCard).join('')
+        : '<p class="panel-sub">No approved or rejected businesses yet.</p>';
+
+      // Accept vendor's uploaded image
+      document.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizAcceptImg;
+          await updateBusinessRecord(
+            id,
+            { image_moderation_status: 'accepted' },
+            'Vendor business image accepted.'
+          );
+        });
+      });
+
+      // Change / replace vendor's business image
+      document.querySelectorAll('[data-biz-change-img]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const id = input.dataset.bizChangeImg;
+          const file = input.files[0];
+          if (!file) return;
+          const newImageUrl = await uploadFileToMedia(file, 'Business');
+          await updateBusinessRecord(
+            id,
+            { image_url: newImageUrl, image_moderation_status: 'replaced' },
+            'Business image replaced by admin.'
+          );
+          await loadMediaLibrary();
+        });
+      });
+
+      // Remove vendor's business image
+      document.querySelectorAll('[data-biz-remove-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizRemoveImg;
+          await updateBusinessRecord(
+            id,
+            { image_url: null, image_moderation_status: 'removed' },
+            'Business image removed.'
+          );
+        });
+      });
+
+      // Approve or Reject listing
+      document.querySelectorAll('[data-biz-status]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizId;
+          const status = btn.dataset.bizStatus;
+          const biz = allBusinesses.find((b) => String(b.id) === String(id));
+          const updates = { status };
+          if (status === 'approved' && biz && biz.image_url && !biz.image_moderation_status) {
+            updates.image_moderation_status = 'accepted';
+          }
+          await updateBusinessRecord(id, updates, `Business marked as ${status}.`);
+        });
+      });
+    }
+
+    // =========================================================================
+    // 9. MEDIA LIBRARY (bisa-media BUCKET)
+    // =========================================================================
+    document.getElementById('mediaUploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const category = document.getElementById('mediaCategorySelect').value;
+      const file = document.getElementById('mediaFileInput').files[0];
+      if (!file) return;
+
+      await uploadFileToMedia(file, category);
+      document.getElementById('mediaUploadForm').reset();
+      showAlert('globalAlert', `Uploaded "${file.name}" under ${category}.`, 'success');
+      await loadMediaLibrary();
+    });
+
+    document.getElementById('mediaFilterSelect').addEventListener('change', renderMediaLibrary);
+
+    async function loadMediaLibrary() {
+      const categories = ['Icon', 'Image', 'Flyer', 'Slideshow', 'Business'];
+      const collected = [];
+
+      for (const cat of categories) {
+        const folder = cat.toLowerCase();
+        const { data, error } = await supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .list(folder, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+
+        if (!error && Array.isArray(data)) {
+          data.forEach((fileObj) => {
+            if (!fileObj.name || fileObj.name === '.emptyFolderPlaceholder') return;
+            const path = `${folder}/${fileObj.name}`;
+            const { data: pub } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+            collected.push({
+              id: path,
+              name: fileObj.name,
+              category: cat,
+              url: pub.publicUrl,
+              path
             });
+          });
+        }
+      }
 
-            document.getElementById('logoutBtn').addEventListener('click', function () {
-                sessionStorage.removeItem(AUTH_KEY);
-                checkAuth();
-            });
+      const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
+      const seenUrls = new Set(collected.map((m) => m.url));
+      cached.forEach((item) => {
+        if (!seenUrls.has(item.url)) {
+          collected.push(item);
+        }
+      });
 
-            function renderAll() {
-                document.getElementById('dashBrandLabel').textContent = (config.brandName || 'BISA') + ' Admin';
-                document.getElementById('brandNameInput').value = config.brandName || 'BISA';
-                document.getElementById('logoPlacementSelect').value = config.logoPlacement || 'header-left';
-                document.getElementById('mainHeadlineInput').value = config.mainHeadline || '';
-                document.getElementById('heroSubtextInput').value = config.heroSubtext || '';
-                document.getElementById('exploreNoticeInput').value = config.exploreNotice || '';
-                document.getElementById('businessNoticeInput').value = config.businessNotice || '';
+      mediaLibrary = collected;
+      renderMediaLibrary();
+    }
 
-                const logoSelect = document.getElementById('activeLogoSelect');
-                logoSelect.innerHTML = '';
-                config.uploads.forEach(item => {
-                    const opt = document.createElement('option');
-                    opt.value = item.src;
-                    opt.textContent = `${item.name} [${item.category}]`;
-                    if (item.src === config.activeLogo) opt.selected = true;
-                    logoSelect.appendChild(opt);
-                });
+    function renderMediaLibrary() {
+      const grid = document.getElementById('mediaLibraryGrid');
+      const filter = document.getElementById('mediaFilterSelect').value;
+      const items = filter === 'ALL' ? mediaLibrary : mediaLibrary.filter((m) => m.category === filter);
 
-                renderPendingBusinesses();
-                renderSlides();
-                renderUploads();
-            }
+      if (!items.length) {
+        grid.innerHTML = '<p class="panel-sub">No media assets found in this category.</p>';
+        return;
+      }
 
-            function renderPendingBusinesses() {
-                const listEl = document.getElementById('pendingApprovalsList');
-                const pending = loadJson(PENDING_BIZ_KEY, []);
-                if (!pending.length) {
-                    listEl.innerHTML = '<p class="empty-note">No pending business requests right now.</p>';
-                    return;
-                }
+      grid.innerHTML = items
+        .map(
+          (item, index) => `
+        <div class="media-item">
+          <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.name)}" />
+          <div class="media-item-info">
+            <span class="badge-cat">${escapeHtml(item.category)}</span>
+            <div style="font-weight: 600; word-break: break-all;">${escapeHtml(item.name)}</div>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: auto;">
+              <button type="button" class="btn btn-outline btn-sm" data-copy-url="${escapeHtml(item.url)}">Copy URL</button>
+              <button type="button" class="btn btn-primary btn-sm" data-set-logo="${escapeHtml(item.url)}">Use as Logo</button>
+              <button type="button" class="btn btn-coral btn-sm" data-delete-media="${index}">Delete</button>
+            </div>
+          </div>
+        </div>
+      `
+        )
+        .join('');
 
-                listEl.innerHTML = '';
-                pending.forEach(biz => {
-                    const card = document.createElement('div');
-                    card.className = 'approval-card';
-                    card.innerHTML = `
-                        <div>
-                            ${biz.image ? `<img src="${esc(biz.image)}" alt="${esc(biz.name)}" class="approval-thumb">` : ''}
-                            <h3>${esc(biz.name)}</h3>
-                            <div class="approval-meta">
-                                Category: ${esc(biz.category || 'General')} &bull; Location: ${esc(biz.location || '')}
-                                ${biz.phone ? ` &bull; Tel: ${esc(biz.phone)}` : ''}
-                            </div>
-                            <p style="font-size:13px;">${esc(biz.description || '')}</p>
-                        </div>
-                        <div class="btn-row">
-                            <button type="button" class="button btn-sm btn-approve" data-approve-id="${esc(biz.id)}">Approve</button>
-                            <button type="button" class="button btn-sm btn-danger" data-reject-id="${esc(biz.id)}">Reject</button>
-                        </div>
-                    `;
-                    listEl.appendChild(card);
-                });
+      grid.querySelectorAll('[data-copy-url]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(btn.dataset.copyUrl);
+          showAlert('globalAlert', 'Asset URL copied to clipboard.', 'success');
+        });
+      });
 
-                listEl.querySelectorAll('[data-approve-id]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.getAttribute('data-approve-id');
-                        const currentPending = loadJson(PENDING_BIZ_KEY, []);
-                        const target = currentPending.find(item => item.id === id);
-                        const nextPending = currentPending.filter(item => item.id !== id);
-                        saveJson(PENDING_BIZ_KEY, nextPending);
+      grid.querySelectorAll('[data-set-logo]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await saveSettings({ logo_url: btn.dataset.setLogo }, 'Active site logo updated.');
+        });
+      });
 
-                        if (target) {
-                            const approved = loadJson(APPROVED_BIZ_KEY, []);
-                            approved.push({ ...target, approvedAt: new Date().toISOString() });
-                            saveJson(APPROVED_BIZ_KEY, approved);
-                        }
-                        renderPendingBusinesses();
-                        showStatus('Business listing approved and published.');
-                    });
-                });
+      grid.querySelectorAll('[data-delete-media]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const item = items[Number(btn.dataset.deleteMedia)];
+          if (!item) return;
 
-                listEl.querySelectorAll('[data-reject-id]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.getAttribute('data-reject-id');
-                        const nextPending = loadJson(PENDING_BIZ_KEY, []).filter(item => item.id !== id);
-                        saveJson(PENDING_BIZ_KEY, nextPending);
-                        renderPendingBusinesses();
-                        showStatus('Business listing rejected and removed.');
-                    });
-                });
-            }
+          if (item.path) {
+            await supabaseClient.storage.from(STORAGE_BUCKET).remove([item.path]);
+          }
+          const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]').filter(
+            (c) => c.url !== item.url
+          );
+          localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached));
+          showAlert('globalAlert', `Deleted "${item.name}".`, 'success');
+          await loadMediaLibrary();
+        });
+      });
+    }
 
-            function renderSlides() {
-                const container = document.getElementById('slidesList');
-                container.innerHTML = '';
-                config.slides.forEach((slide, idx) => {
-                    const box = document.createElement('div');
-                    box.className = 'slide-box';
-                    box.innerHTML = `
-                        <div class="slide-box-top">
-                            <span>Slide ${idx + 1}</span>
-                            <button type="button" class="button btn-sm btn-danger" data-del-slide="${esc(slide.id)}">Delete Slide</button>
-                        </div>
-                        <div class="field">
-                            <label>Title</label>
-                            <input type="text" class="input edit-slide-title" data-id="${esc(slide.id)}" value="${esc(slide.title)}">
-                        </div>
-                        <div class="field" style="margin-bottom:0;">
-                            <label>Caption</label>
-                            <input type="text" class="input edit-slide-caption" data-id="${esc(slide.id)}" value="${esc(slide.caption)}">
-                        </div>
-                    `;
-                    container.appendChild(box);
-                });
-
-                container.querySelectorAll('[data-del-slide]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.getAttribute('data-del-slide');
-                        config.slides = config.slides.filter(s => s.id !== id);
-                        renderSlides();
-                    });
-                });
-            }
-
-            function renderUploads() {
-                const grid = document.getElementById('mediaGrid');
-                const items = activeUploadFilter === 'All'
-                    ? config.uploads
-                    : config.uploads.filter(u => u.category === activeUploadFilter);
-
-                if (!items.length) {
-                    grid.innerHTML = '<p class="empty-note">No uploaded files in this category.</p>';
-                    return;
-                }
-
-                grid.innerHTML = '';
-                items.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'media-card';
-                    card.innerHTML = `
-                        <img src="${esc(item.src)}" alt="${esc(item.name)}">
-                        <div class="media-info"><strong>${esc(item.category)}:</strong> ${esc(item.name)}</div>
-                        <button type="button" class="button btn-sm btn-danger" data-del-upload="${esc(item.id)}">Remove</button>
-                    `;
-                    grid.appendChild(card);
-                });
-
-                grid.querySelectorAll('[data-del-upload]').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.getAttribute('data-del-upload');
-                        config.uploads = config.uploads.filter(u => u.id !== id);
-                        renderAll();
-                        showStatus('Uploaded item removed.');
-                    });
-                });
-            }
-
-            document.querySelectorAll('.upload-filter-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    activeUploadFilter = btn.getAttribute('data-filter');
-                    document.querySelectorAll('.upload-filter-btn').forEach(b => {
-                        b.classList.toggle('button-primary', b === btn);
-                        b.classList.toggle('button-secondary', b !== btn);
-                    });
-                    renderUploads();
-                });
-            });
-
-            document.getElementById('multiFilesInput').addEventListener('change', async function (e) {
-                const files = Array.from(e.target.files || []);
-                const category = document.getElementById('uploadCategorySelect').value;
-                for (const file of files) {
-                    const src = await readFile(file);
-                    config.uploads.push({
-                        id: 'up_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-                        name: file.name,
-                        category,
-                        src
-                    });
-                }
-                e.target.value = '';
-                renderAll();
-                showStatus(`${files.length} file(s) uploaded to ${category}.`);
-            });
-
-            document.getElementById('addSlideBtn').addEventListener('click', async function () {
-                const title = document.getElementById('newSlideTitle').value.trim() || 'Campus Spotlight';
-                const caption = document.getElementById('newSlideCaption').value.trim() || '';
-                const file = document.getElementById('newSlideImage').files[0];
-                let image = config.activeLogo || 'bisa-flyer.png.png';
-
-                if (file) {
-                    image = await readFile(file);
-                    config.uploads.push({
-                        id: 'up_' + Date.now(),
-                        name: file.name,
-                        category: 'Slideshow',
-                        src: image
-                    });
-                }
-
-                config.slides.push({
-                    id: 'sl_' + Date.now(),
-                    title,
-                    caption,
-                    image
-                });
-
-                document.getElementById('newSlideTitle').value = '';
-                document.getElementById('newSlideCaption').value = '';
-                document.getElementById('newSlideImage').value = '';
-                renderAll();
-                showStatus('Slide added.');
-            });
-
-            document.getElementById('saveAllBtn').addEventListener('click', function () {
-                config.brandName = document.getElementById('brandNameInput').value.trim() || 'BISA';
-                config.logoPlacement = document.getElementById('logoPlacementSelect').value;
-                config.activeLogo = document.getElementById('activeLogoSelect').value || config.activeLogo;
-                config.mainHeadline = document.getElementById('mainHeadlineInput').value.trim();
-                config.heroSubtext = document.getElementById('heroSubtextInput').value.trim();
-                config.exploreNotice = document.getElementById('exploreNoticeInput').value.trim();
-                config.businessNotice = document.getElementById('businessNoticeInput').value.trim();
-
-                document.querySelectorAll('.edit-slide-title').forEach(inp => {
-                    const slide = config.slides.find(s => s.id === inp.dataset.id);
-                    if (slide) slide.title = inp.value;
-                });
-                document.querySelectorAll('.edit-slide-caption').forEach(inp => {
-                    const slide = config.slides.find(s => s.id === inp.dataset.id);
-                    if (slide) slide.caption = inp.value;
-                });
-
-                saveJson(CONFIG_KEY, config);
-                renderAll();
-                showStatus('All changes saved.');
-            });
-
-            document.getElementById('resetDefaultsBtn').addEventListener('click', function () {
-                config = structuredClone(defaultConfig);
-                saveJson(CONFIG_KEY, config);
-                renderAll();
-                showStatus('Admin settings reset to defaults.');
-            });
-
-            checkAuth();
-        })();
-    </script>
+    // Initialize Auth Check on Load
+    checkSession();
+  </script>
 </body>
 </html>
