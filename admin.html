@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BISA - Explore Businesses & Services</title>
+    <title>BISA - Explore Businesses &amp; Services</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Initialize Supabase client
-        const supabase = window.supabase = createSupabaseClient(
-            'https://vrgbataasdiyyhtsmjsp.supabase.co',
-            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
-        );
-    </script>
+    <style>
+        .footer-admin-trigger {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .contact-value {
+            color: var(--dark);
+        }
+    </style>
 </head>
 <body>
 
     <!-- HEADER -->
     <header class="header">
         <div class="container header-container">
-            <a href="index.html" class="logo">BISA</a>
+            <a href="index.html" class="logo" id="siteLogoText">BISA</a>
             <nav class="nav">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="explore.html" class="nav-link active">Explore</a>
@@ -40,8 +43,8 @@
                     <strong>Notice:</strong> Welcome to BISA - Your campus marketplace for buying, selling, and connecting.
                 </div>
                 <p class="breadcrumb">Home / Explore</p>
-                <h1 class="page-title">Explore Businesses</h1>
-                <p class="page-subtitle">Browse verified student enterprises, services, and products.</p>
+                <h1 class="page-title" id="exploreMainHeadline">Explore Businesses</h1>
+                <p class="page-subtitle" id="exploreHeroSubtext">Browse verified student enterprises, services, and products across Ghana.</p>
             </div>
         </section>
 
@@ -69,12 +72,15 @@
                         <input type="range" class="price-slider" min="1" max="100">
                     </div>
 
-                    <!-- LOCATION FILTER -->
+                    <!-- LOCATION FILTER (GHANA TOWNS & CITIES) -->
                     <div class="filter-group">
-                        <label class="filter-label">Location</label>
+                        <label class="filter-label">Location (Ghana)</label>
                         <div class="checkbox-wrapper">
-                            <label><input type="checkbox"> Campus</label>
-                            <label><input type="checkbox"> Nearby Town</label>
+                            <label><input type="checkbox" value="Elmina"> Elmina</label>
+                            <label><input type="checkbox" value="Cape Coast"> Cape Coast</label>
+                            <label><input type="checkbox" value="Accra"> Accra</label>
+                            <label><input type="checkbox" value="Kumasi"> Kumasi</label>
+                            <label><input type="checkbox" value="Takoradi"> Takoradi</label>
                         </div>
                     </div>
 
@@ -95,12 +101,12 @@
                     </div>
 
                     <!-- CARDS GRID -->
-                    <div class="results-grid">
+                    <div class="results-grid" id="exploreResultsGrid">
                         <article class="card explore-card"
                             data-business="Campus Fresh Chop"
-                            data-description="Delicious local meals and snacks delivered right to your hostel."
-                            data-location="Campus"
-                            data-find-us="Campus Food Court & Hostel Delivery"
+                            data-description="Delicious local meals and snacks prepared fresh in Elmina and Cape Coast."
+                            data-location="Elmina, Central Region"
+                            data-find-us="Elmina Main Road near Benya Lagoon &amp; Campus Hub"
                             data-phone="+233 20 123 4567"
                             data-email="campusfresh@bisa.edu.gh"
                             data-image="bisa-flyer.png.png"
@@ -108,8 +114,8 @@
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Campus Fresh Chop</h3>
-                                <p>Short description of meals and snacks...</p>
-                                <span class="location-tag">📍 Campus</span>
+                                <p>Local meals and snacks around Elmina &amp; campus...</p>
+                                <span class="location-tag">&#128205; Elmina, Central Region</span>
                                 <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
@@ -117,8 +123,8 @@
                         <article class="card explore-card"
                             data-business="Luminex Creative Lab"
                             data-description="Professional brand identity, flyer design, and motion graphics services."
-                            data-location="Campus"
-                            data-find-us="CCTU Design Studio / Campus Hub"
+                            data-location="Cape Coast, Central Region"
+                            data-find-us="Cape Coast Central / CCTU Area"
                             data-phone="+233 20 987 6543"
                             data-email="luminex@bisa.edu.gh"
                             data-image="bisa-logo-full.png"
@@ -126,17 +132,17 @@
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Luminex Creative Lab</h3>
-                                <p>Professional brand identity & flyer design...</p>
-                                <span class="location-tag">📍 Campus</span>
+                                <p>Brand identity, flyers &amp; motion graphics...</p>
+                                <span class="location-tag">&#128205; Cape Coast, Central Region</span>
                                 <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
                         <article class="card explore-card"
                             data-business="Amoah Web Solutions"
-                            data-description="Responsive websites, debugging, and Cloudflare deployments for students."
-                            data-location="Nearby"
-                            data-find-us="Cape Coast / Elmina Tech Desk"
+                            data-description="Responsive websites, web apps, and technical support across Ghana."
+                            data-location="Elmina &amp; Cape Coast, Central Region"
+                            data-find-us="Elmina - Cape Coast Corridor"
                             data-phone="+233 24 555 0123"
                             data-email="amoahweb@bisa.edu.gh"
                             data-image="bisa-logo-mark.png"
@@ -144,35 +150,35 @@
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Amoah Web Solutions</h3>
-                                <p>Responsive websites and technical support...</p>
-                                <span class="location-tag">📍 Nearby</span>
+                                <p>Websites and technical support in Central Region...</p>
+                                <span class="location-tag">&#128205; Elmina &amp; Cape Coast</span>
                                 <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
                         <article class="card explore-card"
-                            data-business="Bamboo Craft & Art"
-                            data-description="Handmade musical bamboo flutes, instruments, and traditional art pieces."
-                            data-location="Campus"
-                            data-find-us="Campus Arts & Craft Corner"
+                            data-business="Bamboo Craft &amp; Art"
+                            data-description="Handmade musical bamboo flutes, instruments, and traditional craft pieces."
+                            data-location="Elmina, Central Region"
+                            data-find-us="Elmina Craft &amp; Cultural Spot"
                             data-phone="+233 24 111 2233"
                             data-email="bamboo@bisa.edu.gh"
                             data-image="bisa-flyer.png.png"
                             data-website="">
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
-                                <h3>Bamboo Craft & Art</h3>
-                                <p>Handmade musical bamboo flutes...</p>
-                                <span class="location-tag">📍 Campus</span>
+                                <h3>Bamboo Craft &amp; Art</h3>
+                                <p>Handmade bamboo flutes &amp; craft pieces...</p>
+                                <span class="location-tag">&#128205; Elmina, Central Region</span>
                                 <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
                         <article class="card explore-card"
                             data-business="Student Bookstore"
-                            data-description="Research notes, past questions, textbooks, and study guides for all courses."
-                            data-location="Campus"
-                            data-find-us="Main Campus Academic Block"
+                            data-description="Research notes, past questions, textbooks, and study guides for students."
+                            data-location="Cape Coast, Central Region"
+                            data-find-us="Cape Coast Academic &amp; Book Hub"
                             data-phone="+233 20 555 0199"
                             data-email="bookstore@bisa.edu.gh"
                             data-image="bisa-logo-full.png"
@@ -180,17 +186,17 @@
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Student Bookstore</h3>
-                                <p>Research notes, past questions & books...</p>
-                                <span class="location-tag">📍 Campus</span>
+                                <p>Notes, past questions &amp; textbooks...</p>
+                                <span class="location-tag">&#128205; Cape Coast, Central Region</span>
                                 <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
 
                         <article class="card explore-card"
                             data-business="Hostel Laundry Hub"
-                            data-description="Fast and reliable express laundry service with pickup and delivery to your hostel."
-                            data-location="Nearby"
-                            data-find-us="Nearby Hostel Zone Pickup Point"
+                            data-description="Fast and reliable express laundry service with pickup and drop-off."
+                            data-location="Cape Coast, Central Region"
+                            data-find-us="Cape Coast Hostel &amp; Residential Zone"
                             data-phone="+233 24 777 8899"
                             data-email="laundry@bisa.edu.gh"
                             data-image="bisa-logo-mark.png"
@@ -198,8 +204,8 @@
                             <div class="explore-img-box"></div>
                             <div class="explore-card-content">
                                 <h3>Hostel Laundry Hub</h3>
-                                <p>Fast and reliable express laundry service...</p>
-                                <span class="location-tag">📍 Nearby</span>
+                                <p>Express laundry pickup &amp; delivery...</p>
+                                <span class="location-tag">&#128205; Cape Coast, Central Region</span>
                                 <button type="button" class="button button-secondary card-btn contact-btn">Contact</button>
                             </div>
                         </article>
@@ -225,8 +231,8 @@
     <dialog id="connectPolicyModal" class="policy-modal">
         <div class="policy-content">
             <p class="policy-alert"><strong>Read Our Policy</strong></p>
-            <p class="policy-text">
-                Before viewing this campus business or service's contact details, location, and offerings, please note that BISA connects you with student and campus providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely on campus or at agreed public points.
+            <p class="policy-text" id="explorePolicyText">
+                Before viewing this business or service's contact details, location in Ghana, and offerings, please note that BISA connects you with student and local providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely in public or on-campus spots.
             </p>
             <div class="policy-actions">
                 <button type="button" class="btn-close" id="cancelPolicyBtn">Cancel</button>
@@ -271,90 +277,12 @@
         </div>
     </dialog>
 
-    <script>
-        const connectPolicyModal = document.getElementById('connectPolicyModal');
-        const contactModal = document.getElementById('contactModal');
-        const cancelPolicyBtn = document.getElementById('cancelPolicyBtn');
-        const agreePolicyBtn = document.getElementById('agreePolicyBtn');
-        const closeContactModalBtn = document.getElementById('closeContactModalBtn');
-        const doneContactModalBtn = document.getElementById('doneContactModalBtn');
-
-        let selectedCardData = null;
-
-        document.querySelectorAll('.contact-btn').forEach(btn => {
-            btn.addEventListener('click', function () {
-                const card = this.closest('.explore-card');
-                if (!card) return;
-
-                selectedCardData = {
-                    name: card.dataset.business || '',
-                    description: card.dataset.description || '',
-                    location: card.dataset.location || '',
-                    findUs: card.dataset.findUs || card.dataset.location || '',
-                    phone: card.dataset.phone || '',
-                    email: card.dataset.email || '',
-                    image: card.dataset.image || '',
-                    website: card.dataset.website || ''
-                };
-
-                connectPolicyModal.showModal();
-            });
-        });
-
-        cancelPolicyBtn.addEventListener('click', function () {
-            selectedCardData = null;
-            connectPolicyModal.close();
-        });
-
-        agreePolicyBtn.addEventListener('click', function () {
-            connectPolicyModal.close();
-            if (!selectedCardData) return;
-
-            document.getElementById('contactModalName').textContent = selectedCardData.name;
-            document.getElementById('contactModalLocation').textContent = selectedCardData.location ? `📍 ${selectedCardData.location}` : '';
-            document.getElementById('contactModalDescription').textContent = selectedCardData.description;
-            document.getElementById('contactModalFindUs').textContent = selectedCardData.findUs;
-
-            const imgEl = document.getElementById('contactModalImage');
-            if (selectedCardData.image) {
-                imgEl.src = selectedCardData.image;
-                imgEl.alt = selectedCardData.name;
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.style.display = 'none';
-            }
-
-            const phoneEl = document.getElementById('contactModalPhone');
-            const cleanTel = selectedCardData.phone.replace(/[^+\d]/g, '');
-            phoneEl.textContent = selectedCardData.phone;
-            phoneEl.href = cleanTel ? `tel:${cleanTel}` : '#';
-
-            const emailEl = document.getElementById('contactModalEmail');
-            emailEl.textContent = selectedCardData.email;
-            emailEl.href = selectedCardData.email ? `mailto:${selectedCardData.email}` : '#';
-
-            const websiteRow = document.getElementById('contactWebsiteRow');
-            const websiteEl = document.getElementById('contactModalWebsite');
-            if (selectedCardData.website) {
-                websiteEl.href = selectedCardData.website;
-                websiteRow.style.display = 'flex';
-            } else {
-                websiteRow.style.display = 'none';
-            }
-
-            contactModal.showModal();
-        });
-
-        closeContactModalBtn.addEventListener('click', () => contactModal.close());
-        doneContactModalBtn.addEventListener('click', () => contactModal.close());
-    </script>
-
     <!-- FOOTER -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
-                <p>Let's Do Business & Share Ideas.</p>
+                <h4><a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a></h4>
+                <p>Let's Do Business &amp; Share Ideas.</p>
             </div>
             <div class="footer-col">
                 <h4>Quick Links</h4>
@@ -376,43 +304,212 @@
                 </div>
             </div>
         </div>
-<div class="footer-bottom">
+        <div class="footer-bottom">
             <p>&copy; 2026 BISA. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Admin login via footer BISA logo
-        (function() {
-            const adminEmail = 'admin@bisa.edu.gh';
-            const footerAdminLink = document.getElementById('footer-admin-link');
-            
-            if (footerAdminLink) {
-                footerAdminLink.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    const { data: { session } } = await supabase.auth.getSession();
-                    
-                    if (session) {
-                        // User is logged in, show admin dashboard
-                        window.location.href = '/admin';
-                    } else {
-                        // Show login prompt
-                        const password = prompt('Enter admin credentials:\n\nAdmin Email: admin@bisa.edu.gh\n\nPassword:');
-                        if (password) {
-                            const { data, error } = await supabase.auth.signInWithPassword({
-                                email: adminEmail,
-                                password: password
-                            });
-                            if (error) {
-                                alert('Invalid credentials. Please try again.');
-                            } else {
-                                window.location.href = '/admin';
-                            }
-                        }
-                    }
+        (function () {
+            const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const CONFIG_KEY = 'bisa_admin_config_v1';
+            const connectPolicyModal = document.getElementById('connectPolicyModal');
+            const contactModal = document.getElementById('contactModal');
+            const cancelPolicyBtn = document.getElementById('cancelPolicyBtn');
+            const agreePolicyBtn = document.getElementById('agreePolicyBtn');
+            const closeContactModalBtn = document.getElementById('closeContactModalBtn');
+            const doneContactModalBtn = document.getElementById('doneContactModalBtn');
+            const resultsGrid = document.getElementById('exploreResultsGrid');
+
+            let selectedCardData = null;
+
+            function applySettings(cfg) {
+                if (!cfg) return;
+                if (cfg.brandName) {
+                    const siteLogo = document.getElementById('siteLogoText');
+                    const footerLink = document.getElementById('footerBrandLink');
+                    if (siteLogo) siteLogo.textContent = cfg.brandName;
+                    if (footerLink) footerLink.textContent = cfg.brandName;
+                }
+                if (cfg.mainHeadline) {
+                    const h1 = document.getElementById('exploreMainHeadline');
+                    if (h1) h1.textContent = cfg.mainHeadline;
+                }
+                if (cfg.heroSubtext) {
+                    const sub = document.getElementById('exploreHeroSubtext');
+                    if (sub) sub.textContent = cfg.heroSubtext;
+                }
+                if (cfg.exploreNotice) {
+                    const noticeEl = document.getElementById('explorePolicyText');
+                    if (noticeEl) noticeEl.textContent = cfg.exploreNotice;
+                }
+            }
+
+            function bindContactButtons() {
+                document.querySelectorAll('.contact-btn').forEach(btn => {
+                    if (btn.dataset.bound === 'true') return;
+                    btn.dataset.bound = 'true';
+                    btn.addEventListener('click', function () {
+                        const card = this.closest('.explore-card');
+                        if (!card) return;
+
+                        selectedCardData = {
+                            name: card.dataset.business || '',
+                            description: card.dataset.description || '',
+                            location: card.dataset.location || '',
+                            findUs: card.dataset.findUs || card.dataset.location || '',
+                            phone: card.dataset.phone || '',
+                            email: card.dataset.email || '',
+                            image: card.dataset.image || '',
+                            website: card.dataset.website || ''
+                        };
+
+                        connectPolicyModal.showModal();
+                    });
                 });
             }
+
+            function renderApprovedBusinesses(rows) {
+                if (!Array.isArray(rows) || !rows.length || !resultsGrid) return;
+
+                rows.forEach(biz => {
+                    if (resultsGrid.querySelector(`[data-supabase-id="${CSS.escape(String(biz.id))}"]`)) return;
+
+                    const article = document.createElement('article');
+                    article.className = 'card explore-card';
+                    article.dataset.supabaseId = String(biz.id);
+                    article.dataset.business = biz.name || '';
+                    article.dataset.description = biz.description || '';
+                    article.dataset.location = biz.location || 'Elmina, Central Region';
+                    article.dataset.findUs = biz.find_us || biz.location || 'Elmina, Central Region';
+                    article.dataset.phone = biz.phone || '';
+                    article.dataset.email = biz.email || '';
+                    article.dataset.image = biz.image_url || '';
+                    article.dataset.website = biz.website || '';
+
+                    const imgBox = document.createElement('div');
+                    imgBox.className = 'explore-img-box';
+
+                    const content = document.createElement('div');
+                    content.className = 'explore-card-content';
+
+                    const h3 = document.createElement('h3');
+                    h3.textContent = biz.name || '';
+
+                    const p = document.createElement('p');
+                    const desc = biz.description || '';
+                    p.textContent = desc.length > 52 ? desc.slice(0, 52) + '...' : desc;
+
+                    const locSpan = document.createElement('span');
+                    locSpan.className = 'location-tag';
+                    locSpan.textContent = `📍 ${biz.location || 'Elmina, Central Region'}`;
+
+                    const contactBtn = document.createElement('button');
+                    contactBtn.type = 'button';
+                    contactBtn.className = 'button button-secondary card-btn contact-btn';
+                    contactBtn.textContent = 'Contact';
+
+                    content.appendChild(h3);
+                    content.appendChild(p);
+                    content.appendChild(locSpan);
+                    content.appendChild(contactBtn);
+
+                    article.appendChild(imgBox);
+                    article.appendChild(content);
+                    resultsGrid.appendChild(article);
+                });
+
+                bindContactButtons();
+            }
+
+            async function syncSupabaseData() {
+                try {
+                    const cached = localStorage.getItem(CONFIG_KEY);
+                    if (cached) applySettings(JSON.parse(cached));
+                } catch (_) {}
+
+                try {
+                    const { data: settings } = await sb
+                        .from('bisa_settings')
+                        .select('*')
+                        .eq('id', 1)
+                        .maybeSingle();
+
+                    if (settings) {
+                        applySettings({
+                            brandName: settings.brand_name,
+                            mainHeadline: settings.main_headline,
+                            heroSubtext: settings.hero_subtext,
+                            exploreNotice: settings.explore_notice
+                        });
+                    }
+                } catch (_) {}
+
+                try {
+                    const { data: approvedRows } = await sb
+                        .from('bisa_businesses')
+                        .select('*')
+                        .eq('status', 'approved')
+                        .order('created_at', { ascending: false });
+
+                    if (approvedRows) renderApprovedBusinesses(approvedRows);
+                } catch (_) {}
+            }
+
+            cancelPolicyBtn.addEventListener('click', function () {
+                selectedCardData = null;
+                connectPolicyModal.close();
+            });
+
+            agreePolicyBtn.addEventListener('click', function () {
+                connectPolicyModal.close();
+                if (!selectedCardData) return;
+
+                document.getElementById('contactModalName').textContent = selectedCardData.name;
+                document.getElementById('contactModalLocation').textContent = selectedCardData.location ? `📍 ${selectedCardData.location}` : '';
+                document.getElementById('contactModalDescription').textContent = selectedCardData.description;
+                document.getElementById('contactModalFindUs').textContent = selectedCardData.findUs;
+
+                const imgEl = document.getElementById('contactModalImage');
+                if (selectedCardData.image) {
+                    imgEl.src = selectedCardData.image;
+                    imgEl.alt = selectedCardData.name;
+                    imgEl.style.display = 'block';
+                } else {
+                    imgEl.style.display = 'none';
+                }
+
+                const phoneEl = document.getElementById('contactModalPhone');
+                const cleanTel = selectedCardData.phone.replace(/[^+\d]/g, '');
+                phoneEl.textContent = selectedCardData.phone || 'Not provided';
+                phoneEl.href = cleanTel ? `tel:${cleanTel}` : '#';
+
+                const emailEl = document.getElementById('contactModalEmail');
+                emailEl.textContent = selectedCardData.email || 'Not provided';
+                emailEl.href = selectedCardData.email ? `mailto:${selectedCardData.email}` : '#';
+
+                const websiteRow = document.getElementById('contactWebsiteRow');
+                const websiteEl = document.getElementById('contactModalWebsite');
+                if (selectedCardData.website) {
+                    websiteEl.href = selectedCardData.website;
+                    websiteRow.style.display = 'flex';
+                } else {
+                    websiteRow.style.display = 'none';
+                }
+
+                contactModal.showModal();
+            });
+
+            closeContactModalBtn.addEventListener('click', () => contactModal.close());
+            doneContactModalBtn.addEventListener('click', () => contactModal.close());
+
+            bindContactButtons();
+            syncSupabaseData();
         })();
     </script>
+
 </body>
 </html>
