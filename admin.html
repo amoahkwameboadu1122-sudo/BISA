@@ -13,142 +13,6 @@
             'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
         );
     </script>
-    <style>
-        /* Scoped enhancements inside #contactModal while keeping style.css intact */
-        #contactModal .contact-modal-content {
-            max-width: 560px;
-            width: 100%;
-        }
-
-        #contactModal .biz-modal-slideshow {
-            position: relative;
-            width: 100%;
-            height: 220px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 14px;
-            background: #f4ece1;
-        }
-
-        #contactModal .biz-modal-slides-track {
-            display: flex;
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
-
-        #contactModal .biz-modal-slide {
-            min-width: 100%;
-            height: 100%;
-        }
-
-        #contactModal .biz-modal-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        #contactModal .biz-slide-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: rgba(84, 35, 74, 0.85);
-            color: #fff;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            line-height: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #contactModal .biz-slide-arrow:hover {
-            background: #F16B4B;
-        }
-
-        #contactModal .biz-slide-prev {
-            left: 10px;
-        }
-
-        #contactModal .biz-slide-next {
-            right: 10px;
-        }
-
-        #contactModal .biz-slide-dots {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 4px 8px;
-            border-radius: 999px;
-        }
-
-        #contactModal .biz-slide-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            border: none;
-            padding: 0;
-            background: rgba(255, 255, 255, 0.55);
-            cursor: pointer;
-        }
-
-        #contactModal .biz-slide-dot.active {
-            background: #FFB02E;
-            transform: scale(1.15);
-        }
-
-        #contactModal .contact-modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-        }
-
-        #contactModal .contact-detail-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            background: #fff9ef;
-            border: 1px solid rgba(84, 35, 74, 0.14);
-        }
-
-        #contactModal .copy-detail-btn {
-            border: 1px solid #54234A;
-            background: #fff;
-            color: #54234A;
-            border-radius: 6px;
-            padding: 3px 8px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        #contactModal .copy-detail-btn:hover {
-            background: #54234A;
-            color: #fff;
-        }
-
-        #contactModal .contact-quick-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-    </style>
 </head>
 <body>
 
@@ -375,59 +239,32 @@
     <dialog id="contactModal" class="policy-modal">
         <div class="policy-content contact-modal-content">
             <button type="button" class="modal-close-btn" id="closeContactModalBtn" aria-label="Close modal">&times;</button>
-
-            <!-- Business Images Slideshow -->
-            <div class="biz-modal-slideshow" id="bizModalSlideshow">
-                <div class="biz-modal-slides-track" id="bizModalSlidesTrack"></div>
-                <button type="button" class="biz-slide-arrow biz-slide-prev" id="bizSlidePrevBtn" aria-label="Previous image">&#10094;</button>
-                <button type="button" class="biz-slide-arrow biz-slide-next" id="bizSlideNextBtn" aria-label="Next image">&#10095;</button>
-                <div class="biz-slide-dots" id="bizSlideDots"></div>
-            </div>
-
             <div class="contact-modal-header">
-                <h3 id="contactModalName" class="contact-modal-name"></h3>
-                <span id="contactModalLocation" class="location-tag"></span>
+                <img id="contactModalImage" src="" alt="" class="contact-modal-image">
+                <div>
+                    <h3 id="contactModalName" class="contact-modal-name"></h3>
+                    <span id="contactModalLocation" class="location-tag"></span>
+                </div>
             </div>
-
             <p id="contactModalDescription" class="contact-modal-description"></p>
-
             <div class="contact-modal-details">
-                <div class="contact-detail contact-detail-box">
-                    <div>
-                        <span class="contact-label">Where to find service:</span>
-                        <span id="contactModalFindUs" class="contact-value"></span>
-                    </div>
+                <div class="contact-detail">
+                    <span class="contact-label">Where to find service:</span>
+                    <span id="contactModalFindUs" class="contact-value"></span>
                 </div>
-
-                <div class="contact-detail contact-detail-box">
-                    <div>
-                        <span class="contact-label">Tel / Phone:</span>
-                        <a id="contactModalPhone" href="#" class="contact-link"></a>
-                    </div>
-                    <button type="button" class="copy-detail-btn" id="copyPhoneBtn">Copy</button>
+                <div class="contact-detail">
+                    <span class="contact-label">Tel / Phone:</span>
+                    <a id="contactModalPhone" href="#" class="contact-link"></a>
                 </div>
-
-                <div class="contact-detail contact-detail-box">
-                    <div>
-                        <span class="contact-label">Email:</span>
-                        <a id="contactModalEmail" href="#" class="contact-link"></a>
-                    </div>
-                    <button type="button" class="copy-detail-btn" id="copyEmailBtn">Copy</button>
+                <div class="contact-detail">
+                    <span class="contact-label">Email:</span>
+                    <a id="contactModalEmail" href="#" class="contact-link"></a>
                 </div>
-
-                <div class="contact-detail contact-detail-box" id="contactWebsiteRow" style="display: none;">
-                    <div>
-                        <span class="contact-label">Main Page:</span>
-                        <a id="contactModalWebsite" href="#" target="_blank" rel="noopener noreferrer" class="contact-link">Visit Main Page</a>
-                    </div>
+                <div class="contact-detail" id="contactWebsiteRow" style="display: none;">
+                    <span class="contact-label">Main Page:</span>
+                    <a id="contactModalWebsite" href="#" target="_blank" rel="noopener noreferrer" class="contact-link">Visit Main Page</a>
                 </div>
             </div>
-
-            <div class="contact-quick-actions">
-                <a id="quickCallLink" href="#" class="button button-primary">Call Now</a>
-                <a id="quickWebsiteLink" href="#" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="display: none;">Open Main Page</a>
-            </div>
-
             <div class="contact-modal-actions">
                 <button type="button" class="btn-close" id="doneContactModalBtn">Close</button>
             </div>
@@ -442,36 +279,140 @@
         const closeContactModalBtn = document.getElementById('closeContactModalBtn');
         const doneContactModalBtn = document.getElementById('doneContactModalBtn');
 
-        const bizModalSlideshow = document.getElementById('bizModalSlideshow');
-        const bizModalSlidesTrack = document.getElementById('bizModalSlidesTrack');
-        const bizSlidePrevBtn = document.getElementById('bizSlidePrevBtn');
-        const bizSlideNextBtn = document.getElementById('bizSlideNextBtn');
-        const bizSlideDots = document.getElementById('bizSlideDots');
-
         let selectedCardData = null;
-        let modalSlides = [];
-        let modalSlideIndex = 0;
 
-        function parseImages(rawImage) {
-            if (!rawImage) return [];
-            if (Array.isArray(rawImage)) return rawImage.filter(Boolean);
-            return String(rawImage)
-                .split(',')
-                .map(s => s.trim())
-                .filter(Boolean);
-        }
+        document.querySelectorAll('.contact-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const card = this.closest('.explore-card');
+                if (!card) return;
 
-        function renderModalSlideshow(images, businessName) {
-            modalSlides = images;
-            modalSlideIndex = 0;
+                selectedCardData = {
+                    name: card.dataset.business || '',
+                    description: card.dataset.description || '',
+                    location: card.dataset.location || '',
+                    findUs: card.dataset.findUs || card.dataset.location || '',
+                    phone: card.dataset.phone || '',
+                    email: card.dataset.email || '',
+                    image: card.dataset.image || '',
+                    website: card.dataset.website || ''
+                };
 
-            if (!modalSlides.length) {
-                bizModalSlideshow.style.display = 'none';
-                return;
+                connectPolicyModal.showModal();
+            });
+        });
+
+        cancelPolicyBtn.addEventListener('click', function () {
+            selectedCardData = null;
+            connectPolicyModal.close();
+        });
+
+        agreePolicyBtn.addEventListener('click', function () {
+            connectPolicyModal.close();
+            if (!selectedCardData) return;
+
+            document.getElementById('contactModalName').textContent = selectedCardData.name;
+            document.getElementById('contactModalLocation').textContent = selectedCardData.location ? `📍 ${selectedCardData.location}` : '';
+            document.getElementById('contactModalDescription').textContent = selectedCardData.description;
+            document.getElementById('contactModalFindUs').textContent = selectedCardData.findUs;
+
+            const imgEl = document.getElementById('contactModalImage');
+            if (selectedCardData.image) {
+                imgEl.src = selectedCardData.image;
+                imgEl.alt = selectedCardData.name;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
             }
 
-            bizModalSlideshow.style.display = 'block';
-            bizModalSlidesTrack.innerHTML = modalSlides
-                .map((src, idx) => `
-                    <div class="biz-modal-slide">
-                        <img src="${src}" alt="${businessName} image
+            const phoneEl = document.getElementById('contactModalPhone');
+            const cleanTel = selectedCardData.phone.replace(/[^+\d]/g, '');
+            phoneEl.textContent = selectedCardData.phone;
+            phoneEl.href = cleanTel ? `tel:${cleanTel}` : '#';
+
+            const emailEl = document.getElementById('contactModalEmail');
+            emailEl.textContent = selectedCardData.email;
+            emailEl.href = selectedCardData.email ? `mailto:${selectedCardData.email}` : '#';
+
+            const websiteRow = document.getElementById('contactWebsiteRow');
+            const websiteEl = document.getElementById('contactModalWebsite');
+            if (selectedCardData.website) {
+                websiteEl.href = selectedCardData.website;
+                websiteRow.style.display = 'flex';
+            } else {
+                websiteRow.style.display = 'none';
+            }
+
+            contactModal.showModal();
+        });
+
+        closeContactModalBtn.addEventListener('click', () => contactModal.close());
+        doneContactModalBtn.addEventListener('click', () => contactModal.close());
+    </script>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
+                <p>Let's Do Business & Share Ideas.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="explore.html">Explore</a>
+                <a href="business.html">List Your Business</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="footer-col">
+                <h4>Socials</h4>
+                <div class="social-circles">
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                </div>
+            </div>
+        </div>
+<div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Admin login via footer BISA logo
+        (function() {
+            const adminEmail = 'admin@bisa.edu.gh';
+            const footerAdminLink = document.getElementById('footer-admin-link');
+            
+            if (footerAdminLink) {
+                footerAdminLink.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    const { data: { session } } = await supabase.auth.getSession();
+                    
+                    if (session) {
+                        // User is logged in, show admin dashboard
+                        window.location.href = '/admin';
+                    } else {
+                        // Show login prompt
+                        const password = prompt('Enter admin credentials:\n\nAdmin Email: admin@bisa.edu.gh\n\nPassword:');
+                        if (password) {
+                            const { data, error } = await supabase.auth.signInWithPassword({
+                                email: adminEmail,
+                                password: password
+                            });
+                            if (error) {
+                                alert('Invalid credentials. Please try again.');
+                            } else {
+                                window.location.href = '/admin';
+                            }
+                        }
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
