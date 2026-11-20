@@ -124,7 +124,7 @@
                         <input type="email" id="bizEmail" class="input" placeholder="vendor@example.com" required>
                     </div>
 
-                    <!-- HTML: Optional link field (type="text" avoids strict URL validation blocks if left blank or entered without scheme) -->
+                    <!-- HTML: Optional link field -->
                     <div class="form-group">
                         <label for="bizWebsite" class="form-label">Main Page / Link (Optional)</label>
                         <input type="text" id="bizWebsite" class="input" placeholder="Optional — leave blank if you don't have one">
@@ -150,7 +150,7 @@
         </section>
     </main>
 
-    <!-- HTML: Vendor Policy Modal -->
+    <!-- HTML: Vendor Policy Modal (shown on page load and again when clicking Submit) -->
     <dialog id="vendorPolicyModal" class="policy-modal">
         <div class="policy-content">
             <p class="policy-alert"><strong>Vendor Listing Policy</strong></p>
@@ -158,7 +158,7 @@
                 All business listings are reviewed by BISA administrators before appearing publicly on Explore. Provide accurate contact details, pricing terms, and safe meetup or service locations.
             </p>
             <div class="policy-actions">
-                <a href="explore.html" class="btn-close">Back to Explore</a>
+                <button type="button" class="btn-close" id="closeVendorPolicyBtn">Cancel</button>
                 <button type="button" class="btn-agree" id="acceptVendorPolicyBtn">I Agree</button>
             </div>
         </div>
@@ -197,7 +197,7 @@
     </footer>
 
     <script>
-        // JS: Handles optional link, optional multi-image upload, and 24-hour approval message
+        // JS: Shows policy modal on every visit and again on submit, with quota-safe caching and 24h approval notice
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
@@ -210,11 +210,15 @@
             const APPROVAL_NOTICE_MSG = 'Your details have been sent for approval within 24 hours.';
 
             const vendorPolicyModal = document.getElementById('vendorPolicyModal');
+            const closeVendorPolicyBtn = document.getElementById('closeVendorPolicyBtn');
             const acceptVendorPolicyBtn = document.getElementById('acceptVendorPolicyBtn');
             const businessForm = document.getElementById('businessSubmissionForm');
             const feedbackEl = document.getElementById('businessFormFeedback');
             const fileInput = document.getElementById('bizImageFiles');
             const selectedFilesList = document.getElementById('selectedFilesList');
+
+            // JS: Tracks whether the modal was opened on page load ('visit') or on form submit ('submit')
+            let policyModalMode = 'visit';
 
             function showFeedback(msg, type = 'success') {
                 feedbackEl.textContent = msg;
@@ -264,6 +268,50 @@
                 return `https://${trimmed}`;
             }
 
+            function saveBusinessesCacheSafely(records) {
+                const list = Array.isArray(records) ? records : [];
+                const sanitized = list.slice(0, 20).map(item => {
+                    const safeImg = item.image_url && String(item.image_url).startsWith('data:')
+                        ? null
+                        : (item.image_url || null);
+                    const safeImages = item.images
+                        ? String(item.images)
+                            .split(',')
+                            .map(u => u.trim())
+                            .filter(u => u && !u.startsWith('data:'))
+                            .join(',')
+                        : '';
+                    return {
+                        ...item,
+                        image_url: safeImg,
+                        images: safeImages
+                    };
+                });
+
+                try {
+                    localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(sanitized));
+                } catch (_) {
+                    try {
+                        localStorage.removeItem(LS_BUSINESSES_KEY);
+                        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(sanitized.slice(0, 5)));
+                    } catch (_) {
+                        try {
+                            localStorage.removeItem(LS_BUSINESSES_KEY);
+                        } catch (__) {}
+                    }
+                }
+            }
+
+            function readBusinessesCacheSafely() {
+                try {
+                    const raw = localStorage.getItem(LS_BUSINESSES_KEY);
+                    const parsed = raw ? JSON.parse(raw) : [];
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (_) {
+                    return [];
+                }
+            }
+
             async function loadBusinessNotice() {
                 try {
                     const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY) || 'null');
@@ -291,18 +339,21 @@
                 } catch (_) {}
             }
 
-            if (vendorPolicyModal && typeof vendorPolicyModal.showModal === 'function') {
-                if (!sessionStorage.getItem('bisa_vendor_policy_accepted')) {
+            function openPolicyModal(mode) {
+                policyModalMode = mode;
+                if (mode === 'submit') {
+                    closeVendorPolicyBtn.textContent = 'Cancel';
+                    acceptVendorPolicyBtn.textContent = 'I Agree & Submit';
+                } else {
+                    closeVendorPolicyBtn.textContent = 'Back to Explore';
+                    acceptVendorPolicyBtn.textContent = 'I Agree';
+                }
+                if (vendorPolicyModal && typeof vendorPolicyModal.showModal === 'function' && !vendorPolicyModal.open) {
                     vendorPolicyModal.showModal();
                 }
-                acceptVendorPolicyBtn.addEventListener('click', () => {
-                    sessionStorage.setItem('bisa_vendor_policy_accepted', '1');
-                    vendorPolicyModal.close();
-                });
             }
 
-            businessForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+            async function executeBusinessSubmission() {
                 const submitBtn = document.getElementById('submitBusinessBtn');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Submitting...';
@@ -344,20 +395,16 @@
                         created_at: new Date().toISOString()
                     };
 
-                    const localList = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
+                    const localList = readBusinessesCacheSafely();
                     localList.unshift(record);
-                    localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(localList));
+                    saveBusinessesCacheSafely(localList);
 
                     const dbPayload = { ...record };
                     delete dbPayload.id;
 
-                    const { error } = await sb.from('bisa_businesses').insert(dbPayload);
-                    if (error) {
-                        showFeedback(APPROVAL_NOTICE_MSG, 'success');
-                    } else {
-                        showFeedback(APPROVAL_NOTICE_MSG, 'success');
-                    }
+                    await sb.from('bisa_businesses').insert(dbPayload);
 
+                    showFeedback(APPROVAL_NOTICE_MSG, 'success');
                     businessForm.reset();
                     selectedFilesList.innerHTML = '';
                 } catch (err) {
@@ -365,6 +412,29 @@
                 } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Submit for Admin Review';
+                }
+            }
+
+            // JS: Show policy notice every time a user opens/clicks onto business.html
+            openPolicyModal('visit');
+
+            // JS: Clicking "Submit for Admin Review" pops up the policy notice again before sending
+            businessForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                openPolicyModal('submit');
+            });
+
+            closeVendorPolicyBtn.addEventListener('click', () => {
+                vendorPolicyModal.close();
+                if (policyModalMode === 'visit') {
+                    window.location.href = 'explore.html';
+                }
+            });
+
+            acceptVendorPolicyBtn.addEventListener('click', async () => {
+                vendorPolicyModal.close();
+                if (policyModalMode === 'submit') {
+                    await executeBusinessSubmission();
                 }
             });
 
