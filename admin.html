@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- HTML: Document metadata and responsive viewport setup -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BISA Admin Portal</title>
@@ -8,8 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- JS: Loads Supabase v2 client SDK from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    /* CSS: BISA brand variables and layout styles for the admin console */
     :root {
       --plum: #54234A;
       --plum-dark: #3d1836;
@@ -35,7 +38,6 @@
       min-height: 100vh;
     }
 
-    /* Login View */
     .login-wrapper {
       min-height: 100vh;
       display: flex;
@@ -67,7 +69,7 @@
       margin-bottom: 1.5rem;
     }
 
-    /* Logged-in Top Bar (Brand + Log Out ONLY) */
+    /* CSS: Logged-in top bar keeps only brand label and Log Out action */
     .admin-topbar {
       background: var(--plum);
       color: #fff;
@@ -95,7 +97,6 @@
       margin-left: 0.5rem;
     }
 
-    /* Layout & Tabs */
     .admin-container {
       max-width: 1240px;
       margin: 0 auto;
@@ -136,7 +137,6 @@
       display: block;
     }
 
-    /* Cards & Forms */
     .panel-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -206,7 +206,6 @@
       resize: vertical;
     }
 
-    /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -257,7 +256,6 @@
       font-size: 0.8rem;
     }
 
-    /* Status Toast */
     .status-banner {
       padding: 0.75rem 1rem;
       border-radius: 9px;
@@ -283,7 +281,6 @@
       border: 1px solid #f5b5b0;
     }
 
-    /* Business Moderation Cards */
     .biz-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -374,13 +371,51 @@
 
     .biz-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.5rem;
       padding: 0.85rem 1rem;
       border-top: 1px solid var(--border);
       background: #fcfaf7;
     }
 
-    /* Media & Category Asset Grids */
+    /* CSS: Modal dialog used to edit/modify any business listing */
+    dialog.edit-biz-dialog {
+      margin: auto;
+      border: 2px solid var(--plum);
+      border-radius: 16px;
+      padding: 0;
+      width: min(94vw, 640px);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--surface);
+      box-shadow: 0 22px 50px rgba(38, 20, 34, 0.3);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    dialog.edit-biz-dialog::backdrop {
+      background: rgba(38, 20, 34, 0.65);
+      backdrop-filter: blur(3px);
+    }
+
+    .edit-biz-header {
+      background: var(--plum);
+      color: #fff;
+      padding: 1rem 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .edit-biz-header h3 {
+      color: var(--gold);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .edit-biz-body {
+      padding: 1.35rem;
+    }
+
     .media-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -447,11 +482,11 @@
       border-radius: 12px;
       border: 1px solid var(--border);
       background: #fff;
-      object-fit: cover;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .category-slot-preview img {
@@ -496,7 +531,7 @@
 </head>
 <body>
 
-  <!-- LOGIN VIEW -->
+  <!-- HTML: Supabase Auth Login Screen -->
   <section id="loginView" class="login-wrapper">
     <div class="login-card">
       <h1>BISA Admin</h1>
@@ -505,7 +540,7 @@
       <form id="loginForm">
         <div class="form-group">
           <label for="adminEmail">Admin Email</label>
-          <input type="email" id="adminEmail" placeholder="admin@bisa.com" required />
+          <input type="email" id="adminEmail" placeholder="admin@bisa.edu.gh" required />
         </div>
         <div class="form-group">
           <label for="adminPassword">Password</label>
@@ -516,7 +551,7 @@
     </div>
   </section>
 
-  <!-- LOGGED-IN DASHBOARD (NO NAV LINKS, NO FOOTER) -->
+  <!-- HTML: Authenticated Admin Console (brand label + Log Out only; no nav bar or footer) -->
   <section id="dashboardView" class="hidden">
     <header class="admin-topbar">
       <div class="admin-brand" id="topbarBrandLabel">BISA <span>Admin Console</span></div>
@@ -535,17 +570,17 @@
         <button type="button" class="tab-btn" data-tab="noticesTab">Policy Notices</button>
       </div>
 
-      <!-- TAB 1: BUSINESS LISTINGS & IMAGE MODERATION -->
+      <!-- TAB 1: BUSINESS LISTINGS, MODIFY/UPDATE & IMAGE MODERATION -->
       <div id="businessesTab" class="tab-panel active">
         <div class="panel-card">
           <h2>Pending Vendor Submissions</h2>
-          <p class="panel-sub">Review vendor-uploaded business images (Accept, Change/Replace, or Remove) before approving or rejecting listings.</p>
+          <p class="panel-sub">Modify details, review vendor-uploaded business images (Accept, Change/Replace, or Remove), and approve or reject listings.</p>
           <div id="pendingBusinessList" class="biz-grid"></div>
         </div>
 
         <div class="panel-card">
           <h2>Approved &amp; Rejected Listings</h2>
-          <p class="panel-sub">Manage live businesses, swap or remove their photos, or update approval status.</p>
+          <p class="panel-sub">Modify any existing business listing, swap or remove its photos, or change its approval status.</p>
           <div id="reviewedBusinessList" class="biz-grid"></div>
         </div>
       </div>
@@ -575,13 +610,13 @@
             </div>
 
             <div class="form-group">
-              <label for="mainHeadlineInput">Homepage Main Headline</label>
-              <input type="text" id="mainHeadlineInput" placeholder="Business, Ideas, Sharing and Action" required />
+              <label for="mainHeadlineInput">Main Headline</label>
+              <input type="text" id="mainHeadlineInput" placeholder="Let's Do Business &amp; Share Ideas" required />
             </div>
 
             <div class="form-group">
-              <label for="heroSubtextInput">Homepage Hero Subtext</label>
-              <textarea id="heroSubtextInput" placeholder="Your campus marketplace for buying, selling, and connecting."></textarea>
+              <label for="heroSubtextInput">Hero Subtext</label>
+              <textarea id="heroSubtextInput" placeholder="Discover student-run businesses, creative services, and campus products all in one place."></textarea>
             </div>
 
             <div class="form-grid">
@@ -626,11 +661,11 @@
             <div class="form-grid">
               <div class="form-group">
                 <label for="slideTitleInput">Slide Headline / Caption</label>
-                <input type="text" id="slideTitleInput" placeholder="Discover Campus Startups & Services" />
+                <input type="text" id="slideTitleInput" placeholder="Campus Fresh Chop" />
               </div>
               <div class="form-group">
                 <label for="slideSubtitleInput">Slide Subcaption</label>
-                <input type="text" id="slideSubtitleInput" placeholder="Connect directly with student entrepreneurs" />
+                <input type="text" id="slideSubtitleInput" placeholder="Fresh meals &amp; snacks across campus" />
               </div>
             </div>
             <button type="submit" class="btn btn-primary">Add Slide</button>
@@ -647,13 +682,13 @@
       <div id="siteAssetsTab" class="tab-panel">
         <div class="panel-card">
           <h2>Category Icons &amp; Images</h2>
-          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category on the homepage and explore filters.</p>
+          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category.</p>
           <div id="categorySlotsContainer" class="category-slot-grid"></div>
         </div>
 
         <div class="panel-card">
           <h2>Site Area Banners &amp; Promo Flyers</h2>
-          <p class="panel-sub">Upload icons, promotional flyers, or default fallback images for site sections (excluding vendor business registration, where vendors upload their own photo).</p>
+          <p class="panel-sub">Upload icons, promotional flyers, or default fallback images for site sections (excluding vendor registration, where vendors upload their own photo).</p>
           <div id="siteBannersContainer" class="category-slot-grid"></div>
         </div>
       </div>
@@ -725,29 +760,96 @@
     </main>
   </section>
 
+  <!-- HTML: Modal dialog allowing admin to modify & update any business record -->
+  <dialog id="editBusinessModal" class="edit-biz-dialog" aria-labelledby="editBizModalTitle">
+    <div class="edit-biz-header">
+      <h3 id="editBizModalTitle">Modify Business Listing</h3>
+      <button type="button" class="btn btn-gold btn-sm" id="closeEditBizModalBtn">&times;</button>
+    </div>
+    <div class="edit-biz-body">
+      <form id="editBusinessForm">
+        <input type="hidden" id="editBizId" />
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizName">Business Name</label>
+            <input type="text" id="editBizName" required />
+          </div>
+          <div class="form-group">
+            <label for="editBizCategory">Category</label>
+            <input type="text" id="editBizCategory" placeholder="e.g., Services, Products, Businesses" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizLocation">Location</label>
+            <input type="text" id="editBizLocation" placeholder="e.g., Elmina, Central Region" />
+          </div>
+          <div class="form-group">
+            <label for="editBizFindUs">Where to Find Service</label>
+            <input type="text" id="editBizFindUs" placeholder="e.g., Campus Hub / Main Road" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizPhone">Tel / Phone</label>
+            <input type="text" id="editBizPhone" placeholder="+233 ..." />
+          </div>
+          <div class="form-group">
+            <label for="editBizEmail">Email</label>
+            <input type="email" id="editBizEmail" placeholder="vendor@bisa.edu.gh" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizWebsite">Main Page / Website (Optional)</label>
+            <input type="url" id="editBizWebsite" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label for="editBizStatus">Approval Status</label>
+            <select id="editBizStatus">
+              <option value="pending">pending</option>
+              <option value="approved">approved</option>
+              <option value="rejected">rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editBizDescription">Description</label>
+          <textarea id="editBizDescription" rows="3"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" id="cancelEditBizBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Business Changes</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
   <script>
-    // =========================================================================
-    // 1. SUPABASE INITIALIZATION
-    // =========================================================================
+    // JS: Supabase client setup and storage/cache constants
     const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
     const STORAGE_BUCKET = 'bisa-media';
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // LocalStorage Fallback Keys
     const LS_SETTINGS_KEY = 'bisa_settings_cache';
+    const LS_CONFIG_KEY = 'bisa_admin_config_v1';
     const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
     const LS_MEDIA_KEY = 'bisa_media_cache';
 
     const DEFAULT_CATEGORIES = [
-      'Food & Drinks',
-      'Fashion & Beauty',
-      'Tech & Gadgets',
-      'Academic & Tutoring',
-      'Graphics & Media',
-      'Events & Logistics',
-      'Repairs & Services'
+      'Food & Snacks',
+      'Graphics & Art',
+      'Web & Tech',
+      'Books & Notes',
+      'Laundry',
+      'Campus Services'
     ];
 
     const SITE_BANNER_SLOTS = [
@@ -760,11 +862,11 @@
     let currentSettings = {
       id: 1,
       brand_name: 'BISA',
-      main_headline: 'Business, Ideas, Sharing and Action',
-      hero_subtext: 'Your campus marketplace for buying, selling, and connecting.',
+      main_headline: "Let's Do Business & Share Ideas",
+      hero_subtext: 'Discover student-run businesses, creative services, and campus products all in one place.',
       logo_url: '',
       logo_placement: 'header-left',
-      explore_notice: 'Please verify seller details and meet in safe, public campus locations before making payments.',
+      explore_notice: 'Before viewing this business or service\'s contact details, location, and offerings, please note that BISA connects you with student and local providers.',
       business_notice: 'All business listings are reviewed by BISA administrators before appearing publicly on Explore.',
       slideshow: [],
       category_media: {},
@@ -774,9 +876,7 @@
     let allBusinesses = [];
     let mediaLibrary = [];
 
-    // =========================================================================
-    // 2. UI HELPERS & ALERTS
-    // =========================================================================
+    // JS: Helper to display transient feedback banners
     function showAlert(elementId, message, type = 'success') {
       const el = document.getElementById(elementId);
       if (!el) return;
@@ -787,6 +887,7 @@
       }, 4500);
     }
 
+    // JS: Escapes untrusted strings before inserting into HTML template literals
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
       return String(str)
@@ -797,7 +898,7 @@
         .replace(/'/g, '&#039;');
     }
 
-    // Tab Navigation
+    // JS: Switches between dashboard tabs
     document.querySelectorAll('.tab-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
@@ -807,9 +908,7 @@
       });
     });
 
-    // =========================================================================
-    // 3. SUPABASE AUTHENTICATION
-    // =========================================================================
+    // JS: Supabase Auth session check, sign-in, and sign-out handlers
     const loginView = document.getElementById('loginView');
     const dashboardView = document.getElementById('dashboardView');
 
@@ -860,9 +959,7 @@
       await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary()]);
     }
 
-    // =========================================================================
-    // 4. STORAGE UPLOAD HELPER (SUPABASE + LOCAL FALLBACK)
-    // =========================================================================
+    // JS: Converts selected image file to base64 data URL for localStorage fallback
     function fileToDataUrl(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -872,6 +969,7 @@
       });
     }
 
+    // JS: Uploads file to Supabase Storage bucket `bisa-media` with localStorage fallback
     async function uploadFileToMedia(file, category = 'Image') {
       const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const folder = category.toLowerCase();
@@ -919,11 +1017,9 @@
       localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached.slice(0, 100)));
     }
 
-    // =========================================================================
-    // 5. SETTINGS SYNC (bisa_settings row id = 1)
-    // =========================================================================
+    // JS: Loads and saves `bisa_settings` (row id = 1) with localStorage fallback
     async function loadSettings() {
-      const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || 'null');
+      const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY) || 'null');
       if (cached) {
         currentSettings = { ...currentSettings, ...cached };
       }
@@ -951,6 +1047,20 @@
     async function saveSettings(partialUpdates, successMessage = 'Settings saved.') {
       currentSettings = { ...currentSettings, ...partialUpdates, id: 1 };
       localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
+      localStorage.setItem(LS_CONFIG_KEY, JSON.stringify({
+        brandName: currentSettings.brand_name,
+        mainHeadline: currentSettings.main_headline,
+        heroSubtext: currentSettings.hero_subtext,
+        activeLogo: currentSettings.logo_url,
+        logoPlacement: currentSettings.logo_placement,
+        exploreNotice: currentSettings.explore_notice,
+        businessNotice: currentSettings.business_notice,
+        slides: currentSettings.slideshow.map((s) => ({
+          title: s.title || '',
+          caption: s.subtitle || s.caption || '',
+          image: s.image_url || s.image || ''
+        }))
+      }));
 
       const payload = {
         id: 1,
@@ -1004,7 +1114,6 @@
       renderCategoryAndSiteAssets();
     }
 
-    // Branding Form Submit
     document.getElementById('brandingForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       let logoUrl = document.getElementById('activeLogoUrlInput').value.trim();
@@ -1033,7 +1142,6 @@
       await saveSettings({ logo_url: '' }, 'Active logo removed.');
     });
 
-    // Notices Form Submit
     document.getElementById('noticesForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       await saveSettings(
@@ -1045,9 +1153,7 @@
       );
     });
 
-    // =========================================================================
-    // 6. HERO SLIDESHOW MANAGEMENT
-    // =========================================================================
+    // JS: Hero slideshow creation, editing, image replacement, and deletion
     document.getElementById('addSlideForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const file = document.getElementById('slideFileInput').files[0];
@@ -1088,10 +1194,10 @@
         .map(
           (slide, idx) => `
         <div class="slide-row">
-          <img src="${escapeHtml(slide.image_url)}" alt="Slide ${idx + 1}" />
+          <img src="${escapeHtml(slide.image_url || slide.image || '')}" alt="Slide ${idx + 1}" />
           <div style="display: grid; gap: 0.45rem;">
             <input type="text" value="${escapeHtml(slide.title || '')}" placeholder="Slide Title" data-slide-field="title" data-idx="${idx}" />
-            <input type="text" value="${escapeHtml(slide.subtitle || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
+            <input type="text" value="${escapeHtml(slide.subtitle || slide.caption || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
             <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
               <label class="btn btn-outline btn-sm" style="cursor: pointer;">
                 Replace Image
@@ -1139,9 +1245,7 @@
       });
     }
 
-    // =========================================================================
-    // 7. CATEGORY ICONS & SITE AREA IMAGES
-    // =========================================================================
+    // JS: Category icon slots and site banner/flyer asset slots
     function renderCategoryAndSiteAssets() {
       const catContainer = document.getElementById('categorySlotsContainer');
       const catMedia = currentSettings.category_media || {};
@@ -1191,7 +1295,6 @@
         });
       });
 
-      // Site Banner / Flyer Slots
       const bannerContainer = document.getElementById('siteBannersContainer');
       const siteAssets = currentSettings.site_assets || {};
 
@@ -1242,10 +1345,7 @@
       });
     }
 
-    // =========================================================================
-    // 8. BUSINESS LISTING APPROVALS & VENDOR IMAGE MODERATION
-    //    (Accept Vendor Image / Change Vendor Image / Remove Vendor Image)
-    // =========================================================================
+    // JS: Business listing loading, modifying/updating, image moderation, and status updates
     async function loadBusinesses() {
       const cached = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
       if (cached.length) allBusinesses = cached;
@@ -1284,6 +1384,50 @@
       renderBusinesses();
     }
 
+    // JS: Edit Business modal logic
+    const editBusinessModal = document.getElementById('editBusinessModal');
+    const editBusinessForm = document.getElementById('editBusinessForm');
+
+    function openEditBusinessModal(biz) {
+      document.getElementById('editBizId').value = biz.id;
+      document.getElementById('editBizName').value = biz.business_name || biz.name || '';
+      document.getElementById('editBizCategory').value = biz.category || '';
+      document.getElementById('editBizLocation').value = biz.location || '';
+      document.getElementById('editBizFindUs').value = biz.service_location || biz.where_to_find || biz.find_us || '';
+      document.getElementById('editBizPhone').value = biz.phone || biz.tel || '';
+      document.getElementById('editBizEmail').value = biz.email || '';
+      document.getElementById('editBizWebsite').value = biz.website || biz.website_url || '';
+      document.getElementById('editBizStatus').value = biz.status || 'pending';
+      document.getElementById('editBizDescription').value = biz.description || '';
+      editBusinessModal.showModal();
+    }
+
+    document.getElementById('closeEditBizModalBtn').addEventListener('click', () => editBusinessModal.close());
+    document.getElementById('cancelEditBizBtn').addEventListener('click', () => editBusinessModal.close());
+
+    editBusinessForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editBizId').value;
+      const updatedName = document.getElementById('editBizName').value.trim();
+
+      const updates = {
+        business_name: updatedName,
+        name: updatedName,
+        category: document.getElementById('editBizCategory').value.trim(),
+        location: document.getElementById('editBizLocation').value.trim(),
+        service_location: document.getElementById('editBizFindUs').value.trim(),
+        find_us: document.getElementById('editBizFindUs').value.trim(),
+        phone: document.getElementById('editBizPhone').value.trim(),
+        email: document.getElementById('editBizEmail').value.trim(),
+        website: document.getElementById('editBizWebsite').value.trim(),
+        status: document.getElementById('editBizStatus').value,
+        description: document.getElementById('editBizDescription').value.trim()
+      };
+
+      editBusinessModal.close();
+      await updateBusinessRecord(id, updates, `Updated "${updatedName}" listing.`);
+    });
+
     function renderBusinessCard(biz) {
       const imgUrl = biz.image_url || biz.logo_url || '';
       const imgState = biz.image_moderation_status || (imgUrl ? 'pending_review' : 'removed');
@@ -1312,7 +1456,6 @@
             }
           </div>
 
-          <!-- Admin Image Moderation Bar: Accept / Change / Remove -->
           <div class="biz-image-controls">
             ${
               imgUrl
@@ -1338,14 +1481,15 @@
             </div>
             <p>${escapeHtml(biz.description || 'No description provided.')}</p>
             <div class="biz-meta"><strong>Location:</strong> ${escapeHtml(biz.location || 'N/A')}</div>
-            <div class="biz-meta"><strong>Where to find:</strong> ${escapeHtml(biz.service_location || biz.where_to_find || 'N/A')}</div>
+            <div class="biz-meta"><strong>Where to find:</strong> ${escapeHtml(biz.service_location || biz.where_to_find || biz.find_us || 'N/A')}</div>
             <div class="biz-meta"><strong>Contact:</strong> ${escapeHtml(biz.phone || biz.tel || 'N/A')} | ${escapeHtml(biz.email || 'N/A')}</div>
           </div>
 
           <div class="biz-actions">
+            <button type="button" class="btn btn-outline btn-sm" data-biz-edit="${escapeHtml(biz.id)}">Modify / Edit</button>
             ${
               biz.status !== 'approved'
-                ? `<button type="button" class="btn btn-primary btn-sm" style="flex:1;" data-biz-status="approved" data-biz-id="${escapeHtml(biz.id)}">Approve Business</button>`
+                ? `<button type="button" class="btn btn-primary btn-sm" style="flex:1;" data-biz-status="approved" data-biz-id="${escapeHtml(biz.id)}">Approve</button>`
                 : ''
             }
             ${
@@ -1373,19 +1517,20 @@
         ? reviewed.map(renderBusinessCard).join('')
         : '<p class="panel-sub">No approved or rejected businesses yet.</p>';
 
-      // Accept vendor's uploaded image
-      document.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizAcceptImg;
-          await updateBusinessRecord(
-            id,
-            { image_moderation_status: 'accepted' },
-            'Vendor business image accepted.'
-          );
+      document.querySelectorAll('[data-biz-edit]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const biz = allBusinesses.find((b) => String(b.id) === String(btn.dataset.bizEdit));
+          if (biz) openEditBusinessModal(biz);
         });
       });
 
-      // Change / replace vendor's business image
+      document.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizAcceptImg;
+          await updateBusinessRecord(id, { image_moderation_status: 'accepted' }, 'Vendor business image accepted.');
+        });
+      });
+
       document.querySelectorAll('[data-biz-change-img]').forEach((input) => {
         input.addEventListener('change', async () => {
           const id = input.dataset.bizChangeImg;
@@ -1401,7 +1546,6 @@
         });
       });
 
-      // Remove vendor's business image
       document.querySelectorAll('[data-biz-remove-img]').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const id = btn.dataset.bizRemoveImg;
@@ -1413,7 +1557,6 @@
         });
       });
 
-      // Approve or Reject listing
       document.querySelectorAll('[data-biz-status]').forEach((btn) => {
         btn.addEventListener('click', async () => {
           const id = btn.dataset.bizId;
@@ -1428,9 +1571,7 @@
       });
     }
 
-    // =========================================================================
-    // 9. MEDIA LIBRARY (bisa-media BUCKET)
-    // =========================================================================
+    // JS: Media library upload, listing, copying URLs, setting logo, and deletion
     document.getElementById('mediaUploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const category = document.getElementById('mediaCategorySelect').value;
@@ -1543,7 +1684,7 @@
       });
     }
 
-    // Initialize Auth Check on Load
+    // JS: Bootstraps session state when admin.html loads
     checkSession();
   </script>
 </body>
