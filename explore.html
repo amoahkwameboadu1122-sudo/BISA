@@ -15,6 +15,139 @@
         .contact-value {
             color: var(--dark);
         }
+        .explore-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .biz-modal-slideshow {
+            position: relative;
+            width: 100%;
+            height: 205px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-bottom: 14px;
+            background-color: var(--bg-warm);
+            border: 1px solid var(--light-gray);
+        }
+        .biz-modal-slides {
+            display: flex;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        .biz-modal-slide {
+            min-width: 100%;
+            height: 100%;
+        }
+        .biz-modal-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .biz-slide-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary);
+            color: var(--white);
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .biz-slide-nav:hover {
+            background-color: var(--accent);
+        }
+        .biz-slide-prev {
+            left: 10px;
+        }
+        .biz-slide-next {
+            right: 10px;
+        }
+        .biz-slide-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background-color: rgba(34, 34, 34, 0.45);
+        }
+        .biz-slide-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.65);
+        }
+        .biz-slide-dot.active {
+            background-color: var(--secondary);
+            transform: scale(1.15);
+        }
+        .contact-modal-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+            padding-right: 26px;
+        }
+        .contact-modal-top-bar .location-tag {
+            margin-bottom: 0;
+        }
+        .contact-detail-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: var(--border-radius);
+            background-color: var(--bg-warm);
+            border: 1px solid var(--light-gray);
+        }
+        .contact-detail-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .copy-value-btn {
+            padding: 4px 9px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: 1px solid var(--primary);
+            background-color: var(--white);
+            color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .copy-value-btn:hover {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        .contact-quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .contact-quick-links .button {
+            padding: 8px 14px;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -245,32 +378,60 @@
     <dialog id="contactModal" class="policy-modal">
         <div class="policy-content contact-modal-content">
             <button type="button" class="modal-close-btn" id="closeContactModalBtn" aria-label="Close modal">&times;</button>
-            <div class="contact-modal-header">
-                <img id="contactModalImage" src="" alt="" class="contact-modal-image">
-                <div>
-                    <h3 id="contactModalName" class="contact-modal-name"></h3>
-                    <span id="contactModalLocation" class="location-tag"></span>
-                </div>
+
+            <div class="contact-modal-top-bar">
+                <h3 id="contactModalName" class="contact-modal-name"></h3>
+                <span id="contactModalLocation" class="location-tag"></span>
             </div>
+
+            <!-- Business Image Slideshow -->
+            <div class="biz-modal-slideshow" id="bizModalSlideshow">
+                <div class="biz-modal-slides" id="bizModalSlides"></div>
+                <button type="button" class="biz-slide-nav biz-slide-prev" id="bizSlidePrev" aria-label="Previous image">&#10094;</button>
+                <button type="button" class="biz-slide-nav biz-slide-next" id="bizSlideNext" aria-label="Next image">&#10095;</button>
+                <div class="biz-slide-dots" id="bizSlideDots"></div>
+            </div>
+
             <p id="contactModalDescription" class="contact-modal-description"></p>
+
             <div class="contact-modal-details">
-                <div class="contact-detail">
-                    <span class="contact-label">Where to find service:</span>
-                    <span id="contactModalFindUs" class="contact-value"></span>
+                <div class="contact-detail contact-detail-card">
+                    <div class="contact-detail-stack">
+                        <span class="contact-label">Where to find service:</span>
+                        <span id="contactModalFindUs" class="contact-value"></span>
+                    </div>
                 </div>
-                <div class="contact-detail">
-                    <span class="contact-label">Tel / Phone:</span>
-                    <a id="contactModalPhone" href="#" class="contact-link"></a>
+
+                <div class="contact-detail contact-detail-card">
+                    <div class="contact-detail-stack">
+                        <span class="contact-label">Tel / Phone:</span>
+                        <a id="contactModalPhone" href="#" class="contact-link"></a>
+                    </div>
+                    <button type="button" class="copy-value-btn" id="copyPhoneBtn">Copy</button>
                 </div>
-                <div class="contact-detail">
-                    <span class="contact-label">Email:</span>
-                    <a id="contactModalEmail" href="#" class="contact-link"></a>
+
+                <div class="contact-detail contact-detail-card">
+                    <div class="contact-detail-stack">
+                        <span class="contact-label">Email:</span>
+                        <a id="contactModalEmail" href="#" class="contact-link"></a>
+                    </div>
+                    <button type="button" class="copy-value-btn" id="copyEmailBtn">Copy</button>
                 </div>
-                <div class="contact-detail" id="contactWebsiteRow" style="display: none;">
-                    <span class="contact-label">Main Page:</span>
-                    <a id="contactModalWebsite" href="#" target="_blank" rel="noopener noreferrer" class="contact-link">Visit Main Page</a>
+
+                <div class="contact-detail contact-detail-card" id="contactWebsiteRow" style="display: none;">
+                    <div class="contact-detail-stack">
+                        <span class="contact-label">Main Page:</span>
+                        <a id="contactModalWebsite" href="#" target="_blank" rel="noopener noreferrer" class="contact-link">Visit Main Page</a>
+                    </div>
                 </div>
             </div>
+
+            <div class="contact-quick-links">
+                <a id="quickCallBtn" href="#" class="button button-primary">Call Now</a>
+                <a id="quickEmailBtn" href="#" class="button button-secondary">Email Provider</a>
+                <a id="quickWebsiteBtn" href="#" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="display: none;">Main Page</a>
+            </div>
+
             <div class="contact-modal-actions">
                 <button type="button" class="btn-close" id="doneContactModalBtn">Close</button>
             </div>
@@ -316,6 +477,9 @@
             const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
             const CONFIG_KEY = 'bisa_admin_config_v1';
+            const LS_SETTINGS_KEY = 'bisa_settings_cache';
+            const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
+
             const connectPolicyModal = document.getElementById('connectPolicyModal');
             const contactModal = document.getElementById('contactModal');
             const cancelPolicyBtn = document.getElementById('cancelPolicyBtn');
@@ -324,27 +488,125 @@
             const doneContactModalBtn = document.getElementById('doneContactModalBtn');
             const resultsGrid = document.getElementById('exploreResultsGrid');
 
+            const slideshowWrap = document.getElementById('bizModalSlideshow');
+            const slidesTrack = document.getElementById('bizModalSlides');
+            const slidePrevBtn = document.getElementById('bizSlidePrev');
+            const slideNextBtn = document.getElementById('bizSlideNext');
+            const slideDotsWrap = document.getElementById('bizSlideDots');
+
             let selectedCardData = null;
+            let currentSlides = [];
+            let currentSlideIdx = 0;
+
+            function parseImageList(rawVal) {
+                if (!rawVal) return [];
+                if (Array.isArray(rawVal)) return rawVal.map(s => String(s).trim()).filter(Boolean);
+                return String(rawVal)
+                    .split(',')
+                    .map(s => s.trim())
+                    .filter(Boolean);
+            }
+
+            function renderCardThumbnails() {
+                document.querySelectorAll('.explore-card').forEach(card => {
+                    const box = card.querySelector('.explore-img-box');
+                    if (!box) return;
+                    const imgs = parseImageList(card.dataset.images || card.dataset.image || '');
+                    if (imgs.length) {
+                        box.innerHTML = `<img src="${imgs[0]}" alt="${card.dataset.business || 'Business'}">`;
+                    }
+                });
+            }
+
+            function renderModalSlideshow(images, businessName) {
+                currentSlides = images;
+                currentSlideIdx = 0;
+
+                if (!currentSlides.length) {
+                    slideshowWrap.style.display = 'none';
+                    return;
+                }
+
+                slideshowWrap.style.display = 'block';
+                slidesTrack.innerHTML = currentSlides
+                    .map((src, idx) => `<div class="biz-modal-slide"><img src="${src}" alt="${businessName} photo ${idx + 1}"></div>`)
+                    .join('');
+
+                const hasMultiple = currentSlides.length > 1;
+                slidePrevBtn.style.display = hasMultiple ? 'inline-flex' : 'none';
+                slideNextBtn.style.display = hasMultiple ? 'inline-flex' : 'none';
+                slideDotsWrap.style.display = hasMultiple ? 'flex' : 'none';
+
+                slideDotsWrap.innerHTML = currentSlides
+                    .map((_, idx) => `<button type="button" class="biz-slide-dot ${idx === 0 ? 'active' : ''}" data-dot="${idx}" aria-label="Slide ${idx + 1}"></button>`)
+                    .join('');
+
+                slideDotsWrap.querySelectorAll('.biz-slide-dot').forEach(dot => {
+                    dot.addEventListener('click', () => goToSlide(Number(dot.dataset.dot)));
+                });
+
+                updateSlideshow();
+            }
+
+            function goToSlide(idx) {
+                if (!currentSlides.length) return;
+                currentSlideIdx = (idx + currentSlides.length) % currentSlides.length;
+                updateSlideshow();
+            }
+
+            function updateSlideshow() {
+                slidesTrack.style.transform = `translateX(-${currentSlideIdx * 100}%)`;
+                slideDotsWrap.querySelectorAll('.biz-slide-dot').forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentSlideIdx);
+                });
+            }
+
+            slidePrevBtn.addEventListener('click', () => goToSlide(currentSlideIdx - 1));
+            slideNextBtn.addEventListener('click', () => goToSlide(currentSlideIdx + 1));
+
+            function wireCopyBtn(btnId, textVal) {
+                const btn = document.getElementById(btnId);
+                if (!textVal) {
+                    btn.style.display = 'none';
+                    return;
+                }
+                btn.style.display = 'inline-block';
+                btn.textContent = 'Copy';
+                btn.onclick = async () => {
+                    try {
+                        await navigator.clipboard.writeText(textVal);
+                        btn.textContent = 'Copied';
+                        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+                    } catch (_) {
+                        btn.textContent = 'Copy';
+                    }
+                };
+            }
 
             function applySettings(cfg) {
                 if (!cfg) return;
-                if (cfg.brandName) {
+                const brandName = cfg.brandName || cfg.brand_name;
+                const mainHeadline = cfg.mainHeadline || cfg.main_headline;
+                const heroSubtext = cfg.heroSubtext || cfg.hero_subtext;
+                const exploreNotice = cfg.exploreNotice || cfg.explore_notice;
+
+                if (brandName) {
                     const siteLogo = document.getElementById('siteLogoText');
                     const footerLink = document.getElementById('footerBrandLink');
-                    if (siteLogo) siteLogo.textContent = cfg.brandName;
-                    if (footerLink) footerLink.textContent = cfg.brandName;
+                    if (siteLogo) siteLogo.textContent = brandName;
+                    if (footerLink) footerLink.textContent = brandName;
                 }
-                if (cfg.mainHeadline) {
+                if (mainHeadline) {
                     const h1 = document.getElementById('exploreMainHeadline');
-                    if (h1) h1.textContent = cfg.mainHeadline;
+                    if (h1) h1.textContent = mainHeadline;
                 }
-                if (cfg.heroSubtext) {
+                if (heroSubtext) {
                     const sub = document.getElementById('exploreHeroSubtext');
-                    if (sub) sub.textContent = cfg.heroSubtext;
+                    if (sub) sub.textContent = heroSubtext;
                 }
-                if (cfg.exploreNotice) {
+                if (exploreNotice) {
                     const noticeEl = document.getElementById('explorePolicyText');
-                    if (noticeEl) noticeEl.textContent = cfg.exploreNotice;
+                    if (noticeEl) noticeEl.textContent = exploreNotice;
                 }
             }
 
@@ -363,7 +625,7 @@
                             findUs: card.dataset.findUs || card.dataset.location || '',
                             phone: card.dataset.phone || '',
                             email: card.dataset.email || '',
-                            image: card.dataset.image || '',
+                            images: parseImageList(card.dataset.images || card.dataset.image || ''),
                             website: card.dataset.website || ''
                         };
 
@@ -376,36 +638,49 @@
                 if (!Array.isArray(rows) || !rows.length || !resultsGrid) return;
 
                 rows.forEach(biz => {
-                    if (resultsGrid.querySelector(`[data-supabase-id="${CSS.escape(String(biz.id))}"]`)) return;
+                    const rowId = biz.id || biz.business_name || biz.name;
+                    if (rowId && resultsGrid.querySelector(`[data-supabase-id="${CSS.escape(String(rowId))}"]`)) return;
+
+                    const bizName = biz.business_name || biz.name || '';
+                    const desc = biz.description || '';
+                    const loc = biz.location || 'Elmina, Central Region';
+                    const findUs = biz.service_location || biz.where_to_find || biz.find_us || loc;
+                    const phone = biz.phone || biz.tel || '';
+                    const email = biz.email || '';
+                    const imgs = parseImageList(biz.images || biz.image_url || '');
+                    const website = biz.website || biz.website_url || '';
 
                     const article = document.createElement('article');
                     article.className = 'card explore-card';
-                    article.dataset.supabaseId = String(biz.id);
-                    article.dataset.business = biz.name || '';
-                    article.dataset.description = biz.description || '';
-                    article.dataset.location = biz.location || 'Elmina, Central Region';
-                    article.dataset.findUs = biz.find_us || biz.location || 'Elmina, Central Region';
-                    article.dataset.phone = biz.phone || '';
-                    article.dataset.email = biz.email || '';
-                    article.dataset.image = biz.image_url || '';
-                    article.dataset.website = biz.website || '';
+                    if (rowId) article.dataset.supabaseId = String(rowId);
+                    article.dataset.business = bizName;
+                    article.dataset.description = desc;
+                    article.dataset.location = loc;
+                    article.dataset.findUs = findUs;
+                    article.dataset.phone = phone;
+                    article.dataset.email = email;
+                    article.dataset.image = imgs[0] || '';
+                    article.dataset.images = imgs.join(',');
+                    article.dataset.website = website;
 
                     const imgBox = document.createElement('div');
                     imgBox.className = 'explore-img-box';
+                    if (imgs[0]) {
+                        imgBox.innerHTML = `<img src="${imgs[0]}" alt="${bizName}">`;
+                    }
 
                     const content = document.createElement('div');
                     content.className = 'explore-card-content';
 
                     const h3 = document.createElement('h3');
-                    h3.textContent = biz.name || '';
+                    h3.textContent = bizName;
 
                     const p = document.createElement('p');
-                    const desc = biz.description || '';
                     p.textContent = desc.length > 52 ? desc.slice(0, 52) + '...' : desc;
 
                     const locSpan = document.createElement('span');
                     locSpan.className = 'location-tag';
-                    locSpan.textContent = `📍 ${biz.location || 'Elmina, Central Region'}`;
+                    locSpan.textContent = `📍 ${loc}`;
 
                     const contactBtn = document.createElement('button');
                     contactBtn.type = 'button';
@@ -427,8 +702,15 @@
 
             async function syncSupabaseData() {
                 try {
-                    const cached = localStorage.getItem(CONFIG_KEY);
-                    if (cached) applySettings(JSON.parse(cached));
+                    const cachedCfg = localStorage.getItem(CONFIG_KEY) || localStorage.getItem(LS_SETTINGS_KEY);
+                    if (cachedCfg) applySettings(JSON.parse(cachedCfg));
+                } catch (_) {}
+
+                try {
+                    const cachedBiz = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
+                    if (Array.isArray(cachedBiz) && cachedBiz.length) {
+                        renderApprovedBusinesses(cachedBiz.filter(b => (b.status || '').toLowerCase() === 'approved'));
+                    }
                 } catch (_) {}
 
                 try {
@@ -438,14 +720,7 @@
                         .eq('id', 1)
                         .maybeSingle();
 
-                    if (settings) {
-                        applySettings({
-                            brandName: settings.brand_name,
-                            mainHeadline: settings.main_headline,
-                            heroSubtext: settings.hero_subtext,
-                            exploreNotice: settings.explore_notice
-                        });
-                    }
+                    if (settings) applySettings(settings);
                 } catch (_) {}
 
                 try {
@@ -473,31 +748,47 @@
                 document.getElementById('contactModalDescription').textContent = selectedCardData.description;
                 document.getElementById('contactModalFindUs').textContent = selectedCardData.findUs;
 
-                const imgEl = document.getElementById('contactModalImage');
-                if (selectedCardData.image) {
-                    imgEl.src = selectedCardData.image;
-                    imgEl.alt = selectedCardData.name;
-                    imgEl.style.display = 'block';
-                } else {
-                    imgEl.style.display = 'none';
-                }
+                renderModalSlideshow(selectedCardData.images, selectedCardData.name);
 
                 const phoneEl = document.getElementById('contactModalPhone');
+                const quickCallBtn = document.getElementById('quickCallBtn');
                 const cleanTel = selectedCardData.phone.replace(/[^+\d]/g, '');
                 phoneEl.textContent = selectedCardData.phone || 'Not provided';
                 phoneEl.href = cleanTel ? `tel:${cleanTel}` : '#';
+                if (cleanTel) {
+                    quickCallBtn.href = `tel:${cleanTel}`;
+                    quickCallBtn.style.display = 'inline-block';
+                } else {
+                    quickCallBtn.style.display = 'none';
+                }
+                wireCopyBtn('copyPhoneBtn', selectedCardData.phone);
 
                 const emailEl = document.getElementById('contactModalEmail');
+                const quickEmailBtn = document.getElementById('quickEmailBtn');
                 emailEl.textContent = selectedCardData.email || 'Not provided';
                 emailEl.href = selectedCardData.email ? `mailto:${selectedCardData.email}` : '#';
+                if (selectedCardData.email) {
+                    quickEmailBtn.href = `mailto:${selectedCardData.email}`;
+                    quickEmailBtn.style.display = 'inline-block';
+                } else {
+                    quickEmailBtn.style.display = 'none';
+                }
+                wireCopyBtn('copyEmailBtn', selectedCardData.email);
 
                 const websiteRow = document.getElementById('contactWebsiteRow');
                 const websiteEl = document.getElementById('contactModalWebsite');
+                const quickWebsiteBtn = document.getElementById('quickWebsiteBtn');
                 if (selectedCardData.website) {
-                    websiteEl.href = selectedCardData.website;
+                    const url = /^https?:\/\//i.test(selectedCardData.website)
+                        ? selectedCardData.website
+                        : `https://${selectedCardData.website}`;
+                    websiteEl.href = url;
                     websiteRow.style.display = 'flex';
+                    quickWebsiteBtn.href = url;
+                    quickWebsiteBtn.style.display = 'inline-block';
                 } else {
                     websiteRow.style.display = 'none';
+                    quickWebsiteBtn.style.display = 'none';
                 }
 
                 contactModal.showModal();
@@ -506,6 +797,7 @@
             closeContactModalBtn.addEventListener('click', () => contactModal.close());
             doneContactModalBtn.addEventListener('click', () => contactModal.close());
 
+            renderCardThumbnails();
             bindContactButtons();
             syncSupabaseData();
         })();
