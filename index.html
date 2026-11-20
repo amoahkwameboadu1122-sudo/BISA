@@ -1,61 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- HTML: Page metadata, stylesheet, and Supabase v2 SDK -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BISA - Let's Do Business &amp; Share Ideas</title>
+    <title>BISA - Home</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .footer-admin-trigger {
-            color: inherit;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        .logo-placement-hero-top .hero-grid {
-            align-items: start;
-        }
-        .logo-placement-hero-top .hero-text-col::before {
-            content: "";
-            display: block;
-            width: 48px;
-            height: 48px;
-            margin-bottom: 14px;
-            background-image: var(--bisa-active-logo, none);
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: left center;
-        }
-        .header-brand-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .header-logo-img {
-            width: 34px;
-            height: 34px;
-            object-fit: contain;
-            border-radius: 6px;
-        }
-        .footer-brand-highlight {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 4px 10px;
+        /* CSS: Hero slideshow, multi-photo featured card carousel, and category icon styling */
+        .hero-slideshow-wrap {
+            margin-top: 24px;
+            position: relative;
             border-radius: var(--border-radius);
-            background-color: rgba(255, 176, 46, 0.16);
+            overflow: hidden;
+            border: 1px solid var(--light-gray);
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            display: none;
+        }
+        .hero-slides-track {
+            display: flex;
+            transition: transform 0.35s ease;
+        }
+        .hero-slide-item {
+            min-width: 100%;
+            position: relative;
+            height: 280px;
+        }
+        .hero-slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .hero-slide-caption {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 16px 20px;
+            background: linear-gradient(transparent, rgba(42, 22, 37, 0.85));
+            color: var(--white);
+        }
+        .hero-slide-caption h3 {
+            color: var(--secondary);
+            margin-bottom: 4px;
+        }
+        .featured-empty-note {
+            grid-column: 1 / -1;
+            background-color: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 28px 20px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        .category-card-icon {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 0 auto 10px;
+            display: block;
+        }
+        /* CSS: Multi-image slider inside Featured on Campus cards */
+        .featured-card-media {
+            position: relative;
+            overflow: hidden;
+        }
+        .featured-slides-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.35s ease;
+        }
+        .featured-slide {
+            min-width: 100%;
+            height: 100%;
+        }
+        .featured-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .featured-slide-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: none;
+            background-color: rgba(84, 35, 74, 0.85);
+            color: var(--white);
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .featured-slide-nav:hover {
+            background-color: var(--accent);
+        }
+        .featured-slide-prev { left: 8px; }
+        .featured-slide-next { right: 8px; }
+        .featured-slide-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background-color: rgba(34, 34, 34, 0.45);
+            z-index: 2;
+        }
+        .featured-slide-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.65);
+        }
+        .featured-slide-dot.active {
+            background-color: var(--secondary);
+            transform: scale(1.15);
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header class="header" id="siteHeader">
-        <div class="container header-container" id="headerContainer">
-            <div class="header-brand-wrap" id="headerBrandWrap">
-                <img id="headerLogoImg" src="" alt="" class="header-logo-img" style="display: none;">
-                <a href="index.html" class="logo" id="siteLogoText">BISA</a>
-            </div>
+    <!-- HTML: Site navigation header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo" id="siteLogoText">BISA</a>
             <nav class="nav">
                 <a href="index.html" class="nav-link active">Home</a>
                 <a href="explore.html" class="nav-link">Explore</a>
@@ -66,143 +152,107 @@
         </div>
     </header>
 
-    <!-- MAIN -->
+    <!-- HTML: Main Homepage Content -->
     <main class="main">
 
-        <!-- HERO SECTION -->
-        <section class="hero" id="homeHero">
-            <div class="container hero-grid">
-                <div class="hero-text-col">
-                    <h1 class="hero-title" id="homeHeroTitle">Let's Do Business &amp; Share Ideas</h1>
-                    <p class="hero-description" id="homeHeroDescription">
-                        Discover student-run businesses, creative services, and campus products all in one place.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="explore.html" class="button button-primary">Explore Now</a>
-                        <a href="business.html" class="button button-secondary">List Your Business</a>
-                    </div>
-                </div>
-
-                <!-- HERO SLIDESHOW -->
-                <div class="hero-image-box">
-                    <div class="hero-slideshow">
-                        <div class="slideshow-container" id="homeSlideshowContainer">
-                            <div class="slide active">
-                                <div class="slide-content">
-                                    <div class="slide-text">
-                                        <h2 class="hero-title">Campus Fresh Chop</h2>
-                                        <p class="hero-description">Fresh campus meals &amp; snacks.</p>
-                                    </div>
-                                    <div class="slide-image">
-                                        <img src="bisa-flyer.png.png" alt="Campus Fresh Chop" class="hero-img">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="slide">
-                                <div class="slide-content">
-                                    <div class="slide-text">
-                                        <h2 class="hero-title">Luminex Creative Lab</h2>
-                                        <p class="hero-description">Brand identity, flyers &amp; motion graphics.</p>
-                                    </div>
-                                    <div class="slide-image">
-                                        <img src="bisa-logo-full.png" alt="Luminex Creative Lab" class="hero-img">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="slide-arrow prev" id="prevSlideBtn" aria-label="Previous slide">&lsaquo;</button>
-                        <button type="button" class="slide-arrow next" id="nextSlideBtn" aria-label="Next slide">&rsaquo;</button>
-                        <div class="slide-indicators" id="slideIndicators"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEARCH SECTION -->
-        <section class="search-section">
-            <div class="container">
-                <form class="search-form" action="explore.html" method="get">
-                    <input type="text" name="q" class="input" placeholder="Search for food, design, web services, or hostels...">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-content">
+                <h1 class="hero-title" id="homeMainHeadline">Let's Do Business &amp; Share Ideas</h1>
+                <p class="hero-subtitle" id="homeHeroSubtext">Discover student-run businesses, creative services, and campus products all in one place.</p>
+                <form class="search-bar" id="homeSearchForm">
+                    <input type="text" id="homeSearchInput" class="input search-input" placeholder="Search for food, design, printing, coding...">
                     <button type="submit" class="button button-search">Search</button>
                 </form>
+
+                <!-- HTML: Admin-managed Hero Slideshow -->
+                <div class="hero-slideshow-wrap" id="heroSlideshowWrap">
+                    <div class="hero-slides-track" id="heroSlidesTrack"></div>
+                </div>
             </div>
         </section>
 
-        <!-- CATEGORIES SECTION -->
+        <!-- Categories Section -->
         <section class="section">
             <div class="container">
-                <h2 class="section-title">Popular Categories</h2>
-                <div class="categories-grid">
-                    <a href="explore.html" class="card category-card">
-                        <div class="category-icon"></div>
-                        <p class="category-name">Food &amp; Snacks</p>
+                <h2 class="section-title">Browse Categories</h2>
+                <div class="grid categories-grid" id="homeCategoriesGrid">
+                    <a href="explore.html?category=Food%20%26%20Snacks" class="card category-card" data-cat-name="Food & Snacks">
+                        <h3>Food &amp; Snacks</h3>
+                        <p>Homemade meals &amp; treats</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
-                        <div class="category-icon"></div>
-                        <p class="category-name">Graphics &amp; Art</p>
+                    <a href="explore.html?category=Graphics%20%26%20Art" class="card category-card" data-cat-name="Graphics & Art">
+                        <h3>Graphics &amp; Art</h3>
+                        <p>Logos, flyers &amp; portraits</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
-                        <div class="category-icon"></div>
-                        <p class="category-name">Web &amp; Tech</p>
+                    <a href="explore.html?category=Web%20%26%20Tech" class="card category-card" data-cat-name="Web & Tech">
+                        <h3>Web &amp; Tech</h3>
+                        <p>Coding, repairs &amp; setup</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
-                        <div class="category-icon"></div>
-                        <p class="category-name">Books &amp; Notes</p>
+                    <a href="explore.html?category=Books%20%26%20Notes" class="card category-card" data-cat-name="Books & Notes">
+                        <h3>Books &amp; Notes</h3>
+                        <p>Textbooks &amp; study guides</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
-                        <div class="category-icon"></div>
-                        <p class="category-name">Laundry</p>
+                    <a href="explore.html?category=Laundry" class="card category-card" data-cat-name="Laundry">
+                        <h3>Laundry</h3>
+                        <p>Pickup &amp; delivery service</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
-                        <div class="category-icon"></div>
-                        <p class="category-name">Campus Services</p>
+                    <a href="explore.html?category=Campus%20Services" class="card category-card" data-cat-name="Campus Services">
+                        <h3>Campus Services</h3>
+                        <p>Tutoring &amp; errands</p>
                     </a>
                 </div>
             </div>
         </section>
 
-        <!-- FEATURED BUSINESSES SECTION -->
-        <section class="section">
+        <!-- Featured on Campus Section (ONLY renders approved businesses marked as Featured by Admin) -->
+        <section class="section bg-warm">
             <div class="container">
                 <h2 class="section-title">Featured on Campus</h2>
-                <div class="businesses-grid">
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Campus Fresh Chop</h3>
-                        <p class="business-desc">Delicious local meals and snacks delivered to your hostel.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Luminex Creative Lab</h3>
-                        <p class="business-desc">Brand identity, event flyers, and motion graphics.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Amoah Web Solutions</h3>
-                        <p class="business-desc">Responsive websites and technical support for students.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Bamboo Craft &amp; Art</h3>
-                        <p class="business-desc">Handmade musical bamboo flutes and traditional art.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
+                <div class="grid featured-grid" id="featuredCampusGrid"></div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="section">
+            <div class="container">
+                <h2 class="section-title">How It Works</h2>
+                <div class="grid steps-grid">
+                    <div class="step-card">
+                        <span class="step-number">1</span>
+                        <h3>Browse Listings</h3>
+                        <p>Explore products and services offered by fellow students.</p>
+                    </div>
+                    <div class="step-card">
+                        <span class="step-number">2</span>
+                        <h3>Connect Directly</h3>
+                        <p>Reach out to sellers easily to ask questions or place orders.</p>
+                    </div>
+                    <div class="step-card">
+                        <span class="step-number">3</span>
+                        <h3>Grow Together</h3>
+                        <p>Support campus entrepreneurs or list your own business.</p>
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="cta-banner">
+            <div class="container cta-content">
+                <h2>Have a skill, product, or service?</h2>
+                <p>Join student entrepreneurs and showcase your business to the community.</p>
+                <a href="business.html" class="button button-primary">List Your Business</a>
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER (ADMIN PORTAL TRIGGER ON "BISA") -->
+    <!-- HTML: Site Footer -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4 id="footerBrandWrap">
-                    <a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a>
-                </h4>
+                <h4><a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a></h4>
                 <p>Let's Do Business &amp; Share Ideas.</p>
             </div>
             <div class="footer-col">
@@ -231,166 +281,307 @@
     </footer>
 
     <script>
+        // JS: Renders admin-approved Featured on Campus cards with multi-photo cycling, category icons, slideshow, and search
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
-            const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
-            const sb = window.supabase && typeof window.supabase.createClient === 'function'
-                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-                : null;
+            const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            const CONFIG_KEY = 'bisa_admin_config_v1';
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
+            const LS_CONFIG_KEY = 'bisa_admin_config_v1';
+            const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
 
-            let currentSlide = 0;
+            const featuredGrid = document.getElementById('featuredCampusGrid');
+            const homeSearchForm = document.getElementById('homeSearchForm');
+            const homeSearchInput = document.getElementById('homeSearchInput');
 
-            function initSlideshowControls() {
-                const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
-                const indicatorsWrap = document.getElementById('slideIndicators');
-                const prevBtn = document.getElementById('prevSlideBtn');
-                const nextBtn = document.getElementById('nextSlideBtn');
+            let currentSettings = {};
+            let allApprovedBusinesses = [];
+            let activeCardTimers = [];
 
-                currentSlide = 0;
-
-                function showSlide(index) {
-                    if (!slides.length) return;
-                    currentSlide = (index + slides.length) % slides.length;
-                    slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
-                    if (indicatorsWrap) {
-                        Array.from(indicatorsWrap.children).forEach((dot, i) => {
-                            dot.classList.toggle('active', i === currentSlide);
-                        });
-                    }
-                }
-
-                if (slides.length > 0 && indicatorsWrap) {
-                    indicatorsWrap.innerHTML = '';
-                    slides.forEach((_, idx) => {
-                        const dot = document.createElement('span');
-                        dot.className = 'indicator' + (idx === 0 ? ' active' : '');
-                        dot.addEventListener('click', () => showSlide(idx));
-                        indicatorsWrap.appendChild(dot);
-                    });
-                }
-
-                if (prevBtn) prevBtn.onclick = () => showSlide(currentSlide - 1);
-                if (nextBtn) nextBtn.onclick = () => showSlide(currentSlide + 1);
+            if (homeSearchForm) {
+                homeSearchForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const q = (homeSearchInput.value || '').trim();
+                    window.location.href = q
+                        ? `explore.html?q=${encodeURIComponent(q)}`
+                        : 'explore.html';
+                });
             }
 
-            function applySettings(cfg) {
-                if (!cfg) return;
+            // JS: Extracts all valid image URLs from image_url and comma-separated/array images fields
+            function getBusinessImages(biz) {
+                const urls = [];
+                if (biz.image_url && !String(biz.image_url).startsWith('data:')) {
+                    urls.push(String(biz.image_url).trim());
+                }
+                if (biz.images) {
+                    const rawList = Array.isArray(biz.images) ? biz.images : String(biz.images).split(',');
+                    rawList
+                        .map((u) => String(u).trim())
+                        .filter((u) => u && !u.startsWith('data:'))
+                        .forEach((u) => {
+                            if (!urls.includes(u)) urls.push(u);
+                        });
+                }
+                return urls;
+            }
 
-                const brandText = cfg.brand_name || cfg.brandName || 'BISA';
-                const logoEl = document.getElementById('siteLogoText');
-                const footerBrandLink = document.getElementById('footerBrandLink');
-                if (logoEl) logoEl.textContent = brandText;
-                if (footerBrandLink) footerBrandLink.textContent = brandText;
+            function applyBrandingAndMedia(settings) {
+                if (!settings) return;
+                currentSettings = settings;
 
-                const mainHeadline = cfg.main_headline || cfg.mainHeadline;
-                if (mainHeadline) {
-                    const heroTitle = document.getElementById('homeHeroTitle');
-                    if (heroTitle) heroTitle.textContent = mainHeadline;
+                const brandName = settings.brand_name || settings.brandName;
+                const headline = settings.main_headline || settings.mainHeadline;
+                const subtext = settings.hero_subtext || settings.heroSubtext;
+
+                if (brandName) {
+                    document.getElementById('siteLogoText').textContent = brandName;
+                    document.getElementById('footerBrandLink').textContent = brandName;
+                }
+                if (headline) {
+                    document.getElementById('homeMainHeadline').textContent = headline;
+                }
+                if (subtext) {
+                    document.getElementById('homeHeroSubtext').textContent = subtext;
                 }
 
-                const heroSubtext = cfg.hero_subtext || cfg.heroSubtext;
-                if (heroSubtext) {
-                    const heroDesc = document.getElementById('homeHeroDescription');
-                    if (heroDesc) heroDesc.textContent = heroSubtext;
+                // Category icons from admin settings
+                const catMedia = settings.category_media || {};
+                document.querySelectorAll('#homeCategoriesGrid .category-card').forEach((card) => {
+                    const catName = card.dataset.catName;
+                    const iconUrl = catMedia[catName];
+                    const existingImg = card.querySelector('.category-card-icon');
+                    if (iconUrl) {
+                        if (existingImg) {
+                            existingImg.src = iconUrl;
+                        } else {
+                            const img = document.createElement('img');
+                            img.className = 'category-card-icon';
+                            img.src = iconUrl;
+                            img.alt = catName;
+                            card.prepend(img);
+                        }
+                    } else if (existingImg) {
+                        existingImg.remove();
+                    }
+                });
+
+                // Hero slideshow from admin settings
+                const slides = Array.isArray(settings.slideshow) ? settings.slideshow : (settings.slides || []);
+                const wrap = document.getElementById('heroSlideshowWrap');
+                const track = document.getElementById('heroSlidesTrack');
+                if (slides.length && wrap && track) {
+                    wrap.style.display = 'block';
+                    track.innerHTML = slides.map((s, idx) => {
+                        const imgSrc = s.image_url || s.image || '';
+                        const title = s.title || '';
+                        const sub = s.subtitle || s.caption || '';
+                        return `
+                            <div class="hero-slide-item">
+                                <img src="${imgSrc}" alt="${title || 'Slide ' + (idx + 1)}">
+                                ${(title || sub) ? `
+                                    <div class="hero-slide-caption">
+                                        ${title ? `<h3>${title}</h3>` : ''}
+                                        ${sub ? `<p>${sub}</p>` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                } else if (wrap) {
+                    wrap.style.display = 'none';
+                }
+            }
+
+            function renderFeaturedBusinesses() {
+                if (!featuredGrid) return;
+
+                // Clear any existing auto-cycle intervals before re-rendering
+                activeCardTimers.forEach((timerId) => clearInterval(timerId));
+                activeCardTimers = [];
+
+                const featuredIds = new Set(
+                    Array.isArray(currentSettings?.site_assets?.featured_business_ids)
+                        ? currentSettings.site_assets.featured_business_ids.map(String)
+                        : []
+                );
+
+                const featuredList = allApprovedBusinesses.filter((biz) => {
+                    if ((biz.status || '').toLowerCase() !== 'approved') return false;
+                    return biz.featured_on_campus === true || featuredIds.has(String(biz.id));
+                });
+
+                if (!featuredList.length) {
+                    featuredGrid.innerHTML = `
+                        <div class="featured-empty-note">
+                            No businesses are currently featured on campus. Approved listings selected by the admin will appear here.
+                        </div>
+                    `;
+                    return;
                 }
 
-                const activeLogo = cfg.logo_url || cfg.activeLogo;
-                const headerLogoImg = document.getElementById('headerLogoImg');
-                const headerContainer = document.getElementById('headerContainer');
-                const footerBrandWrap = document.getElementById('footerBrandWrap');
-                const placement = cfg.logo_placement || cfg.logoPlacement || 'header-left';
+                featuredGrid.innerHTML = '';
+                featuredList.forEach((biz, cardIndex) => {
+                    const bizName = biz.business_name || biz.name || 'Campus Business';
+                    const desc = biz.description || '';
+                    const imgs = getBusinessImages(biz);
 
-                if (activeLogo && headerLogoImg) {
-                    headerLogoImg.src = activeLogo;
-                    headerLogoImg.alt = brandText + ' Logo';
-                    headerLogoImg.style.display = 'inline-block';
-                    document.documentElement.style.setProperty('--bisa-active-logo', `url("${activeLogo}")`);
-                }
+                    const card = document.createElement('div');
+                    card.className = 'card business-card';
 
-                if (headerContainer) {
-                    headerContainer.style.justifyContent = placement === 'header-center' ? 'center' : 'space-between';
-                }
-                document.body.classList.toggle('logo-placement-hero-top', placement === 'hero-top');
-                if (footerBrandWrap) {
-                    footerBrandWrap.classList.toggle('footer-brand-highlight', placement === 'footer-brand');
-                }
+                    const imgDiv = document.createElement('div');
+                    imgDiv.className = 'card-image-placeholder featured-card-media';
 
-                const rawSlides = Array.isArray(cfg.slideshow) && cfg.slideshow.length
-                    ? cfg.slideshow
-                    : (Array.isArray(cfg.slides) && cfg.slides.length ? cfg.slides : null);
+                    if (imgs.length > 0) {
+                        const track = document.createElement('div');
+                        track.className = 'featured-slides-track';
 
-                if (rawSlides) {
-                    const container = document.getElementById('homeSlideshowContainer');
-                    if (container) {
-                        container.innerHTML = '';
-                        rawSlides.forEach((slide, idx) => {
-                            const slideEl = document.createElement('div');
-                            slideEl.className = 'slide' + (idx === 0 ? ' active' : '');
+                        imgs.forEach((src, imgIdx) => {
+                            const slide = document.createElement('div');
+                            slide.className = 'featured-slide';
+                            const img = document.createElement('img');
+                            img.src = src;
+                            img.alt = `${bizName} photo ${imgIdx + 1}`;
+                            slide.appendChild(img);
+                            track.appendChild(slide);
+                        });
 
-                            const contentEl = document.createElement('div');
-                            contentEl.className = 'slide-content';
+                        imgDiv.appendChild(track);
 
-                            const textCol = document.createElement('div');
-                            textCol.className = 'slide-text';
+                        // JS: Add arrows, dots, and automatic photo cycling when multiple photos exist
+                        if (imgs.length > 1) {
+                            let slideIdx = 0;
+                            let isPaused = false;
 
-                            const h2 = document.createElement('h2');
-                            h2.className = 'hero-title';
-                            h2.textContent = slide.title || '';
+                            const prevBtn = document.createElement('button');
+                            prevBtn.type = 'button';
+                            prevBtn.className = 'featured-slide-nav featured-slide-prev';
+                            prevBtn.setAttribute('aria-label', 'Previous photo');
+                            prevBtn.innerHTML = '&#10094;';
 
-                            const p = document.createElement('p');
-                            p.className = 'hero-description';
-                            p.textContent = slide.subtitle || slide.caption || '';
+                            const nextBtn = document.createElement('button');
+                            nextBtn.type = 'button';
+                            nextBtn.className = 'featured-slide-nav featured-slide-next';
+                            nextBtn.setAttribute('aria-label', 'Next photo');
+                            nextBtn.innerHTML = '&#10095;';
 
-                            textCol.appendChild(h2);
-                            textCol.appendChild(p);
+                            const dotsWrap = document.createElement('div');
+                            dotsWrap.className = 'featured-slide-dots';
 
-                            const imgCol = document.createElement('div');
-                            imgCol.className = 'slide-image';
+                            const dots = imgs.map((_, dotIdx) => {
+                                const dot = document.createElement('button');
+                                dot.type = 'button';
+                                dot.className = `featured-slide-dot ${dotIdx === 0 ? 'active' : ''}`;
+                                dot.setAttribute('aria-label', `Photo ${dotIdx + 1}`);
+                                dot.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    goToCardSlide(dotIdx);
+                                });
+                                dotsWrap.appendChild(dot);
+                                return dot;
+                            });
 
-                            const imgSrc = slide.image_url || slide.image || '';
-                            if (imgSrc) {
-                                const img = document.createElement('img');
-                                img.src = imgSrc;
-                                img.alt = slide.title || 'Slide image';
-                                img.className = 'hero-img';
-                                imgCol.appendChild(img);
+                            function goToCardSlide(nextIdx) {
+                                slideIdx = (nextIdx + imgs.length) % imgs.length;
+                                track.style.transform = `translateX(-${slideIdx * 100}%)`;
+                                dots.forEach((d, idx) => d.classList.toggle('active', idx === slideIdx));
                             }
 
-                            contentEl.appendChild(textCol);
-                            contentEl.appendChild(imgCol);
-                            slideEl.appendChild(contentEl);
-                            container.appendChild(slideEl);
-                        });
-                        initSlideshowControls();
-                    }
-                }
-            }
+                            prevBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                goToCardSlide(slideIdx - 1);
+                            });
 
-            initSlideshowControls();
+                            nextBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                goToCardSlide(slideIdx + 1);
+                            });
 
-            try {
-                const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(CONFIG_KEY);
-                if (cached) applySettings(JSON.parse(cached));
-            } catch (_) {}
+                            card.addEventListener('mouseenter', () => { isPaused = true; });
+                            card.addEventListener('mouseleave', () => { isPaused = false; });
 
-            if (sb) {
-                sb.from('bisa_settings')
-                    .select('*')
-                    .eq('id', 1)
-                    .maybeSingle()
-                    .then(({ data, error }) => {
-                        if (!error && data) {
-                            try {
-                                localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
-                            } catch (_) {}
-                            applySettings(data);
+                            imgDiv.appendChild(prevBtn);
+                            imgDiv.appendChild(nextBtn);
+                            imgDiv.appendChild(dotsWrap);
+
+                            const intervalMs = 3500 + (cardIndex % 3) * 400;
+                            const timer = setInterval(() => {
+                                if (!isPaused) goToCardSlide(slideIdx + 1);
+                            }, intervalMs);
+                            activeCardTimers.push(timer);
                         }
-                    })
-                    .catch(() => {});
+                    }
+
+                    const body = document.createElement('div');
+                    body.className = 'card-body';
+
+                    const h3 = document.createElement('h3');
+                    h3.textContent = bizName;
+
+                    const p = document.createElement('p');
+                    p.textContent = desc.length > 85 ? desc.slice(0, 85) + '...' : desc;
+
+                    const link = document.createElement('a');
+                    link.href = `explore.html?q=${encodeURIComponent(bizName)}`;
+                    link.className = 'button button-secondary card-btn';
+                    link.textContent = 'View Details';
+
+                    body.appendChild(h3);
+                    body.appendChild(p);
+                    body.appendChild(link);
+
+                    card.appendChild(imgDiv);
+                    card.appendChild(body);
+                    featuredGrid.appendChild(card);
+                });
             }
+
+            async function initHome() {
+                try {
+                    const cachedCfg = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY);
+                    if (cachedCfg) applyBrandingAndMedia(JSON.parse(cachedCfg));
+                } catch (_) {}
+
+                try {
+                    const cachedBiz = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
+                    if (Array.isArray(cachedBiz)) {
+                        allApprovedBusinesses = cachedBiz.filter(b => (b.status || '').toLowerCase() === 'approved');
+                        renderFeaturedBusinesses();
+                    }
+                } catch (_) {}
+
+                try {
+                    const { data: settings } = await sb
+                        .from('bisa_settings')
+                        .select('*')
+                        .eq('id', 1)
+                        .maybeSingle();
+
+                    if (settings) {
+                        applyBrandingAndMedia(settings);
+                        renderFeaturedBusinesses();
+                    }
+                } catch (_) {}
+
+                try {
+                    const { data: rows, error } = await sb
+                        .from('bisa_businesses')
+                        .select('*')
+                        .eq('status', 'approved')
+                        .order('created_at', { ascending: false });
+
+                    if (!error && Array.isArray(rows)) {
+                        allApprovedBusinesses = rows;
+                        renderFeaturedBusinesses();
+                    }
+                } catch (_) {}
+            }
+
+            initHome();
         })();
     </script>
 
