@@ -3,228 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>BISA - Homepage | Let's Do Business & Share Ideas</title>
-    
+    <title>BISA - Let's Do Business &amp; Share Ideas</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Initialize Supabase client
-        const supabase = window.supabase = createSupabaseClient(
-            'https://vrgbataasdiyyhtsmjsp.supabase.co',
-            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
-        );
-    </script>
+    <style>
+        .footer-admin-trigger {
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .home-notice-strip {
+            background-color: var(--white);
+            border-bottom: 1px solid var(--light-gray);
+            padding: 12px 0;
+        }
+        .home-notice-box {
+            background-color: var(--bg-warm);
+            border-left: 4px solid var(--secondary);
+            color: var(--primary);
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+        }
+        .logo-placement-hero-top .hero-grid {
+            align-items: start;
+        }
+        .logo-placement-hero-top .hero-text-col::before {
+            content: "";
+            display: block;
+            width: 48px;
+            height: 48px;
+            margin-bottom: 14px;
+            background-image: var(--bisa-active-logo, none);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: left center;
+        }
+        .header-brand-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-logo-img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        .footer-brand-highlight {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 10px;
+            border-radius: var(--border-radius);
+            background-color: rgba(255, 176, 46, 0.16);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- HEADER: The top container holding the brand logo and navigation menu -->
-    <header class="header">
-        <!-- CONTAINER: Wraps header contents to keep them centered and aligned -->
-        <div class="container header-container">
-            
-            <!-- LOGO: Displays the brand name BISA -->
-            <a href="index.html" class="logo">BISA</a>
-
-            <!-- NAV: Contains the main website navigation links -->
+    <!-- HEADER -->
+    <header class="header" id="siteHeader">
+        <div class="container header-container" id="headerContainer">
+            <div class="header-brand-wrap" id="headerBrandWrap">
+                <img id="headerLogoImg" src="" alt="" class="header-logo-img" style="display: none;">
+                <a href="index.html" class="logo" id="siteLogoText">BISA</a>
+            </div>
             <nav class="nav">
-                <!-- href tells the browser which HTML file to open when clicked -->
                 <a href="index.html" class="nav-link active">Home</a>
                 <a href="explore.html" class="nav-link">Explore</a>
                 <a href="business.html" class="nav-link">List Your Business</a>
                 <a href="about.html" class="nav-link">About</a>
                 <a href="contact.html" class="nav-link">Contact</a>
             </nav>
-
         </div>
     </header>
 
-    <!-- MAIN: Wraps the core unique content of the homepage -->
+    <!-- OPTIONAL NOTICE BANNER (SYNCED WITH ADMIN PORTAL) -->
+    <div class="home-notice-strip" id="homeNoticeStrip">
+        <div class="container">
+            <div class="home-notice-box" id="homeNoticeText">
+                <strong>Notice:</strong> Welcome to BISA - Your campus marketplace for buying, selling, and connecting.
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN -->
     <main class="main">
 
-        <!-- HERO SECTION: The introductory banner at the top of the homepage (Reference: Wireframe Screenshot 1) -->
-        <section class="hero">
+        <!-- HERO SECTION -->
+        <section class="hero" id="homeHero">
             <div class="container hero-grid">
-                
-                <!-- HERO SLIDESHOW: Slideshow banner at the top of the homepage -->
-                <div class="hero-slideshow">
-                    <div class="slideshow-container">
-                        <!-- Slide 1 -->
-                        <div class="slide active">
-                            <div class="slide-content">
-                                <div class="slide-text">
-                                    <h1 class="hero-title">Connect, Discover, and Grow with BISA</h1>
-                                    <p class="hero-description">
-                                        Welcome to BISA (Let's Do Business & Share Ideas). Discover trusted campus and local student businesses, services, and products instantly.
-                                    </p>
-                                    <div class="hero-buttons">
-                                        <a href="explore.html" class="button button-primary">Explore Now</a>
-                                        <a href="business.html" class="button button-secondary">List a Business</a>
-                                    </div>
-                                </div>
-                                <div class="slide-image">
-                                    <img src="bisa-flyer.png.png" alt="African university campus" class="hero-img">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Slide 2 -->
-                        <div class="slide">
-                            <div class="slide-content">
-                                <div class="slide-text">
-                                    <h1 class="hero-title">Student Entrepreneurs Welcome</h1>
-                                    <p class="hero-description">
-                                        Turn your passion into profit. Join thousands of student entrepreneurs showcasing their products and services on BISA.
-                                    </p>
-                                    <div class="hero-buttons">
-                                        <a href="business.html" class="button button-primary">List Your Business</a>
-                                        <a href="explore.html" class="button button-secondary">Explore Now</a>
-                                    </div>
-                                </div>
-                                <div class="slide-image">
-                                    <img src="bisa-logo-full.png" alt="BISA Student Entrepreneurs" class="hero-img">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Slide 3 -->
-                        <div class="slide">
-                            <div class="slide-content">
-                                <div class="slide-text">
-                                    <h1 class="hero-title">Discover Campus Services</h1>
-                                    <p class="hero-description">
-                                        From tutoring to laundry, design to delivery. Find trusted student services right on your campus.
-                                    </p>
-                                    <div class="hero-buttons">
-                                        <a href="explore.html" class="button button-primary">Explore Services</a>
-                                        <a href="business.html" class="button button-secondary">Offer a Service</a>
-                                    </div>
-                                </div>
-                                <div class="slide-image">
-                                    <img src="bisa-logo-mark.png" alt="BISA Campus Services" class="hero-img">
-                                </div>
-                            </div>
-                        </div>
+                <div class="hero-text-col">
+                    <h1 class="hero-title" id="homeHeroTitle">Let's Do Business &amp; Share Ideas</h1>
+                    <p class="hero-description" id="homeHeroDescription">
+                        Discover student-run businesses, creative services, and campus products all in one place.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="explore.html" class="button button-primary">Explore Now</a>
+                        <a href="business.html" class="button button-secondary">List Your Business</a>
                     </div>
                 </div>
 
+                <!-- HERO SLIDESHOW -->
+                <div class="hero-image-box">
+                    <div class="hero-slideshow">
+                        <div class="slideshow-container" id="homeSlideshowContainer">
+                            <div class="slide active">
+                                <div class="slide-content">
+                                    <div class="slide-text">
+                                        <h2 class="hero-title">Campus Fresh Chop</h2>
+                                        <p class="hero-description">Fresh campus meals &amp; snacks.</p>
+                                    </div>
+                                    <div class="slide-image">
+                                        <img src="bisa-flyer.png.png" alt="Campus Fresh Chop" class="hero-img">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slide">
+                                <div class="slide-content">
+                                    <div class="slide-text">
+                                        <h2 class="hero-title">Luminex Creative Lab</h2>
+                                        <p class="hero-description">Brand identity, flyers &amp; motion graphics.</p>
+                                    </div>
+                                    <div class="slide-image">
+                                        <img src="bisa-logo-full.png" alt="Luminex Creative Lab" class="hero-img">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="slide-arrow prev" id="prevSlideBtn" aria-label="Previous slide">&lsaquo;</button>
+                        <button type="button" class="slide-arrow next" id="nextSlideBtn" aria-label="Next slide">&rsaquo;</button>
+                        <div class="slide-indicators" id="slideIndicators"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- SEARCH SECTION: Quick search bar matching the wireframe layout -->
+        <!-- SEARCH SECTION -->
         <section class="search-section">
             <div class="container">
-                <!-- FORM: Static visual search form -->
-                <form class="search-form" action="explore.html" method="GET">
-                    <!-- INPUT: Text field for searching products or services -->
-                    <input type="text" class="input search-input" placeholder="Search products, services or businesses...">
-                    <!-- BUTTON: Triggers search action -->
+                <form class="search-form" action="explore.html" method="get">
+                    <input type="text" name="q" class="input" placeholder="Search for food, design, web services, or hostels...">
                     <button type="submit" class="button button-search">Search</button>
                 </form>
             </div>
         </section>
 
-        <!-- FEATURED CATEGORIES: Displays categories in a row of cards as per wireframe -->
-        <section class="section categories-section">
+        <!-- CATEGORIES SECTION -->
+        <section class="section">
             <div class="container">
-                <h2 class="section-title">Featured Categories</h2>
-                
-                <!-- GRID: Arranges category cards horizontally -->
+                <h2 class="section-title">Popular Categories</h2>
                 <div class="categories-grid">
-                    <!-- CARD 1 -->
-                    <div class="card category-card">
+                    <a href="explore.html" class="card category-card">
                         <div class="category-icon"></div>
-                        <h3 class="category-name">Food & Snacks</h3>
-                    </div>
-                    <!-- CARD 2 -->
-                    <div class="card category-card">
+                        <p class="category-name">Food &amp; Snacks</p>
+                    </a>
+                    <a href="explore.html" class="card category-card">
                         <div class="category-icon"></div>
-                        <h3 class="category-name">Graphics & Art</h3>
-                    </div>
-                    <!-- CARD 3 -->
-                    <div class="card category-card">
+                        <p class="category-name">Graphics &amp; Art</p>
+                    </a>
+                    <a href="explore.html" class="card category-card">
                         <div class="category-icon"></div>
-                        <h3 class="category-name">Tech & Web</h3>
-                    </div>
-                    <!-- CARD 4 -->
-                    <div class="card category-card">
+                        <p class="category-name">Web &amp; Tech</p>
+                    </a>
+                    <a href="explore.html" class="card category-card">
                         <div class="category-icon"></div>
-                        <h3 class="category-name">Campus Services</h3>
-                    </div>
-                    <!-- CARD 5 -->
-                    <div class="card category-card">
+                        <p class="category-name">Books &amp; Notes</p>
+                    </a>
+                    <a href="explore.html" class="card category-card">
                         <div class="category-icon"></div>
-                        <h3 class="category-name">Fashion & Wear</h3>
-                    </div>
-                    <!-- CARD 6 -->
-                    <div class="card category-card">
+                        <p class="category-name">Laundry</p>
+                    </a>
+                    <a href="explore.html" class="card category-card">
                         <div class="category-icon"></div>
-                        <h3 class="category-name">Books & Notes</h3>
-                    </div>
+                        <p class="category-name">Campus Services</p>
+                    </a>
                 </div>
             </div>
         </section>
 
-        <!-- FEATURED BUSINESSES: Grid showcasing popular student listings -->
-        <section class="section businesses-section">
+        <!-- FEATURED BUSINESSES SECTION -->
+        <section class="section">
             <div class="container">
-                <h2 class="section-title">Featured Businesses</h2>
-                
+                <h2 class="section-title">Featured on Campus</h2>
                 <div class="businesses-grid">
-                    <!-- BUSINESS CARD 1 -->
                     <article class="card business-card">
                         <div class="business-img-box"></div>
                         <h3 class="business-name">Campus Fresh Chop</h3>
-                        <p class="business-desc">Delicious local meals and snacks delivered right to your hostel.</p>
-                        <a href="explore.html" class="business-link">View Details</a>
+                        <p class="business-desc">Delicious local meals and snacks delivered to your hostel.</p>
+                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
                     </article>
-
-                    <!-- BUSINESS CARD 2 -->
                     <article class="card business-card">
                         <div class="business-img-box"></div>
                         <h3 class="business-name">Luminex Creative Lab</h3>
-                        <p class="business-desc">Professional brand identity, flyer design, and motion graphics.</p>
-                        <a href="explore.html" class="business-link">View Details</a>
+                        <p class="business-desc">Brand identity, event flyers, and motion graphics.</p>
+                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
                     </article>
-
-                    <!-- BUSINESS CARD 3 -->
                     <article class="card business-card">
                         <div class="business-img-box"></div>
                         <h3 class="business-name">Amoah Web Solutions</h3>
-                        <p class="business-desc">Responsive websites, debugging, and Cloudflare deployments.</p>
-                        <a href="explore.html" class="business-link">View Details</a>
+                        <p class="business-desc">Responsive websites and technical support for students.</p>
+                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
                     </article>
-
-                    <!-- BUSINESS CARD 4 -->
                     <article class="card business-card">
                         <div class="business-img-box"></div>
-                        <h3 class="business-name">Bamboo Craft & Art</h3>
-                        <p class="business-desc">Handmade bamboo flutes, musical instruments, and traditional art.</p>
-                        <a href="explore.html" class="business-link">View Details</a>
+                        <h3 class="business-name">Bamboo Craft &amp; Art</h3>
+                        <p class="business-desc">Handmade musical bamboo flutes and traditional art.</p>
+                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
                     </article>
                 </div>
-            </div>
-        </section>
-
-        <!-- CALL TO ACTION BANNER: Matches wireframe bottom callout banner -->
-        <section class="cta-banner-section">
-            <div class="container cta-banner">
-                <div class="cta-text">
-                    <h3>Are you a student entrepreneur or business owner?</h3>
-                    <p>Showcase your products and services to the entire campus community today.</p>
-                </div>
-                <a href="business.html" class="button button-primary">List Your Business</a>
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER: Bottom section with links and copyright information -->
+    <!-- FOOTER (HIDDEN ADMIN PORTAL TRIGGER ON "BISA") -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
-                <p>Let's Do Business & Share Ideas.</p>
+                <h4 id="footerBrandWrap">
+                    <a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a>
+                </h4>
+                <p>Let's Do Business &amp; Share Ideas.</p>
             </div>
             <div class="footer-col">
                 <h4>Quick Links</h4>
@@ -251,41 +251,137 @@
         </div>
     </footer>
 
-<div class="footer-bottom">
-            <p>&copy; 2026 BISA. All rights reserved.</p>
-        </div>
-    </footer>
-
     <script>
-        // Hero Slideshow Functionality - Automatic slideshow, 3s interval, no arrows/indicators
-        (function() {
-            const slides = document.querySelectorAll('.slide');
+        (function () {
+            const STORAGE_KEY = 'bisa_admin_config_v1';
+            let config = null;
+
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) config = JSON.parse(raw);
+            } catch (err) {
+                config = null;
+            }
+
+            if (config) {
+                const brandText = config.brandName || 'BISA';
+                const logoEl = document.getElementById('siteLogoText');
+                const footerBrandLink = document.getElementById('footerBrandLink');
+                if (logoEl) logoEl.textContent = brandText;
+                if (footerBrandLink) footerBrandLink.textContent = brandText;
+
+                if (config.mainHeadline) {
+                    const heroTitle = document.getElementById('homeHeroTitle');
+                    if (heroTitle) heroTitle.textContent = config.mainHeadline;
+                }
+
+                if (config.heroSubtext) {
+                    const heroDesc = document.getElementById('homeHeroDescription');
+                    if (heroDesc) heroDesc.textContent = config.heroSubtext;
+                }
+
+                const noticeBox = document.getElementById('homeNoticeText');
+                if (noticeBox && typeof config.noticeBannerText === 'string') {
+                    noticeBox.textContent = config.noticeBannerText;
+                }
+
+                const headerLogoImg = document.getElementById('headerLogoImg');
+                const headerContainer = document.getElementById('headerContainer');
+                const footerBrandWrap = document.getElementById('footerBrandWrap');
+                const placement = config.logoPlacement || 'header-left';
+
+                if (config.activeLogo && headerLogoImg) {
+                    headerLogoImg.src = config.activeLogo;
+                    headerLogoImg.alt = brandText + ' Logo';
+                    headerLogoImg.style.display = 'inline-block';
+                    document.documentElement.style.setProperty('--bisa-active-logo', `url("${config.activeLogo}")`);
+                }
+
+                if (headerContainer) {
+                    headerContainer.style.justifyContent = placement === 'header-center' ? 'center' : 'space-between';
+                }
+                document.body.classList.toggle('logo-placement-hero-top', placement === 'hero-top');
+                if (footerBrandWrap) {
+                    footerBrandWrap.classList.toggle('footer-brand-highlight', placement === 'footer-brand');
+                }
+
+                if (Array.isArray(config.slides) && config.slides.length > 0) {
+                    const container = document.getElementById('homeSlideshowContainer');
+                    if (container) {
+                        container.innerHTML = '';
+                        config.slides.forEach((slide, idx) => {
+                            const slideEl = document.createElement('div');
+                            slideEl.className = 'slide' + (idx === 0 ? ' active' : '');
+
+                            const contentEl = document.createElement('div');
+                            contentEl.className = 'slide-content';
+
+                            const textCol = document.createElement('div');
+                            textCol.className = 'slide-text';
+
+                            const h2 = document.createElement('h2');
+                            h2.className = 'hero-title';
+                            h2.textContent = slide.title || '';
+
+                            const p = document.createElement('p');
+                            p.className = 'hero-description';
+                            p.textContent = slide.caption || '';
+
+                            textCol.appendChild(h2);
+                            textCol.appendChild(p);
+
+                            const imgCol = document.createElement('div');
+                            imgCol.className = 'slide-image';
+
+                            if (slide.image) {
+                                const img = document.createElement('img');
+                                img.src = slide.image;
+                                img.alt = slide.title || 'Slide image';
+                                img.className = 'hero-img';
+                                imgCol.appendChild(img);
+                            }
+
+                            contentEl.appendChild(textCol);
+                            contentEl.appendChild(imgCol);
+                            slideEl.appendChild(contentEl);
+                            container.appendChild(slideEl);
+                        });
+                    }
+                }
+            }
+
+            // Slideshow navigation & indicators
+            const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
+            const indicatorsWrap = document.getElementById('slideIndicators');
+            const prevBtn = document.getElementById('prevSlideBtn');
+            const nextBtn = document.getElementById('nextSlideBtn');
             let currentSlide = 0;
-            let slideInterval;
 
             function showSlide(index) {
-                // Remove active class from all slides
-                slides.forEach(slide => slide.classList.remove('active'));
-                
-                // Add active class to current slide
-                slides[index].classList.add('active');
-                currentSlide = index;
+                if (!slides.length) return;
+                currentSlide = (index + slides.length) % slides.length;
+                slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+                if (indicatorsWrap) {
+                    Array.from(indicatorsWrap.children).forEach((dot, i) => {
+                        dot.classList.toggle('active', i === currentSlide);
+                    });
+                }
             }
 
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % 3;
-                showSlide(currentSlide);
+            if (slides.length > 0 && indicatorsWrap) {
+                indicatorsWrap.innerHTML = '';
+                slides.forEach((_, idx) => {
+                    const dot = document.createElement('span');
+                    dot.className = 'indicator' + (idx === 0 ? ' active' : '');
+                    dot.addEventListener('click', () => showSlide(idx));
+                    indicatorsWrap.appendChild(dot);
+                });
             }
 
-            function startAutoSlide() {
-                slideInterval = setInterval(nextSlide, 3000);
-            }
-
-            function stopAutoSlide() {
-                clearInterval(slideInterval);
-            }
-
-            // Initialize
-            showSlide(0);
-            startAutoSlide();
+            if (prevBtn) prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
+            if (nextBtn) nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
         })();
+    </script>
+
+</body>
+</html>
