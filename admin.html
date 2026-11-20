@@ -6,53 +6,146 @@
     <title>BISA - Admin Portal</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .admin-wrap {
-            padding: 36px 0 60px;
+        .login-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: var(--bg-warm);
         }
-        .admin-top {
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: var(--white);
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 28px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        .login-card h1 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        .login-card p {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        .error-text {
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+            min-height: 18px;
+        }
+        .dashboard-shell {
+            display: none;
+            min-height: 100vh;
+            background: var(--bg-warm);
+        }
+        .admin-topbar {
+            background: var(--white);
+            border-bottom: 2px solid var(--light-gray);
+            padding: 14px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .admin-topbar-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .admin-main {
+            padding: 28px 0 48px;
+        }
+        .admin-head {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .admin-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
         }
         .admin-panel {
             background: var(--white);
             border: 1px solid var(--light-gray);
             border-radius: var(--border-radius);
             padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+            margin-bottom: 22px;
+        }
+        .admin-grid .admin-panel {
+            margin-bottom: 0;
         }
         .admin-panel h2 {
             font-size: 18px;
             margin-bottom: 14px;
         }
-        .admin-field {
+        .field {
             margin-bottom: 14px;
         }
-        .admin-field label {
+        .field label {
             display: block;
             font-size: 13px;
             font-weight: 600;
-            margin-bottom: 6px;
             color: var(--primary);
+            margin-bottom: 6px;
         }
-        .admin-field textarea {
-            min-height: 76px;
+        .field textarea {
+            min-height: 84px;
             resize: vertical;
         }
-        .media-list {
+        .approval-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 14px;
+        }
+        .approval-card {
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            padding: 14px;
+            background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             gap: 12px;
-            margin-top: 14px;
+        }
+        .approval-card h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .approval-meta {
+            font-size: 12px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        .approval-thumb {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid var(--light-gray);
+        }
+        .uploads-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
         }
         .media-card {
             border: 1px solid var(--light-gray);
@@ -65,35 +158,46 @@
         }
         .media-card img {
             width: 100%;
-            height: 84px;
+            height: 90px;
             object-fit: cover;
             border-radius: 6px;
             background: var(--white);
         }
-        .media-meta {
+        .media-info {
             font-size: 11px;
-            color: var(--gray);
+            color: var(--dark);
             word-break: break-word;
         }
-        .slide-item {
+        .slide-box {
             border: 1px solid var(--light-gray);
             border-radius: var(--border-radius);
             padding: 12px;
-            margin-bottom: 10px;
+            margin-top: 12px;
             background: #fafafa;
         }
-        .slide-item-head {
+        .slide-box-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
             margin-bottom: 8px;
-            font-weight: 600;
             font-size: 13px;
+            font-weight: 600;
+        }
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .btn-sm {
             padding: 6px 12px;
             font-size: 12px;
+        }
+        .btn-approve {
+            background: #15803d;
+            color: var(--white);
+        }
+        .btn-approve:hover {
+            background: #166534;
         }
         .btn-danger {
             background: #dc2626;
@@ -102,376 +206,506 @@
         .btn-danger:hover {
             background: #b91c1c;
         }
-        .admin-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .status-msg {
+        .status-banner {
             font-size: 13px;
             font-weight: 600;
             color: var(--primary);
             min-height: 20px;
+            margin-bottom: 12px;
+        }
+        .empty-note {
+            font-size: 13px;
+            color: var(--gray);
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="container header-container">
-            <a href="index.html" class="logo">BISA</a>
-            <nav class="nav">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="explore.html" class="nav-link">Explore</a>
-                <a href="business.html" class="nav-link">List Your Business</a>
-                <a href="admin.html" class="nav-link active">Admin</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="main admin-wrap">
-        <div class="container">
-            <div class="admin-top">
-                <div>
-                    <h1 class="page-title">BISA Admin Portal</h1>
-                    <p class="page-subtitle">Manage headlines, notice banners, logo placement, slideshows, and uploaded media.</p>
-                </div>
-                <div class="admin-actions">
-                    <button type="button" id="saveAllBtn" class="button button-primary">Save All Changes</button>
-                    <button type="button" id="resetDefaultBtn" class="button button-secondary">Reset Defaults</button>
-                </div>
+    <!-- LOGIN SCREEN -->
+    <section class="login-wrap" id="loginScreen">
+        <form class="login-card" id="loginForm">
+            <h1>BISA Admin Login</h1>
+            <p>Enter your admin credentials to access the portal.</p>
+            <div class="field">
+                <label for="adminUsername">Username</label>
+                <input type="text" id="adminUsername" class="input" autocomplete="username" required>
             </div>
+            <div class="field">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" class="input" autocomplete="current-password" required>
+            </div>
+            <button type="submit" class="button button-primary" style="width: 100%;">Log In</button>
+            <p id="loginError" class="error-text"></p>
+        </form>
+    </section>
 
-            <p id="statusMsg" class="status-msg"></p>
+    <!-- AUTHENTICATED ADMIN DASHBOARD (NO PAGE NAV LINKS, NO FOOTER) -->
+    <div class="dashboard-shell" id="adminDashboard">
+        <header class="admin-topbar">
+            <div class="container admin-topbar-inner">
+                <span class="logo" id="dashBrandLabel">BISA Admin</span>
+                <button type="button" id="logoutBtn" class="button button-secondary btn-sm">Log Out</button>
+            </div>
+        </header>
 
-            <div class="admin-grid">
-                <!-- HEADLINES & HERO MESSAGE -->
+        <main class="main admin-main">
+            <div class="container">
+                <div class="admin-head">
+                    <div>
+                        <h1 class="page-title">Admin Control Dashboard</h1>
+                        <p class="page-subtitle">Approve business listings, manage multi-category uploads, slideshows, and page notices.</p>
+                    </div>
+                    <div class="btn-row">
+                        <button type="button" id="saveAllBtn" class="button button-primary">Save All Changes</button>
+                        <button type="button" id="resetDefaultsBtn" class="button button-secondary">Reset Defaults</button>
+                    </div>
+                </div>
+
+                <p id="statusBanner" class="status-banner"></p>
+
+                <!-- PENDING BUSINESS APPROVALS -->
                 <section class="admin-panel">
-                    <h2>Headlines &amp; Messages</h2>
-                    <div class="admin-field">
-                        <label for="mainHeadline">Main Hero / Page Headline</label>
-                        <input type="text" id="mainHeadline" class="input">
-                    </div>
-                    <div class="admin-field">
-                        <label for="heroSubtext">Subheadline / Description</label>
-                        <textarea id="heroSubtext" class="input"></textarea>
-                    </div>
-                    <div class="admin-field">
-                        <label for="noticeBannerText">Notice Banner Message</label>
-                        <textarea id="noticeBannerText" class="input"></textarea>
-                    </div>
+                    <h2>Business Listing Approvals</h2>
+                    <p class="empty-note" style="margin-bottom: 14px;">Review submitted businesses before they appear on the Explore page.</p>
+                    <div id="pendingApprovalsList" class="approval-list"></div>
                 </section>
 
-                <!-- LOGO & BRAND PLACEMENT -->
+                <!-- HEADLINES, BRANDING & POLICY NOTICES -->
+                <div class="admin-grid">
+                    <section class="admin-panel">
+                        <h2>Headlines &amp; Brand Placement</h2>
+                        <div class="field">
+                            <label for="brandNameInput">Brand Name</label>
+                            <input type="text" id="brandNameInput" class="input">
+                        </div>
+                        <div class="field">
+                            <label for="logoPlacementSelect">Logo Placement</label>
+                            <select id="logoPlacementSelect" class="input">
+                                <option value="header-left">Header Left</option>
+                                <option value="header-center">Header Center</option>
+                                <option value="hero-top">Above Hero Content</option>
+                                <option value="footer-brand">Footer Brand Highlight</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="activeLogoSelect">Active Logo Asset</label>
+                            <select id="activeLogoSelect" class="input"></select>
+                        </div>
+                        <div class="field">
+                            <label for="mainHeadlineInput">Main Headline</label>
+                            <input type="text" id="mainHeadlineInput" class="input">
+                        </div>
+                        <div class="field">
+                            <label for="heroSubtextInput">Hero Subheadline / Description</label>
+                            <textarea id="heroSubtextInput" class="input"></textarea>
+                        </div>
+                    </section>
+
+                    <section class="admin-panel">
+                        <h2>Editable Page Notices</h2>
+                        <div class="field">
+                            <label for="exploreNoticeInput">Explore Contact Policy Notice (Before Viewing Details)</label>
+                            <textarea id="exploreNoticeInput" class="input"></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="businessNoticeInput">List Your Business Page Policy Notice</label>
+                            <textarea id="businessNoticeInput" class="input"></textarea>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- SLIDESHOW MANAGER -->
                 <section class="admin-panel">
-                    <h2>Logo &amp; Content Placement</h2>
-                    <div class="admin-field">
-                        <label for="brandName">Brand Text</label>
-                        <input type="text" id="brandName" class="input">
+                    <h2>Slideshow Manager</h2>
+                    <div class="admin-grid" style="margin-bottom: 10px;">
+                        <div class="field">
+                            <label for="newSlideTitle">New Slide Title</label>
+                            <input type="text" id="newSlideTitle" class="input" placeholder="Slide title">
+                        </div>
+                        <div class="field">
+                            <label for="newSlideCaption">New Slide Caption</label>
+                            <input type="text" id="newSlideCaption" class="input" placeholder="Slide description">
+                        </div>
+                        <div class="field">
+                            <label for="newSlideImage">New Slide Image</label>
+                            <input type="file" id="newSlideImage" class="input" accept="image/*">
+                        </div>
                     </div>
-                    <div class="admin-field">
-                        <label for="logoPlacement">Logo Placement</label>
-                        <select id="logoPlacement" class="input">
-                            <option value="header-left">Header Left (Default)</option>
-                            <option value="header-center">Header Center</option>
-                            <option value="hero-top">Above Hero Content</option>
-                            <option value="footer-brand">Footer Brand Highlight</option>
-                        </select>
+                    <button type="button" id="addSlideBtn" class="button button-secondary btn-sm">+ Add Slide</button>
+                    <div id="slidesList"></div>
+                </section>
+
+                <!-- MULTI-UPLOAD MANAGER (ICONS, IMAGES, FLYERS, SLIDES, BUSINESS MEDIA) -->
+                <section class="admin-panel">
+                    <h2>Media &amp; Icon Uploads Manager</h2>
+                    <div class="admin-grid" style="margin-bottom: 12px;">
+                        <div class="field">
+                            <label for="uploadCategorySelect">Upload Category</label>
+                            <select id="uploadCategorySelect" class="input">
+                                <option value="Icon">Icons</option>
+                                <option value="Image">Images</option>
+                                <option value="Flyer">Flyers &amp; Banners</option>
+                                <option value="Slideshow">Slideshow Media</option>
+                                <option value="Business">Business Photos</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="multiFilesInput">Select File(s) to Upload</label>
+                            <input type="file" id="multiFilesInput" class="input" accept="image/*" multiple>
+                        </div>
                     </div>
-                    <div class="admin-field">
-                        <label for="activeLogoSelect">Active Logo Asset</label>
-                        <select id="activeLogoSelect" class="input"></select>
+
+                    <div class="uploads-filter-row" id="uploadFilterRow">
+                        <button type="button" class="button button-primary btn-sm upload-filter-btn" data-filter="All">All</button>
+                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Icon">Icons</button>
+                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Image">Images</button>
+                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Flyer">Flyers</button>
+                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Slideshow">Slideshow</button>
+                        <button type="button" class="button button-secondary btn-sm upload-filter-btn" data-filter="Business">Business</button>
                     </div>
-                    <div class="admin-field">
-                        <label for="uploadLogoInput">Upload New Logo Image</label>
-                        <input type="file" id="uploadLogoInput" class="input" accept="image/*">
-                    </div>
+
+                    <div id="mediaGrid" class="media-grid"></div>
                 </section>
             </div>
-
-            <!-- SLIDESHOW MANAGER -->
-            <section class="admin-panel" style="margin-bottom: 24px;">
-                <h2>Slideshow Manager</h2>
-                <div class="admin-field">
-                    <label for="newSlideTitle">New Slide Title</label>
-                    <input type="text" id="newSlideTitle" class="input" placeholder="e.g., Campus Marketplace Spotlight">
-                </div>
-                <div class="admin-field">
-                    <label for="newSlideCaption">New Slide Caption</label>
-                    <input type="text" id="newSlideCaption" class="input" placeholder="Short message for this slide">
-                </div>
-                <div class="admin-field">
-                    <label for="newSlideImage">Slide Image</label>
-                    <input type="file" id="newSlideImage" class="input" accept="image/*">
-                </div>
-                <button type="button" id="addSlideBtn" class="button button-secondary btn-sm">+ Add Slide</button>
-                <div id="slidesContainer" style="margin-top: 14px;"></div>
-            </section>
-
-            <!-- UPLOADS MANAGER (IMAGES & ICONS) -->
-            <section class="admin-panel">
-                <h2>Uploads Manager (Images &amp; Icons)</h2>
-                <div class="admin-field">
-                    <label for="uploadTypeSelect">Upload Category</label>
-                    <select id="uploadTypeSelect" class="input">
-                        <option value="Image">Image</option>
-                        <option value="Icon">Icon</option>
-                    </select>
-                </div>
-                <div class="admin-field">
-                    <label for="bulkMediaInput">Upload Image or Icon File(s)</label>
-                    <input type="file" id="bulkMediaInput" class="input" accept="image/*" multiple>
-                </div>
-                <div id="mediaList" class="media-list"></div>
-            </section>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container footer-content">
-            <div class="footer-col">
-                <h4><a href="admin.html" title="Open Admin Portal">BISA</a></h4>
-                <p>Let's Do Business &amp; Share Ideas.</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 BISA. All rights reserved.</p>
-        </div>
-    </footer>
+        </main>
+    </div>
 
     <script>
-        const STORAGE_KEY = 'bisa_admin_config_v1';
+        (function () {
+            // Update these credentials before deploying
+            const ADMIN_USER = 'admin';
+            const ADMIN_PASS = 'bisa2026';
 
-        const defaultConfig = {
-            brandName: 'BISA',
-            logoPlacement: 'header-left',
-            activeLogo: 'bisa-logo-full.png',
-            mainHeadline: 'Explore Businesses',
-            heroSubtext: 'Browse verified student enterprises, services, and products.',
-            noticeBannerText: 'Notice: Welcome to BISA - Your campus marketplace for buying, selling, and connecting.',
-            slides: [
-                { id: 's1', title: 'Campus Fresh Chop', caption: 'Fresh campus meals & snacks.', image: 'bisa-flyer.png.png' },
-                { id: 's2', title: 'Luminex Creative Lab', caption: 'Brand identity, flyers & motion graphics.', image: 'bisa-logo-full.png' }
-            ],
-            uploads: [
-                { id: 'u1', name: 'bisa-logo-full.png', type: 'Icon', src: 'bisa-logo-full.png' },
-                { id: 'u2', name: 'bisa-logo-mark.png', type: 'Icon', src: 'bisa-logo-mark.png' },
-                { id: 'u3', name: 'bisa-flyer.png.png', type: 'Image', src: 'bisa-flyer.png.png' }
-            ]
-        };
+            const AUTH_KEY = 'bisa_admin_logged_in_v1';
+            const CONFIG_KEY = 'bisa_admin_config_v1';
+            const PENDING_BIZ_KEY = 'bisa_pending_businesses_v1';
+            const APPROVED_BIZ_KEY = 'bisa_approved_businesses_v1';
 
-        let state = loadState();
+            const defaultConfig = {
+                brandName: 'BISA',
+                logoPlacement: 'header-left',
+                activeLogo: 'bisa-logo-full.png',
+                mainHeadline: 'Explore Businesses',
+                heroSubtext: 'Browse verified student enterprises, services, and products.',
+                exploreNotice: 'Before viewing this campus business or service\'s contact details, location, and offerings, please note that BISA connects you with student and campus providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely on campus or at agreed public points.',
+                businessNotice: 'By listing your business on BISA, you confirm that your goods or services are legal, safe, and appropriate for the campus community. You are solely responsible for fulfilling customer orders accurately, maintaining fair pricing, and delivering quality service. False listings will be removed.',
+                slides: [
+                    { id: 's1', title: 'Campus Fresh Chop', caption: 'Fresh campus meals & snacks.', image: 'bisa-flyer.png.png' },
+                    { id: 's2', title: 'Luminex Creative Lab', caption: 'Brand identity, flyers & motion graphics.', image: 'bisa-logo-full.png' }
+                ],
+                uploads: [
+                    { id: 'u1', name: 'bisa-logo-full.png', category: 'Icon', src: 'bisa-logo-full.png' },
+                    { id: 'u2', name: 'bisa-logo-mark.png', category: 'Icon', src: 'bisa-logo-mark.png' },
+                    { id: 'u3', name: 'bisa-flyer.png.png', category: 'Flyer', src: 'bisa-flyer.png.png' }
+                ]
+            };
 
-        function loadState() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? { ...defaultConfig, ...JSON.parse(raw) } : structuredClone(defaultConfig);
-            } catch {
-                return structuredClone(defaultConfig);
+            let config = loadJson(CONFIG_KEY, defaultConfig);
+            let activeUploadFilter = 'All';
+
+            function loadJson(key, fallback) {
+                try {
+                    const raw = localStorage.getItem(key);
+                    return raw ? (Array.isArray(fallback) ? JSON.parse(raw) : { ...fallback, ...JSON.parse(raw) }) : structuredClone(fallback);
+                } catch {
+                    return structuredClone(fallback);
+                }
             }
-        }
 
-        function setStatus(msg) {
-            const el = document.getElementById('statusMsg');
-            el.textContent = msg;
-            setTimeout(() => { el.textContent = ''; }, 3000);
-        }
+            function saveJson(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            }
 
-        function readFileAsDataURL(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
+            function showStatus(msg) {
+                const el = document.getElementById('statusBanner');
+                if (!el) return;
+                el.textContent = msg;
+                clearTimeout(showStatus._t);
+                showStatus._t = setTimeout(() => { el.textContent = ''; }, 3500);
+            }
 
-        function renderForm() {
-            document.getElementById('brandName').value = state.brandName;
-            document.getElementById('logoPlacement').value = state.logoPlacement;
-            document.getElementById('mainHeadline').value = state.mainHeadline;
-            document.getElementById('heroSubtext').value = state.heroSubtext;
-            document.getElementById('noticeBannerText').value = state.noticeBannerText;
+            function esc(str) {
+                return String(str || '').replace(/[&<>"']/g, m => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[m]));
+            }
 
-            const logoSelect = document.getElementById('activeLogoSelect');
-            logoSelect.innerHTML = '';
-            state.uploads.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item.src;
-                opt.textContent = `${item.name} (${item.type})`;
-                if (item.src === state.activeLogo) opt.selected = true;
-                logoSelect.appendChild(opt);
-            });
+            function readFile(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            }
 
-            renderSlides();
-            renderUploads();
-        }
+            function checkAuth() {
+                const isLoggedIn = sessionStorage.getItem(AUTH_KEY) === 'true';
+                document.getElementById('loginScreen').style.display = isLoggedIn ? 'none' : 'flex';
+                document.getElementById('adminDashboard').style.display = isLoggedIn ? 'block' : 'none';
+                if (isLoggedIn) {
+                    renderAll();
+                }
+            }
 
-        function renderSlides() {
-            const container = document.getElementById('slidesContainer');
-            container.innerHTML = '';
-            state.slides.forEach((slide, idx) => {
-                const div = document.createElement('div');
-                div.className = 'slide-item';
-                div.innerHTML = `
-                    <div class="slide-item-head">
-                        <span>Slide ${idx + 1}</span>
-                        <button type="button" class="button btn-sm btn-danger" data-remove-slide="${slide.id}">Remove</button>
-                    </div>
-                    <div class="admin-field">
-                        <label>Title</label>
-                        <input type="text" class="input slide-title-input" data-id="${slide.id}" value="${escapeAttr(slide.title)}">
-                    </div>
-                    <div class="admin-field" style="margin-bottom:0;">
-                        <label>Caption</label>
-                        <input type="text" class="input slide-caption-input" data-id="${slide.id}" value="${escapeAttr(slide.caption)}">
-                    </div>
-                `;
-                container.appendChild(div);
+            document.getElementById('loginForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+                const u = document.getElementById('adminUsername').value.trim();
+                const p = document.getElementById('adminPassword').value;
+                const errEl = document.getElementById('loginError');
+                if (u === ADMIN_USER && p === ADMIN_PASS) {
+                    sessionStorage.setItem(AUTH_KEY, 'true');
+                    errEl.textContent = '';
+                    document.getElementById('adminPassword').value = '';
+                    checkAuth();
+                } else {
+                    errEl.textContent = 'Invalid admin username or password.';
+                }
             });
 
-            container.querySelectorAll('[data-remove-slide]').forEach(btn => {
+            document.getElementById('logoutBtn').addEventListener('click', function () {
+                sessionStorage.removeItem(AUTH_KEY);
+                checkAuth();
+            });
+
+            function renderAll() {
+                document.getElementById('dashBrandLabel').textContent = (config.brandName || 'BISA') + ' Admin';
+                document.getElementById('brandNameInput').value = config.brandName || 'BISA';
+                document.getElementById('logoPlacementSelect').value = config.logoPlacement || 'header-left';
+                document.getElementById('mainHeadlineInput').value = config.mainHeadline || '';
+                document.getElementById('heroSubtextInput').value = config.heroSubtext || '';
+                document.getElementById('exploreNoticeInput').value = config.exploreNotice || '';
+                document.getElementById('businessNoticeInput').value = config.businessNotice || '';
+
+                const logoSelect = document.getElementById('activeLogoSelect');
+                logoSelect.innerHTML = '';
+                config.uploads.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.src;
+                    opt.textContent = `${item.name} [${item.category}]`;
+                    if (item.src === config.activeLogo) opt.selected = true;
+                    logoSelect.appendChild(opt);
+                });
+
+                renderPendingBusinesses();
+                renderSlides();
+                renderUploads();
+            }
+
+            function renderPendingBusinesses() {
+                const listEl = document.getElementById('pendingApprovalsList');
+                const pending = loadJson(PENDING_BIZ_KEY, []);
+                if (!pending.length) {
+                    listEl.innerHTML = '<p class="empty-note">No pending business requests right now.</p>';
+                    return;
+                }
+
+                listEl.innerHTML = '';
+                pending.forEach(biz => {
+                    const card = document.createElement('div');
+                    card.className = 'approval-card';
+                    card.innerHTML = `
+                        <div>
+                            ${biz.image ? `<img src="${esc(biz.image)}" alt="${esc(biz.name)}" class="approval-thumb">` : ''}
+                            <h3>${esc(biz.name)}</h3>
+                            <div class="approval-meta">
+                                Category: ${esc(biz.category || 'General')} &bull; Location: ${esc(biz.location || '')}
+                                ${biz.phone ? ` &bull; Tel: ${esc(biz.phone)}` : ''}
+                            </div>
+                            <p style="font-size:13px;">${esc(biz.description || '')}</p>
+                        </div>
+                        <div class="btn-row">
+                            <button type="button" class="button btn-sm btn-approve" data-approve-id="${esc(biz.id)}">Approve</button>
+                            <button type="button" class="button btn-sm btn-danger" data-reject-id="${esc(biz.id)}">Reject</button>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+
+                listEl.querySelectorAll('[data-approve-id]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-approve-id');
+                        const currentPending = loadJson(PENDING_BIZ_KEY, []);
+                        const target = currentPending.find(item => item.id === id);
+                        const nextPending = currentPending.filter(item => item.id !== id);
+                        saveJson(PENDING_BIZ_KEY, nextPending);
+
+                        if (target) {
+                            const approved = loadJson(APPROVED_BIZ_KEY, []);
+                            approved.push({ ...target, approvedAt: new Date().toISOString() });
+                            saveJson(APPROVED_BIZ_KEY, approved);
+                        }
+                        renderPendingBusinesses();
+                        showStatus('Business listing approved and published.');
+                    });
+                });
+
+                listEl.querySelectorAll('[data-reject-id]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-reject-id');
+                        const nextPending = loadJson(PENDING_BIZ_KEY, []).filter(item => item.id !== id);
+                        saveJson(PENDING_BIZ_KEY, nextPending);
+                        renderPendingBusinesses();
+                        showStatus('Business listing rejected and removed.');
+                    });
+                });
+            }
+
+            function renderSlides() {
+                const container = document.getElementById('slidesList');
+                container.innerHTML = '';
+                config.slides.forEach((slide, idx) => {
+                    const box = document.createElement('div');
+                    box.className = 'slide-box';
+                    box.innerHTML = `
+                        <div class="slide-box-top">
+                            <span>Slide ${idx + 1}</span>
+                            <button type="button" class="button btn-sm btn-danger" data-del-slide="${esc(slide.id)}">Delete Slide</button>
+                        </div>
+                        <div class="field">
+                            <label>Title</label>
+                            <input type="text" class="input edit-slide-title" data-id="${esc(slide.id)}" value="${esc(slide.title)}">
+                        </div>
+                        <div class="field" style="margin-bottom:0;">
+                            <label>Caption</label>
+                            <input type="text" class="input edit-slide-caption" data-id="${esc(slide.id)}" value="${esc(slide.caption)}">
+                        </div>
+                    `;
+                    container.appendChild(box);
+                });
+
+                container.querySelectorAll('[data-del-slide]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-del-slide');
+                        config.slides = config.slides.filter(s => s.id !== id);
+                        renderSlides();
+                    });
+                });
+            }
+
+            function renderUploads() {
+                const grid = document.getElementById('mediaGrid');
+                const items = activeUploadFilter === 'All'
+                    ? config.uploads
+                    : config.uploads.filter(u => u.category === activeUploadFilter);
+
+                if (!items.length) {
+                    grid.innerHTML = '<p class="empty-note">No uploaded files in this category.</p>';
+                    return;
+                }
+
+                grid.innerHTML = '';
+                items.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'media-card';
+                    card.innerHTML = `
+                        <img src="${esc(item.src)}" alt="${esc(item.name)}">
+                        <div class="media-info"><strong>${esc(item.category)}:</strong> ${esc(item.name)}</div>
+                        <button type="button" class="button btn-sm btn-danger" data-del-upload="${esc(item.id)}">Remove</button>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                grid.querySelectorAll('[data-del-upload]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-del-upload');
+                        config.uploads = config.uploads.filter(u => u.id !== id);
+                        renderAll();
+                        showStatus('Uploaded item removed.');
+                    });
+                });
+            }
+
+            document.querySelectorAll('.upload-filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-remove-slide');
-                    state.slides = state.slides.filter(s => s.id !== id);
-                    renderSlides();
+                    activeUploadFilter = btn.getAttribute('data-filter');
+                    document.querySelectorAll('.upload-filter-btn').forEach(b => {
+                        b.classList.toggle('button-primary', b === btn);
+                        b.classList.toggle('button-secondary', b !== btn);
+                    });
+                    renderUploads();
                 });
             });
-        }
 
-        function renderUploads() {
-            const list = document.getElementById('mediaList');
-            list.innerHTML = '';
-            state.uploads.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'media-card';
-                card.innerHTML = `
-                    <img src="${escapeAttr(item.src)}" alt="${escapeAttr(item.name)}">
-                    <div class="media-meta"><strong>${escapeHtml(item.type)}:</strong> ${escapeHtml(item.name)}</div>
-                    <button type="button" class="button btn-sm btn-danger" data-remove-upload="${item.id}">Remove</button>
-                `;
-                list.appendChild(card);
+            document.getElementById('multiFilesInput').addEventListener('change', async function (e) {
+                const files = Array.from(e.target.files || []);
+                const category = document.getElementById('uploadCategorySelect').value;
+                for (const file of files) {
+                    const src = await readFile(file);
+                    config.uploads.push({
+                        id: 'up_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                        name: file.name,
+                        category,
+                        src
+                    });
+                }
+                e.target.value = '';
+                renderAll();
+                showStatus(`${files.length} file(s) uploaded to ${category}.`);
             });
 
-            list.querySelectorAll('[data-remove-upload]').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const id = btn.getAttribute('data-remove-upload');
-                    state.uploads = state.uploads.filter(u => u.id !== id);
-                    renderForm();
+            document.getElementById('addSlideBtn').addEventListener('click', async function () {
+                const title = document.getElementById('newSlideTitle').value.trim() || 'Campus Spotlight';
+                const caption = document.getElementById('newSlideCaption').value.trim() || '';
+                const file = document.getElementById('newSlideImage').files[0];
+                let image = config.activeLogo || 'bisa-flyer.png.png';
+
+                if (file) {
+                    image = await readFile(file);
+                    config.uploads.push({
+                        id: 'up_' + Date.now(),
+                        name: file.name,
+                        category: 'Slideshow',
+                        src: image
+                    });
+                }
+
+                config.slides.push({
+                    id: 'sl_' + Date.now(),
+                    title,
+                    caption,
+                    image
                 });
-            });
-        }
 
-        function escapeHtml(str) {
-            return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-        }
-
-        function escapeAttr(str) {
-            return escapeHtml(str);
-        }
-
-        document.getElementById('uploadLogoInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const src = await readFileAsDataURL(file);
-            state.uploads.push({ id: 'u_' + Date.now(), name: file.name, type: 'Icon', src });
-            state.activeLogo = src;
-            renderForm();
-            setStatus('Logo uploaded. Click "Save All Changes" to apply.');
-        });
-
-        document.getElementById('bulkMediaInput').addEventListener('change', async (e) => {
-            const files = Array.from(e.target.files || []);
-            const type = document.getElementById('uploadTypeSelect').value;
-            for (const file of files) {
-                const src = await readFileAsDataURL(file);
-                state.uploads.push({ id: 'u_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6), name: file.name, type, src });
-            }
-            e.target.value = '';
-            renderForm();
-            setStatus(`${files.length} upload(s) added.`);
-        });
-
-        document.getElementById('addSlideBtn').addEventListener('click', async () => {
-            const title = document.getElementById('newSlideTitle').value.trim() || 'New Slide';
-            const caption = document.getElementById('newSlideCaption').value.trim() || '';
-            const file = document.getElementById('newSlideImage').files[0];
-            let image = state.activeLogo || 'bisa-flyer.png.png';
-            if (file) {
-                image = await readFileAsDataURL(file);
-                state.uploads.push({ id: 'u_' + Date.now(), name: file.name, type: 'Image', src: image });
-            }
-            state.slides.push({ id: 's_' + Date.now(), title, caption, image });
-            document.getElementById('newSlideTitle').value = '';
-            document.getElementById('newSlideCaption').value = '';
-            document.getElementById('newSlideImage').value = '';
-            renderForm();
-            setStatus('Slide added.');
-        });
-
-        document.getElementById('saveAllBtn').addEventListener('click', () => {
-            state.brandName = document.getElementById('brandName').value.trim() || 'BISA';
-            state.logoPlacement = document.getElementById('logoPlacement').value;
-            state.activeLogo = document.getElementById('activeLogoSelect').value;
-            state.mainHeadline = document.getElementById('mainHeadline').value.trim();
-            state.heroSubtext = document.getElementById('heroSubtext').value.trim();
-            state.noticeBannerText = document.getElementById('noticeBannerText').value.trim();
-
-            document.querySelectorAll('.slide-title-input').forEach(inp => {
-                const s = state.slides.find(item => item.id === inp.dataset.id);
-                if (s) s.title = inp.value;
-            });
-            document.querySelectorAll('.slide-caption-input').forEach(inp => {
-                const s = state.slides.find(item => item.id === inp.dataset.id);
-                if (s) s.caption = inp.value;
+                document.getElementById('newSlideTitle').value = '';
+                document.getElementById('newSlideCaption').value = '';
+                document.getElementById('newSlideImage').value = '';
+                renderAll();
+                showStatus('Slide added.');
             });
 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            setStatus('All admin changes saved!');
-        });
+            document.getElementById('saveAllBtn').addEventListener('click', function () {
+                config.brandName = document.getElementById('brandNameInput').value.trim() || 'BISA';
+                config.logoPlacement = document.getElementById('logoPlacementSelect').value;
+                config.activeLogo = document.getElementById('activeLogoSelect').value || config.activeLogo;
+                config.mainHeadline = document.getElementById('mainHeadlineInput').value.trim();
+                config.heroSubtext = document.getElementById('heroSubtextInput').value.trim();
+                config.exploreNotice = document.getElementById('exploreNoticeInput').value.trim();
+                config.businessNotice = document.getElementById('businessNoticeInput').value.trim();
 
-        document.getElementById('resetDefaultBtn').addEventListener('click', () => {
-            state = structuredClone(defaultConfig);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            renderForm();
-            setStatus('Reset to default settings.');
-        });
+                document.querySelectorAll('.edit-slide-title').forEach(inp => {
+                    const slide = config.slides.find(s => s.id === inp.dataset.id);
+                    if (slide) slide.title = inp.value;
+                });
+                document.querySelectorAll('.edit-slide-caption').forEach(inp => {
+                    const slide = config.slides.find(s => s.id === inp.dataset.id);
+                    if (slide) slide.caption = inp.value;
+                });
 
-        renderForm();
+                saveJson(CONFIG_KEY, config);
+                renderAll();
+                showStatus('All changes saved.');
+            });
+
+            document.getElementById('resetDefaultsBtn').addEventListener('click', function () {
+                config = structuredClone(defaultConfig);
+                saveJson(CONFIG_KEY, config);
+                renderAll();
+                showStatus('Admin settings reset to defaults.');
+            });
+
+            checkAuth();
+        })();
     </script>
 </body>
-
- <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container footer-content">
-            <div class="footer-col">
-                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
-                <p>Let's Do Business & Share Ideas.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Quick Links</h4>
-                <a href="index.html">Home</a>
-                <a href="explore.html">Explore</a>
-                <a href="business.html">List Your Business</a>
-            </div>
-            <div class="footer-col">
-                <h4>Support</h4>
-                <a href="about.html">About Us</a>
-                <a href="contact.html">Contact Us</a>
-            </div>
-            <div class="footer-col">
-                <h4>Socials</h4>
-                <div class="social-circles">
-                    <span class="circle"></span>
-                    <span class="circle"></span>
-                    <span class="circle"></span>
-                </div>
-            </div>
-        </div>
-<div class="footer-bottom">
-            <p>&copy; 2026 BISA. All rights reserved.</p>
-        </div>
-    </footer>
-
 </html>
