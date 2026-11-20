@@ -8,45 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* CSS: Hero slideshow, multi-photo featured card carousel, and category icon styling */
-        .hero-slideshow-wrap {
-            margin-top: 24px;
-            position: relative;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            border: 1px solid var(--light-gray);
-            background-color: var(--white);
-            box-shadow: var(--shadow-sm);
-            display: none;
-        }
-        .hero-slides-track {
-            display: flex;
-            transition: transform 0.35s ease;
-        }
-        .hero-slide-item {
-            min-width: 100%;
-            position: relative;
-            height: 280px;
-        }
-        .hero-slide-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .hero-slide-caption {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            padding: 16px 20px;
-            background: linear-gradient(transparent, rgba(42, 22, 37, 0.85));
-            color: var(--white);
-        }
-        .hero-slide-caption h3 {
-            color: var(--secondary);
-            margin-bottom: 4px;
-        }
+        /* CSS: Category icon and empty featured state styling */
         .featured-empty-note {
             grid-column: 1 / -1;
             background-color: var(--white);
@@ -64,75 +26,6 @@
             border-radius: 10px;
             margin: 0 auto 10px;
             display: block;
-        }
-        /* CSS: Multi-image slider inside Featured on Campus cards */
-        .featured-card-media {
-            position: relative;
-            overflow: hidden;
-        }
-        .featured-slides-track {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.35s ease;
-        }
-        .featured-slide {
-            min-width: 100%;
-            height: 100%;
-        }
-        .featured-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .featured-slide-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            border: none;
-            background-color: rgba(84, 35, 74, 0.85);
-            color: var(--white);
-            font-size: 14px;
-            line-height: 1;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-        .featured-slide-nav:hover {
-            background-color: var(--accent);
-        }
-        .featured-slide-prev { left: 8px; }
-        .featured-slide-next { right: 8px; }
-        .featured-slide-dots {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 5px;
-            padding: 3px 7px;
-            border-radius: 999px;
-            background-color: rgba(34, 34, 34, 0.45);
-            z-index: 2;
-        }
-        .featured-slide-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.65);
-        }
-        .featured-slide-dot.active {
-            background-color: var(--secondary);
-            transform: scale(1.15);
         }
     </style>
 </head>
@@ -164,11 +57,6 @@
                     <input type="text" id="homeSearchInput" class="input search-input" placeholder="Search for food, design, printing, coding...">
                     <button type="submit" class="button button-search">Search</button>
                 </form>
-
-                <!-- HTML: Admin-managed Hero Slideshow -->
-                <div class="hero-slideshow-wrap" id="heroSlideshowWrap">
-                    <div class="hero-slides-track" id="heroSlidesTrack"></div>
-                </div>
             </div>
         </section>
 
@@ -205,7 +93,7 @@
             </div>
         </section>
 
-        <!-- Featured on Campus Section (ONLY renders approved businesses marked as Featured by Admin) -->
+        <!-- Featured on Campus Section -->
         <section class="section bg-warm">
             <div class="container">
                 <h2 class="section-title">Featured on Campus</h2>
@@ -281,7 +169,7 @@
     </footer>
 
     <script>
-        // JS: Renders admin-approved Featured on Campus cards with multi-photo cycling, category icons, slideshow, and search
+        // JS: Syncs branding, category icons, search redirect, and admin-approved Featured on Campus cards
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
@@ -297,7 +185,6 @@
 
             let currentSettings = {};
             let allApprovedBusinesses = [];
-            let activeCardTimers = [];
 
             if (homeSearchForm) {
                 homeSearchForm.addEventListener('submit', (e) => {
@@ -307,24 +194,6 @@
                         ? `explore.html?q=${encodeURIComponent(q)}`
                         : 'explore.html';
                 });
-            }
-
-            // JS: Extracts all valid image URLs from image_url and comma-separated/array images fields
-            function getBusinessImages(biz) {
-                const urls = [];
-                if (biz.image_url && !String(biz.image_url).startsWith('data:')) {
-                    urls.push(String(biz.image_url).trim());
-                }
-                if (biz.images) {
-                    const rawList = Array.isArray(biz.images) ? biz.images : String(biz.images).split(',');
-                    rawList
-                        .map((u) => String(u).trim())
-                        .filter((u) => u && !u.startsWith('data:'))
-                        .forEach((u) => {
-                            if (!urls.includes(u)) urls.push(u);
-                        });
-                }
-                return urls;
             }
 
             function applyBrandingAndMedia(settings) {
@@ -346,7 +215,6 @@
                     document.getElementById('homeHeroSubtext').textContent = subtext;
                 }
 
-                // Category icons from admin settings
                 const catMedia = settings.category_media || {};
                 document.querySelectorAll('#homeCategoriesGrid .category-card').forEach((card) => {
                     const catName = card.dataset.catName;
@@ -366,40 +234,10 @@
                         existingImg.remove();
                     }
                 });
-
-                // Hero slideshow from admin settings
-                const slides = Array.isArray(settings.slideshow) ? settings.slideshow : (settings.slides || []);
-                const wrap = document.getElementById('heroSlideshowWrap');
-                const track = document.getElementById('heroSlidesTrack');
-                if (slides.length && wrap && track) {
-                    wrap.style.display = 'block';
-                    track.innerHTML = slides.map((s, idx) => {
-                        const imgSrc = s.image_url || s.image || '';
-                        const title = s.title || '';
-                        const sub = s.subtitle || s.caption || '';
-                        return `
-                            <div class="hero-slide-item">
-                                <img src="${imgSrc}" alt="${title || 'Slide ' + (idx + 1)}">
-                                ${(title || sub) ? `
-                                    <div class="hero-slide-caption">
-                                        ${title ? `<h3>${title}</h3>` : ''}
-                                        ${sub ? `<p>${sub}</p>` : ''}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }).join('');
-                } else if (wrap) {
-                    wrap.style.display = 'none';
-                }
             }
 
             function renderFeaturedBusinesses() {
                 if (!featuredGrid) return;
-
-                // Clear any existing auto-cycle intervals before re-rendering
-                activeCardTimers.forEach((timerId) => clearInterval(timerId));
-                activeCardTimers = [];
 
                 const featuredIds = new Set(
                     Array.isArray(currentSettings?.site_assets?.featured_business_ids)
@@ -422,98 +260,26 @@
                 }
 
                 featuredGrid.innerHTML = '';
-                featuredList.forEach((biz, cardIndex) => {
+                featuredList.forEach((biz) => {
                     const bizName = biz.business_name || biz.name || 'Campus Business';
                     const desc = biz.description || '';
-                    const imgs = getBusinessImages(biz);
+                    const imgUrl = biz.image_url && !String(biz.image_url).startsWith('data:')
+                        ? biz.image_url
+                        : '';
 
                     const card = document.createElement('div');
                     card.className = 'card business-card';
 
                     const imgDiv = document.createElement('div');
-                    imgDiv.className = 'card-image-placeholder featured-card-media';
-
-                    if (imgs.length > 0) {
-                        const track = document.createElement('div');
-                        track.className = 'featured-slides-track';
-
-                        imgs.forEach((src, imgIdx) => {
-                            const slide = document.createElement('div');
-                            slide.className = 'featured-slide';
-                            const img = document.createElement('img');
-                            img.src = src;
-                            img.alt = `${bizName} photo ${imgIdx + 1}`;
-                            slide.appendChild(img);
-                            track.appendChild(slide);
-                        });
-
-                        imgDiv.appendChild(track);
-
-                        // JS: Add arrows, dots, and automatic photo cycling when multiple photos exist
-                        if (imgs.length > 1) {
-                            let slideIdx = 0;
-                            let isPaused = false;
-
-                            const prevBtn = document.createElement('button');
-                            prevBtn.type = 'button';
-                            prevBtn.className = 'featured-slide-nav featured-slide-prev';
-                            prevBtn.setAttribute('aria-label', 'Previous photo');
-                            prevBtn.innerHTML = '&#10094;';
-
-                            const nextBtn = document.createElement('button');
-                            nextBtn.type = 'button';
-                            nextBtn.className = 'featured-slide-nav featured-slide-next';
-                            nextBtn.setAttribute('aria-label', 'Next photo');
-                            nextBtn.innerHTML = '&#10095;';
-
-                            const dotsWrap = document.createElement('div');
-                            dotsWrap.className = 'featured-slide-dots';
-
-                            const dots = imgs.map((_, dotIdx) => {
-                                const dot = document.createElement('button');
-                                dot.type = 'button';
-                                dot.className = `featured-slide-dot ${dotIdx === 0 ? 'active' : ''}`;
-                                dot.setAttribute('aria-label', `Photo ${dotIdx + 1}`);
-                                dot.addEventListener('click', (e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    goToCardSlide(dotIdx);
-                                });
-                                dotsWrap.appendChild(dot);
-                                return dot;
-                            });
-
-                            function goToCardSlide(nextIdx) {
-                                slideIdx = (nextIdx + imgs.length) % imgs.length;
-                                track.style.transform = `translateX(-${slideIdx * 100}%)`;
-                                dots.forEach((d, idx) => d.classList.toggle('active', idx === slideIdx));
-                            }
-
-                            prevBtn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                goToCardSlide(slideIdx - 1);
-                            });
-
-                            nextBtn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                goToCardSlide(slideIdx + 1);
-                            });
-
-                            card.addEventListener('mouseenter', () => { isPaused = true; });
-                            card.addEventListener('mouseleave', () => { isPaused = false; });
-
-                            imgDiv.appendChild(prevBtn);
-                            imgDiv.appendChild(nextBtn);
-                            imgDiv.appendChild(dotsWrap);
-
-                            const intervalMs = 3500 + (cardIndex % 3) * 400;
-                            const timer = setInterval(() => {
-                                if (!isPaused) goToCardSlide(slideIdx + 1);
-                            }, intervalMs);
-                            activeCardTimers.push(timer);
-                        }
+                    imgDiv.className = 'card-image-placeholder';
+                    if (imgUrl) {
+                        const img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.alt = bizName;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        imgDiv.appendChild(img);
                     }
 
                     const body = document.createElement('div');
