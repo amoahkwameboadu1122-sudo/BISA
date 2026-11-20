@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - Let's Do Business &amp; Share Ideas</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .footer-admin-trigger {
             color: inherit;
@@ -195,7 +196,7 @@
 
     </main>
 
-    <!-- FOOTER (HIDDEN ADMIN PORTAL TRIGGER ON "BISA") -->
+    <!-- FOOTER (ADMIN PORTAL TRIGGER ON "BISA") -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
@@ -231,43 +232,82 @@
 
     <script>
         (function () {
-            const STORAGE_KEY = 'bisa_admin_config_v1';
-            let config = null;
+            const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+            const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const sb = window.supabase && typeof window.supabase.createClient === 'function'
+                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+                : null;
 
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (raw) config = JSON.parse(raw);
-            } catch (err) {
-                config = null;
+            const CONFIG_KEY = 'bisa_admin_config_v1';
+            const LS_SETTINGS_KEY = 'bisa_settings_cache';
+
+            let currentSlide = 0;
+
+            function initSlideshowControls() {
+                const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
+                const indicatorsWrap = document.getElementById('slideIndicators');
+                const prevBtn = document.getElementById('prevSlideBtn');
+                const nextBtn = document.getElementById('nextSlideBtn');
+
+                currentSlide = 0;
+
+                function showSlide(index) {
+                    if (!slides.length) return;
+                    currentSlide = (index + slides.length) % slides.length;
+                    slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+                    if (indicatorsWrap) {
+                        Array.from(indicatorsWrap.children).forEach((dot, i) => {
+                            dot.classList.toggle('active', i === currentSlide);
+                        });
+                    }
+                }
+
+                if (slides.length > 0 && indicatorsWrap) {
+                    indicatorsWrap.innerHTML = '';
+                    slides.forEach((_, idx) => {
+                        const dot = document.createElement('span');
+                        dot.className = 'indicator' + (idx === 0 ? ' active' : '');
+                        dot.addEventListener('click', () => showSlide(idx));
+                        indicatorsWrap.appendChild(dot);
+                    });
+                }
+
+                if (prevBtn) prevBtn.onclick = () => showSlide(currentSlide - 1);
+                if (nextBtn) nextBtn.onclick = () => showSlide(currentSlide + 1);
             }
 
-            if (config) {
-                const brandText = config.brandName || 'BISA';
+            function applySettings(cfg) {
+                if (!cfg) return;
+
+                const brandText = cfg.brand_name || cfg.brandName || 'BISA';
                 const logoEl = document.getElementById('siteLogoText');
                 const footerBrandLink = document.getElementById('footerBrandLink');
                 if (logoEl) logoEl.textContent = brandText;
                 if (footerBrandLink) footerBrandLink.textContent = brandText;
 
-                if (config.mainHeadline) {
+                const mainHeadline = cfg.main_headline || cfg.mainHeadline;
+                if (mainHeadline) {
                     const heroTitle = document.getElementById('homeHeroTitle');
-                    if (heroTitle) heroTitle.textContent = config.mainHeadline;
+                    if (heroTitle) heroTitle.textContent = mainHeadline;
                 }
 
-                if (config.heroSubtext) {
+                const heroSubtext = cfg.hero_subtext || cfg.heroSubtext;
+                if (heroSubtext) {
                     const heroDesc = document.getElementById('homeHeroDescription');
-                    if (heroDesc) heroDesc.textContent = config.heroSubtext;
+                    if (heroDesc) heroDesc.textContent = heroSubtext;
                 }
 
+                const activeLogo = cfg.logo_url || cfg.activeLogo;
                 const headerLogoImg = document.getElementById('headerLogoImg');
                 const headerContainer = document.getElementById('headerContainer');
                 const footerBrandWrap = document.getElementById('footerBrandWrap');
-                const placement = config.logoPlacement || 'header-left';
+                const placement = cfg.logo_placement || cfg.logoPlacement || 'header-left';
 
-                if (config.activeLogo && headerLogoImg) {
-                    headerLogoImg.src = config.activeLogo;
+                if (activeLogo && headerLogoImg) {
+                    headerLogoImg.src = activeLogo;
                     headerLogoImg.alt = brandText + ' Logo';
                     headerLogoImg.style.display = 'inline-block';
-                    document.documentElement.style.setProperty('--bisa-active-logo', `url("${config.activeLogo}")`);
+                    document.documentElement.style.setProperty('--bisa-active-logo', `url("${activeLogo}")`);
                 }
 
                 if (headerContainer) {
@@ -278,11 +318,15 @@
                     footerBrandWrap.classList.toggle('footer-brand-highlight', placement === 'footer-brand');
                 }
 
-                if (Array.isArray(config.slides) && config.slides.length > 0) {
+                const rawSlides = Array.isArray(cfg.slideshow) && cfg.slideshow.length
+                    ? cfg.slideshow
+                    : (Array.isArray(cfg.slides) && cfg.slides.length ? cfg.slides : null);
+
+                if (rawSlides) {
                     const container = document.getElementById('homeSlideshowContainer');
                     if (container) {
                         container.innerHTML = '';
-                        config.slides.forEach((slide, idx) => {
+                        rawSlides.forEach((slide, idx) => {
                             const slideEl = document.createElement('div');
                             slideEl.className = 'slide' + (idx === 0 ? ' active' : '');
 
@@ -298,7 +342,7 @@
 
                             const p = document.createElement('p');
                             p.className = 'hero-description';
-                            p.textContent = slide.caption || '';
+                            p.textContent = slide.subtitle || slide.caption || '';
 
                             textCol.appendChild(h2);
                             textCol.appendChild(p);
@@ -306,9 +350,10 @@
                             const imgCol = document.createElement('div');
                             imgCol.className = 'slide-image';
 
-                            if (slide.image) {
+                            const imgSrc = slide.image_url || slide.image || '';
+                            if (imgSrc) {
                                 const img = document.createElement('img');
-                                img.src = slide.image;
+                                img.src = imgSrc;
                                 img.alt = slide.title || 'Slide image';
                                 img.className = 'hero-img';
                                 imgCol.appendChild(img);
@@ -319,40 +364,33 @@
                             slideEl.appendChild(contentEl);
                             container.appendChild(slideEl);
                         });
+                        initSlideshowControls();
                     }
                 }
             }
 
-            // Slideshow navigation & indicators
-            const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
-            const indicatorsWrap = document.getElementById('slideIndicators');
-            const prevBtn = document.getElementById('prevSlideBtn');
-            const nextBtn = document.getElementById('nextSlideBtn');
-            let currentSlide = 0;
+            initSlideshowControls();
 
-            function showSlide(index) {
-                if (!slides.length) return;
-                currentSlide = (index + slides.length) % slides.length;
-                slides.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
-                if (indicatorsWrap) {
-                    Array.from(indicatorsWrap.children).forEach((dot, i) => {
-                        dot.classList.toggle('active', i === currentSlide);
-                    });
-                }
+            try {
+                const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(CONFIG_KEY);
+                if (cached) applySettings(JSON.parse(cached));
+            } catch (_) {}
+
+            if (sb) {
+                sb.from('bisa_settings')
+                    .select('*')
+                    .eq('id', 1)
+                    .maybeSingle()
+                    .then(({ data, error }) => {
+                        if (!error && data) {
+                            try {
+                                localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
+                            } catch (_) {}
+                            applySettings(data);
+                        }
+                    })
+                    .catch(() => {});
             }
-
-            if (slides.length > 0 && indicatorsWrap) {
-                indicatorsWrap.innerHTML = '';
-                slides.forEach((_, idx) => {
-                    const dot = document.createElement('span');
-                    dot.className = 'indicator' + (idx === 0 ? ' active' : '');
-                    dot.addEventListener('click', () => showSlide(idx));
-                    indicatorsWrap.appendChild(dot);
-                });
-            }
-
-            if (prevBtn) prevBtn.addEventListener('click', () => showSlide(currentSlide - 1));
-            if (nextBtn) nextBtn.addEventListener('click', () => showSlide(currentSlide + 1));
         })();
     </script>
 
