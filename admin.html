@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- JS: Loads Supabase v2 client SDK from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     /* CSS: BISA brand variables and layout styles for the admin console */
@@ -68,6 +69,7 @@
       margin-bottom: 1.5rem;
     }
 
+    /* CSS: Logged-in top bar keeps only brand label and Log Out action */
     .admin-topbar {
       background: var(--plum);
       color: #fff;
@@ -279,19 +281,19 @@
       border: 1px solid #f5b5b0;
     }
 
-    .quick-add-row {
+    .featured-picker-bar {
       display: flex;
       gap: 0.75rem;
       align-items: center;
       flex-wrap: wrap;
       background: #fff9ef;
       border: 1.5px solid var(--border);
-      padding: 1rem;
+      padding: 0.9rem 1rem;
       border-radius: 11px;
       margin-bottom: 1.25rem;
     }
 
-    .quick-add-row select {
+    .featured-picker-bar select {
       flex: 1 1 260px;
     }
 
@@ -334,7 +336,27 @@
       padding: 1rem;
     }
 
-    .featured-pill-badge {
+    .img-review-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .img-review-badge.accepted {
+      background: #1c7c43;
+    }
+
+    .img-review-badge.removed {
+      background: var(--coral);
+    }
+
+    .featured-tag-badge {
       position: absolute;
       top: 10px;
       left: 10px;
@@ -344,6 +366,15 @@
       font-weight: 800;
       background: var(--gold);
       color: var(--plum-dark);
+    }
+
+    .biz-image-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      padding: 0.75rem 1rem;
+      background: #fff9ef;
+      border-bottom: 1px solid var(--border);
     }
 
     .biz-body {
@@ -375,11 +406,206 @@
       background: #fcfaf7;
     }
 
+    /* CSS: Modal dialog used to edit/modify any business listing */
+    dialog.edit-biz-dialog {
+      margin: auto;
+      border: 2px solid var(--plum);
+      border-radius: 16px;
+      padding: 0;
+      width: min(94vw, 640px);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--surface);
+      box-shadow: 0 22px 50px rgba(38, 20, 34, 0.3);
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    dialog.edit-biz-dialog::backdrop {
+      background: rgba(38, 20, 34, 0.65);
+      backdrop-filter: blur(3px);
+    }
+
+    .edit-biz-header {
+      background: var(--plum);
+      color: #fff;
+      padding: 1rem 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .edit-biz-header h3 {
+      color: var(--gold);
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .edit-biz-body {
+      padding: 1.35rem;
+    }
+
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .media-item {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 135px;
+      object-fit: cover;
+      background: #f5ece0;
+    }
+
+    .media-item-info {
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      flex: 1;
+    }
+
+    .badge-cat {
+      display: inline-block;
+      align-self: flex-start;
+      background: var(--vanilla);
+      color: var(--plum);
+      border: 1px solid var(--plum);
+      padding: 0.15rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }
+
+    .category-slot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .category-slot-card {
+      border: 1.5px solid var(--border);
+      border-radius: 11px;
+      padding: 1rem;
+      background: #fffcf7;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .category-slot-preview {
+      width: 68px;
+      height: 68px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .category-slot-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slide-row {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin-bottom: 0.85rem;
+      background: #fffcf8;
+    }
+
+    .slide-row img {
+      width: 120px;
+      height: 75px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #eee;
+    }
+
+    /* CSS: Contact message cards inside the Messages tab */
+    .messages-list {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .message-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      background: #fffcf8;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .message-sender {
+      color: var(--plum);
+      font-weight: 800;
+      font-size: 0.98rem;
+    }
+
+    .message-email {
+      color: var(--coral);
+      font-weight: 600;
+      font-size: 0.84rem;
+    }
+
+    .message-date {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .message-body {
+      color: var(--text);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .message-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
     .hidden {
       display: none !important;
     }
 
     @media (max-width: 680px) {
+      .slide-row {
+        grid-template-columns: 1fr;
+      }
       .admin-topbar {
         padding: 0.9rem 1rem;
       }
@@ -392,7 +618,7 @@
   <section id="loginView" class="login-wrapper">
     <div class="login-card">
       <h1>BISA Admin</h1>
-      <p>Sign in with your Supabase admin credentials to manage approvals, featured campus listings, and uploads.</p>
+      <p>Sign in with your Supabase admin credentials to manage listings, site media, messages, and notices.</p>
       <div id="loginAlert" class="status-banner"></div>
       <form id="loginForm">
         <div class="form-group">
@@ -408,7 +634,7 @@
     </div>
   </section>
 
-  <!-- HTML: Authenticated Admin Console -->
+  <!-- HTML: Authenticated Admin Console (brand label + Log Out only; no nav bar or footer) -->
   <section id="dashboardView" class="hidden">
     <header class="admin-topbar">
       <div class="admin-brand" id="topbarBrandLabel">BISA <span>Admin Console</span></div>
@@ -419,167 +645,362 @@
       <div id="globalAlert" class="status-banner"></div>
 
       <div class="tab-bar">
-        <button type="button" class="tab-btn active" data-tab="featuredTab">Featured on Campus</button>
-        <button type="button" class="tab-btn" data-tab="approvalsTab">Pending &amp; All Listings</button>
+        <button type="button" class="tab-btn active" data-tab="businessesTab">Business Approvals &amp; Images</button>
+        <button type="button" class="tab-btn" data-tab="featuredCampusTab">Featured on Campus</button>
+        <button type="button" class="tab-btn" data-tab="brandingTab">Branding &amp; Logo Upload</button>
+        <button type="button" class="tab-btn" data-tab="slideshowTab">Hero Slideshow</button>
+        <button type="button" class="tab-btn" data-tab="siteAssetsTab">Category Icons &amp; Site Images</button>
+        <button type="button" class="tab-btn" data-tab="mediaLibraryTab">All Uploaded Media</button>
+        <button type="button" class="tab-btn" data-tab="noticesTab">Policy Notices</button>
+        <button type="button" class="tab-btn" data-tab="messagesTab">Messages</button>
       </div>
 
-      <!-- TAB 1: FEATURED ON CAMPUS (SELECT FROM APPROVED + UPLOAD NEW FEATURED BUSINESS) -->
-      <div id="featuredTab" class="tab-panel active">
-
-        <!-- Add from Approved Businesses -->
+      <!-- TAB 1: BUSINESS LISTINGS, MODIFY/UPDATE & IMAGE MODERATION -->
+      <div id="businessesTab" class="tab-panel active">
         <div class="panel-card">
-          <h2>Add from Approved Businesses</h2>
-          <p class="panel-sub">Select an already-approved business to feature on the Home page under <strong>Featured on Campus</strong>.</p>
+          <h2>Pending Vendor Submissions</h2>
+          <p class="panel-sub">Modify details, review vendor-uploaded business images (Accept, Change/Replace, or Remove), and approve or reject listings.</p>
+          <div id="pendingBusinessList" class="biz-grid"></div>
+        </div>
 
-          <div class="quick-add-row">
-            <select id="approvedBusinessSelect">
-              <option value="">-- Choose an Approved Business --</option>
+        <div class="panel-card">
+          <h2>Approved &amp; Rejected Listings</h2>
+          <p class="panel-sub">Modify any existing business listing, swap or remove its photos, feature approved listings on campus, or change its approval status.</p>
+          <div id="reviewedBusinessList" class="biz-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FEATURED ON CAMPUS (ADD FROM APPROVED & EDIT FEATURED BUSINESSES) -->
+      <div id="featuredCampusTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Add Approved Business to Featured on Campus</h2>
+          <p class="panel-sub">Select an <strong>approved</strong> business to display on the Home page under <strong>Featured on Campus</strong>, or edit any featured business below.</p>
+
+          <div class="featured-picker-bar">
+            <select id="approvedToFeatureSelect">
+              <option value="">-- Select an Approved Business --</option>
             </select>
-            <button type="button" class="btn btn-primary" id="addSelectedApprovedToFeaturedBtn">+ Add to Featured on Campus</button>
+            <button type="button" class="btn btn-primary" id="addApprovedToFeaturedBtn">+ Add to Featured on Campus</button>
           </div>
 
           <h3 style="color: var(--plum); font-size: 1rem; margin-bottom: 0.75rem;">Currently Featured on Campus</h3>
-          <div id="currentlyFeaturedGrid" class="biz-grid" style="margin-bottom: 1.5rem;"></div>
+          <div id="currentlyFeaturedCampusList" class="biz-grid" style="margin-bottom: 1.5rem;"></div>
 
           <h3 style="color: var(--plum); font-size: 1rem; margin-bottom: 0.75rem;">Approved Businesses Available to Feature</h3>
-          <div id="approvedCandidateGrid" class="biz-grid"></div>
+          <div id="approvedAvailableCampusList" class="biz-grid"></div>
         </div>
+      </div>
 
-        <!-- Upload a New Featured on Campus Business -->
+      <!-- TAB 3: BRANDING, HEADLINES & LOGO UPLOAD -->
+      <div id="brandingTab" class="tab-panel">
         <div class="panel-card">
-          <h2>Upload New Featured on Campus Business</h2>
-          <p class="panel-sub">Upload a business with photos directly as <strong>Approved</strong> and <strong>Featured on Campus</strong>.</p>
+          <h2>Brand Identity, Headlines &amp; Logo Asset</h2>
+          <p class="panel-sub">Upload a brand logo/icon directly to Supabase Storage or select from uploaded icons, and set where it appears.</p>
 
-          <form id="uploadFeaturedBizForm">
+          <form id="brandingForm">
             <div class="form-grid">
               <div class="form-group">
-                <label for="upBizName">Business Name</label>
-                <input type="text" id="upBizName" placeholder="e.g., Campus Fresh Chop" required />
+                <label for="brandNameInput">Brand Name</label>
+                <input type="text" id="brandNameInput" value="BISA" required />
               </div>
+
               <div class="form-group">
-                <label for="upBizCategory">Category</label>
-                <select id="upBizCategory">
-                  <option value="Food & Snacks">Food &amp; Snacks</option>
-                  <option value="Graphics & Art">Graphics &amp; Art</option>
-                  <option value="Web & Tech">Web &amp; Tech</option>
-                  <option value="Books & Notes">Books &amp; Notes</option>
-                  <option value="Laundry">Laundry</option>
-                  <option value="Campus Services">Campus Services</option>
-                  <option value="Businesses">Businesses</option>
-                  <option value="Services">Services</option>
-                  <option value="Products">Products</option>
+                <label for="logoPlacementInput">Logo Placement</label>
+                <select id="logoPlacementInput">
+                  <option value="header-left">Header Left</option>
+                  <option value="header-center">Header Center</option>
+                  <option value="hero-top">Hero Top</option>
+                  <option value="footer-brand">Footer Brand</option>
                 </select>
               </div>
             </div>
 
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="upBizLocation">Town / City (Ghana)</label>
-                <input type="text" id="upBizLocation" placeholder="e.g., Elmina, Central Region" required />
-              </div>
-              <div class="form-group">
-                <label for="upBizFindUs">Where to Find Service</label>
-                <input type="text" id="upBizFindUs" placeholder="e.g., Near Campus Hub" required />
-              </div>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="upBizPhone">Phone / WhatsApp</label>
-                <input type="text" id="upBizPhone" placeholder="+233 ..." required />
-              </div>
-              <div class="form-group">
-                <label for="upBizEmail">Email</label>
-                <input type="email" id="upBizEmail" placeholder="vendor@example.com" required />
-              </div>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="upBizWebsite">Main Page / Link (Optional)</label>
-                <input type="text" id="upBizWebsite" placeholder="Optional" />
-              </div>
-              <div class="form-group">
-                <label for="upBizImageFile">Upload Business Photo / Flyer</label>
-                <input type="file" id="upBizImageFile" accept="image/*" />
-              </div>
+            <div class="form-group">
+              <label for="mainHeadlineInput">Main Headline</label>
+              <input type="text" id="mainHeadlineInput" placeholder="Let's Do Business &amp; Share Ideas" required />
             </div>
 
             <div class="form-group">
-              <label for="upBizDescription">Description</label>
-              <textarea id="upBizDescription" placeholder="Describe the business or service..." required></textarea>
+              <label for="heroSubtextInput">Hero Subtext</label>
+              <textarea id="heroSubtextInput" placeholder="Discover student-run businesses, creative services, and campus products all in one place."></textarea>
             </div>
 
-            <button type="submit" class="btn btn-gold" id="submitUploadFeaturedBtn">Upload &amp; Feature on Campus</button>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="logoFileUpload">Upload New Logo / Icon File</label>
+                <input type="file" id="logoFileUpload" accept="image/*" />
+              </div>
+
+              <div class="form-group">
+                <label for="activeLogoUrlInput">Active Logo Image URL</label>
+                <input type="url" id="activeLogoUrlInput" placeholder="https://..." />
+              </div>
+            </div>
+
+            <div id="logoPreviewWrap" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+              <img id="activeLogoPreview" src="" alt="Active Logo" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 10px; background: #fff; display: none;" />
+              <button type="button" class="btn btn-outline btn-sm" id="clearLogoBtn">Remove Active Logo</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Branding &amp; Logo Settings</button>
           </form>
         </div>
       </div>
 
-      <!-- TAB 2: APPROVE / REJECT PENDING & ALL LISTINGS -->
-      <div id="approvalsTab" class="tab-panel">
+      <!-- TAB 4: HERO SLIDESHOW -->
+      <div id="slideshowTab" class="tab-panel">
         <div class="panel-card">
-          <h2>Pending Vendor Submissions</h2>
-          <p class="panel-sub">Approve pending listings so they become available to feature on campus and appear on Explore.</p>
-          <div id="pendingListGrid" class="biz-grid"></div>
+          <h2>Add Hero Slideshow Slide</h2>
+          <p class="panel-sub">Upload a banner/slideshow image or paste an image URL to display on the homepage hero.</p>
+
+          <form id="addSlideForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="slideFileInput">Upload Slide Image</label>
+                <input type="file" id="slideFileInput" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label for="slideUrlInput">Or Image URL</label>
+                <input type="url" id="slideUrlInput" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="slideTitleInput">Slide Headline / Caption</label>
+                <input type="text" id="slideTitleInput" placeholder="Campus Fresh Chop" />
+              </div>
+              <div class="form-group">
+                <label for="slideSubtitleInput">Slide Subcaption</label>
+                <input type="text" id="slideSubtitleInput" placeholder="Fresh meals &amp; snacks across campus" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Slide</button>
+          </form>
         </div>
 
         <div class="panel-card">
-          <h2>All Businesses</h2>
-          <p class="panel-sub">Manage approval or featured status for all submitted listings.</p>
-          <div id="allListingsGrid" class="biz-grid"></div>
+          <h2>Current Slideshow Items</h2>
+          <div id="slideshowList"></div>
+        </div>
+      </div>
+
+      <!-- TAB 5: CATEGORY ICONS & SITE AREA IMAGES -->
+      <div id="siteAssetsTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Category Icons &amp; Images</h2>
+          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category.</p>
+          <div id="categorySlotsContainer" class="category-slot-grid"></div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Site Area Banners &amp; Promo Flyers</h2>
+          <p class="panel-sub">Upload icons, promotional flyers, or default fallback images for site sections (excluding vendor registration, where vendors upload their own photo).</p>
+          <div id="siteBannersContainer" class="category-slot-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 6: ALL MEDIA LIBRARY -->
+      <div id="mediaLibraryTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Upload Media to Storage (<code>bisa-media</code>)</h2>
+          <p class="panel-sub">Upload assets under Icon, Image, Flyer, Slideshow, or Business categories.</p>
+
+          <form id="mediaUploadForm" class="form-grid" style="align-items: end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="mediaCategorySelect">Asset Category</label>
+              <select id="mediaCategorySelect">
+                <option value="Icon">Icon</option>
+                <option value="Image">Image</option>
+                <option value="Flyer">Flyer</option>
+                <option value="Slideshow">Slideshow</option>
+                <option value="Business">Business</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="mediaFileInput">Select Image File</label>
+              <input type="file" id="mediaFileInput" accept="image/*" required />
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Asset</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h2>Media Library</h2>
+              <p class="panel-sub" style="margin-bottom: 0;">Copy asset URLs, set as site logo, or delete files from storage.</p>
+            </div>
+            <select id="mediaFilterSelect" style="max-width: 200px;">
+              <option value="ALL">All Categories</option>
+              <option value="Icon">Icon</option>
+              <option value="Image">Image</option>
+              <option value="Flyer">Flyer</option>
+              <option value="Slideshow">Slideshow</option>
+              <option value="Business">Business</option>
+            </select>
+          </div>
+          <div id="mediaLibraryGrid" class="media-grid"></div>
+        </div>
+      </div>
+
+      <!-- TAB 7: POLICY NOTICES -->
+      <div id="noticesTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Policy Notice Modals</h2>
+          <p class="panel-sub">Edit the policy modal messages shown before viewing contact details on Explore and upon opening the Vendor Registration page.</p>
+          <form id="noticesForm">
+            <div class="form-group">
+              <label for="exploreNoticeInput">Explore Contact Policy Notice (<code>explore_notice</code>)</label>
+              <textarea id="exploreNoticeInput" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="businessNoticeInput">List Your Business Page Policy Notice (<code>business_notice</code>)</label>
+              <textarea id="businessNoticeInput" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Policy Notices</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 8: CONTACT MESSAGES FROM contact.html -->
+      <div id="messagesTab" class="tab-panel">
+        <div class="panel-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+            <div>
+              <h2>Contact Messages</h2>
+              <p class="panel-sub" style="margin-bottom: 0;">Messages submitted from <code>contact.html</code>.</p>
+            </div>
+            <button type="button" class="btn btn-outline btn-sm" id="refreshMessagesBtn">Refresh Messages</button>
+          </div>
+          <div id="messagesListContainer" class="messages-list"></div>
         </div>
       </div>
     </main>
   </section>
 
+  <!-- HTML: Modal dialog allowing admin to modify & update any business record -->
+  <dialog id="editBusinessModal" class="edit-biz-dialog" aria-labelledby="editBizModalTitle">
+    <div class="edit-biz-header">
+      <h3 id="editBizModalTitle">Modify Business Listing</h3>
+      <button type="button" class="btn btn-gold btn-sm" id="closeEditBizModalBtn">&times;</button>
+    </div>
+    <div class="edit-biz-body">
+      <form id="editBusinessForm">
+        <input type="hidden" id="editBizId" />
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizName">Business Name</label>
+            <input type="text" id="editBizName" required />
+          </div>
+          <div class="form-group">
+            <label for="editBizCategory">Category</label>
+            <input type="text" id="editBizCategory" placeholder="e.g., Services, Products, Businesses" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizLocation">Location</label>
+            <input type="text" id="editBizLocation" placeholder="e.g., Elmina, Central Region" />
+          </div>
+          <div class="form-group">
+            <label for="editBizFindUs">Where to Find Service</label>
+            <input type="text" id="editBizFindUs" placeholder="e.g., Campus Hub / Main Road" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizPhone">Tel / Phone</label>
+            <input type="text" id="editBizPhone" placeholder="+233 ..." />
+          </div>
+          <div class="form-group">
+            <label for="editBizEmail">Email</label>
+            <input type="email" id="editBizEmail" placeholder="vendor@bisa.edu.gh" />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="editBizWebsite">Main Page / Website (Optional)</label>
+            <input type="url" id="editBizWebsite" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label for="editBizStatus">Approval Status</label>
+            <select id="editBizStatus">
+              <option value="pending">pending</option>
+              <option value="approved">approved</option>
+              <option value="rejected">rejected</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editBizDescription">Description</label>
+          <textarea id="editBizDescription" rows="3"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;">
+          <button type="button" class="btn btn-outline" id="cancelEditBizBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Business Changes</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
   <script>
-    // JS: Supabase client, quota-safe cache helpers, and Featured on Campus selection + upload workflow
+    // JS: Supabase client setup and storage/cache constants
     const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
     const STORAGE_BUCKET = 'bisa-media';
 
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const LS_SETTINGS_KEY = 'bisa_settings_cache';
     const LS_CONFIG_KEY = 'bisa_admin_config_v1';
     const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
+    const LS_MEDIA_KEY = 'bisa_media_cache';
+    const LS_MESSAGES_KEY = 'bisa_messages_cache';
+
+    const DEFAULT_CATEGORIES = [
+      'Food & Snacks',
+      'Graphics & Art',
+      'Web & Tech',
+      'Books & Notes',
+      'Laundry',
+      'Campus Services'
+    ];
+
+    const SITE_BANNER_SLOTS = [
+      { key: 'explore_banner', label: 'Explore Page Hero Graphic / Icon' },
+      { key: 'featured_badge', label: 'Featured Business Badge Icon' },
+      { key: 'promo_flyer', label: 'Homepage / Campus Promo Flyer' },
+      { key: 'default_business_placeholder', label: 'Default Business Fallback Image (When Removed)' }
+    ];
 
     let currentSettings = {
       id: 1,
       brand_name: 'BISA',
+      main_headline: "Let's Do Business & Share Ideas",
+      hero_subtext: 'Discover student-run businesses, creative services, and campus products all in one place.',
+      logo_url: '',
+      logo_placement: 'header-left',
+      explore_notice: 'Before viewing this business or service\'s contact details, location, and offerings, please note that BISA connects you with student and local providers.',
+      business_notice: 'All business listings are reviewed by BISA administrators before appearing publicly on Explore.',
+      slideshow: [],
+      category_media: {},
       site_assets: { featured_business_ids: [] }
     };
+
     let allBusinesses = [];
+    let mediaLibrary = [];
+    let contactMessages = [];
 
-    function saveJsonSafely(key, value) {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (_) {
-        try {
-          localStorage.removeItem(key);
-        } catch (__) {}
-      }
-    }
-
-    function readJsonSafely(key, fallback) {
-      try {
-        const raw = localStorage.getItem(key);
-        return raw ? JSON.parse(raw) : fallback;
-      } catch (_) {
-        return fallback;
-      }
-    }
-
-    function saveBusinessesCacheSafely(list) {
-      const sanitized = (Array.isArray(list) ? list : []).slice(0, 20).map((b) => {
-        const safeImg = b.image_url && String(b.image_url).startsWith('data:') ? null : (b.image_url || null);
-        return { ...b, image_url: safeImg };
-      });
-      saveJsonSafely(LS_BUSINESSES_KEY, sanitized);
-    }
-
-    function showAlert(message, type = 'success') {
-      const el = document.getElementById('globalAlert');
+    // JS: Helper to display transient feedback banners
+    function showAlert(elementId, message, type = 'success') {
+      const el = document.getElementById(elementId);
       if (!el) return;
       el.textContent = message;
       el.className = `status-banner show ${type}`;
@@ -588,6 +1009,7 @@
       }, 4500);
     }
 
+    // JS: Escapes untrusted strings before inserting into HTML template literals
     function escapeHtml(str) {
       if (str === null || str === undefined) return '';
       return String(str)
@@ -598,6 +1020,7 @@
         .replace(/'/g, '&#039;');
     }
 
+    // JS: Switches between dashboard tabs
     document.querySelectorAll('.tab-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
@@ -607,11 +1030,12 @@
       });
     });
 
+    // JS: Supabase Auth session check, sign-in, and sign-out handlers
     const loginView = document.getElementById('loginView');
     const dashboardView = document.getElementById('dashboardView');
 
     async function checkSession() {
-      const { data: { session } } = await sb.auth.getSession();
+      const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) {
         enterDashboard();
       } else {
@@ -624,275 +1048,659 @@
       e.preventDefault();
       const email = document.getElementById('adminEmail').value.trim();
       const password = document.getElementById('adminPassword').value;
-      const btn = document.getElementById('loginSubmitBtn');
-      btn.disabled = true;
-      btn.textContent = 'Signing In...';
+      const submitBtn = document.getElementById('loginSubmitBtn');
 
-      const { data, error } = await sb.auth.signInWithPassword({ email, password });
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing In...';
 
-      btn.disabled = false;
-      btn.textContent = 'Sign In';
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Sign In';
 
       if (error) {
-        const alertEl = document.getElementById('loginAlert');
-        alertEl.textContent = error.message || 'Sign-in failed.';
-        alertEl.className = 'status-banner show error';
+        showAlert('loginAlert', error.message || 'Invalid login credentials.', 'error');
         return;
       }
 
-      if (data.session) enterDashboard();
+      if (data.session) {
+        enterDashboard();
+      }
     });
 
     document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await sb.auth.signOut();
+      await supabaseClient.auth.signOut();
       dashboardView.classList.add('hidden');
       loginView.classList.remove('hidden');
+      document.getElementById('adminPassword').value = '';
     });
 
     async function enterDashboard() {
       loginView.classList.add('hidden');
       dashboardView.classList.remove('hidden');
-      await Promise.all([loadSettings(), loadBusinesses()]);
+      await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary(), loadMessages()]);
     }
 
-    async function uploadImageToBucket(file) {
+    // JS: Converts selected image file to base64 data URL for local fallback
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // JS: Uploads a file to Supabase Storage bucket `bisa-media` under the chosen category folder
+    async function uploadFileToMedia(file, category = 'Image') {
       const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-      const path = `business/${safeName}`;
+      const folder = category.toLowerCase();
+      const storagePath = `${folder}/${safeName}`;
+
       try {
-        const { error } = await sb.storage.from(STORAGE_BUCKET).upload(path, file, {
-          cacheControl: '3600',
-          upsert: true
+        const { error: uploadError } = await supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .upload(storagePath, file, { cacheControl: '3600', upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data: publicData } = supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .getPublicUrl(storagePath);
+
+        const publicUrl = publicData.publicUrl;
+        recordMediaLocally({
+          id: storagePath,
+          name: file.name,
+          category,
+          url: publicUrl,
+          path: storagePath,
+          created_at: new Date().toISOString()
         });
-        if (error) throw error;
-        const { data } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(path);
-        return data.publicUrl;
-      } catch (_) {
-        return null;
+        return publicUrl;
+      } catch (err) {
+        console.warn('Supabase storage upload fallback:', err.message);
+        const dataUrl = await fileToDataUrl(file);
+        recordMediaLocally({
+          id: `local-${Date.now()}`,
+          name: file.name,
+          category,
+          url: dataUrl,
+          path: null,
+          created_at: new Date().toISOString()
+        });
+        return dataUrl;
       }
     }
 
-    async function loadSettings() {
-      const cached = readJsonSafely(LS_SETTINGS_KEY, null) || readJsonSafely(LS_CONFIG_KEY, null);
-      if (cached) currentSettings = { ...currentSettings, ...cached };
+    function recordMediaLocally(item) {
+      try {
+        const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
+        cached.unshift(item);
+        localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached.slice(0, 60)));
+      } catch (_) {}
+    }
 
-      const { data } = await sb.from('bisa_settings').select('*').eq('id', 1).maybeSingle();
-      if (data) {
+    // JS: Loads and saves `bisa_settings` (row id = 1)
+    async function loadSettings() {
+      try {
+        const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY);
+        if (cached) {
+          currentSettings = { ...currentSettings, ...JSON.parse(cached) };
+        }
+      } catch (_) {}
+
+      const { data, error } = await supabaseClient
+        .from('bisa_settings')
+        .select('*')
+        .eq('id', 1)
+        .maybeSingle();
+
+      if (!error && data) {
         currentSettings = {
           ...currentSettings,
           ...data,
+          slideshow: Array.isArray(data.slideshow) ? data.slideshow : [],
+          category_media: data.category_media && typeof data.category_media === 'object' ? data.category_media : {},
           site_assets: data.site_assets && typeof data.site_assets === 'object' ? data.site_assets : {}
         };
-        saveJsonSafely(LS_SETTINGS_KEY, currentSettings);
+        try {
+          localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
+        } catch (_) {}
       }
 
-      if (currentSettings.brand_name) {
-        document.getElementById('topbarBrandLabel').innerHTML =
-          `${escapeHtml(currentSettings.brand_name)} <span>Admin Console</span>`;
-      }
-      renderAllViews();
+      populateSettingsUI();
+      renderBusinesses();
     }
 
-    async function saveFeaturedIds(nextIds, successMsg) {
-      const nextAssets = {
-        ...(currentSettings.site_assets || {}),
-        featured_business_ids: nextIds
-      };
-      currentSettings = { ...currentSettings, id: 1, site_assets: nextAssets };
-      saveJsonSafely(LS_SETTINGS_KEY, currentSettings);
-      saveJsonSafely(LS_CONFIG_KEY, {
-        ...(readJsonSafely(LS_CONFIG_KEY, {}) || {}),
-        site_assets: nextAssets
-      });
+    async function saveSettings(partialUpdates, successMessage = 'Settings saved.') {
+      currentSettings = { ...currentSettings, ...partialUpdates, id: 1 };
+      try {
+        localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
+        localStorage.setItem(LS_CONFIG_KEY, JSON.stringify({
+          brandName: currentSettings.brand_name,
+          mainHeadline: currentSettings.main_headline,
+          heroSubtext: currentSettings.hero_subtext,
+          activeLogo: currentSettings.logo_url,
+          logoPlacement: currentSettings.logo_placement,
+          exploreNotice: currentSettings.explore_notice,
+          businessNotice: currentSettings.business_notice,
+          slides: currentSettings.slideshow.map((s) => ({
+            title: s.title || '',
+            caption: s.subtitle || s.caption || '',
+            image: s.image_url || s.image || ''
+          })),
+          site_assets: currentSettings.site_assets
+        }));
+      } catch (_) {}
 
-      const { error } = await sb
+      const payload = {
+        id: 1,
+        brand_name: currentSettings.brand_name,
+        main_headline: currentSettings.main_headline,
+        hero_subtext: currentSettings.hero_subtext,
+        logo_url: currentSettings.logo_url,
+        logo_placement: currentSettings.logo_placement,
+        explore_notice: currentSettings.explore_notice,
+        business_notice: currentSettings.business_notice,
+        slideshow: currentSettings.slideshow,
+        category_media: currentSettings.category_media,
+        site_assets: currentSettings.site_assets
+      };
+
+      const { error } = await supabaseClient
         .from('bisa_settings')
-        .upsert({ id: 1, site_assets: nextAssets }, { onConflict: 'id' });
+        .upsert(payload, { onConflict: 'id' });
 
       if (error) {
-        showAlert(`Saved locally (sync note: ${error.message})`, 'error');
-      } else if (successMsg) {
-        showAlert(successMsg, 'success');
+        showAlert('globalAlert', `Saved locally (Supabase sync note: ${error.message})`, 'error');
+      } else {
+        showAlert('globalAlert', successMessage, 'success');
       }
-      renderAllViews();
+
+      populateSettingsUI();
     }
 
-    function isFeatured(biz) {
-      const ids = Array.isArray(currentSettings?.site_assets?.featured_business_ids)
+    function populateSettingsUI() {
+      document.getElementById('topbarBrandLabel').innerHTML =
+        `${escapeHtml(currentSettings.brand_name || 'BISA')} <span>Admin Console</span>`;
+
+      document.getElementById('brandNameInput').value = currentSettings.brand_name || 'BISA';
+      document.getElementById('logoPlacementInput').value = currentSettings.logo_placement || 'header-left';
+      document.getElementById('mainHeadlineInput').value = currentSettings.main_headline || '';
+      document.getElementById('heroSubtextInput').value = currentSettings.hero_subtext || '';
+      document.getElementById('activeLogoUrlInput').value = currentSettings.logo_url || '';
+
+      const logoImg = document.getElementById('activeLogoPreview');
+      if (currentSettings.logo_url) {
+        logoImg.src = currentSettings.logo_url;
+        logoImg.style.display = 'block';
+      } else {
+        logoImg.style.display = 'none';
+      }
+
+      document.getElementById('exploreNoticeInput').value = currentSettings.explore_notice || '';
+      document.getElementById('businessNoticeInput').value = currentSettings.business_notice || '';
+
+      renderSlideshowList();
+      renderCategoryAndSiteAssets();
+    }
+
+    // JS: Saves Branding, Headlines, and Logo Upload
+    document.getElementById('brandingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let logoUrl = document.getElementById('activeLogoUrlInput').value.trim();
+      const logoFile = document.getElementById('logoFileUpload').files[0];
+
+      if (logoFile) {
+        logoUrl = await uploadFileToMedia(logoFile, 'Icon');
+        document.getElementById('logoFileUpload').value = '';
+      }
+
+      await saveSettings(
+        {
+          brand_name: document.getElementById('brandNameInput').value.trim() || 'BISA',
+          logo_placement: document.getElementById('logoPlacementInput').value,
+          main_headline: document.getElementById('mainHeadlineInput').value.trim(),
+          hero_subtext: document.getElementById('heroSubtextInput').value.trim(),
+          logo_url: logoUrl
+        },
+        'Branding and logo settings updated.'
+      );
+      await loadMediaLibrary();
+    });
+
+    document.getElementById('clearLogoBtn').addEventListener('click', async () => {
+      document.getElementById('activeLogoUrlInput').value = '';
+      await saveSettings({ logo_url: '' }, 'Active logo removed.');
+    });
+
+    // JS: Saves Policy Notices (`explore_notice` and `business_notice`)
+    document.getElementById('noticesForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await saveSettings(
+        {
+          explore_notice: document.getElementById('exploreNoticeInput').value.trim(),
+          business_notice: document.getElementById('businessNoticeInput').value.trim()
+        },
+        'Policy notices updated.'
+      );
+    });
+
+    // JS: Hero Slideshow management
+    document.getElementById('addSlideForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const file = document.getElementById('slideFileInput').files[0];
+      let imageUrl = document.getElementById('slideUrlInput').value.trim();
+
+      if (file) {
+        imageUrl = await uploadFileToMedia(file, 'Slideshow');
+      }
+
+      if (!imageUrl) {
+        showAlert('globalAlert', 'Please upload an image or enter a slide image URL.', 'error');
+        return;
+      }
+
+      const newSlide = {
+        id: `slide-${Date.now()}`,
+        image_url: imageUrl,
+        title: document.getElementById('slideTitleInput').value.trim(),
+        subtitle: document.getElementById('slideSubtitleInput').value.trim()
+      };
+
+      const updatedSlides = [...(currentSettings.slideshow || []), newSlide];
+      document.getElementById('addSlideForm').reset();
+      await saveSettings({ slideshow: updatedSlides }, 'Slide added to homepage slideshow.');
+      await loadMediaLibrary();
+    });
+
+    function renderSlideshowList() {
+      const container = document.getElementById('slideshowList');
+      const slides = currentSettings.slideshow || [];
+
+      if (!slides.length) {
+        container.innerHTML = '<p class="panel-sub">No custom slideshow slides added yet.</p>';
+        return;
+      }
+
+      container.innerHTML = slides
+        .map(
+          (slide, idx) => `
+        <div class="slide-row">
+          <img src="${escapeHtml(slide.image_url || slide.image || '')}" alt="Slide ${idx + 1}" />
+          <div style="display: grid; gap: 0.45rem;">
+            <input type="text" value="${escapeHtml(slide.title || '')}" placeholder="Slide Title" data-slide-field="title" data-idx="${idx}" />
+            <input type="text" value="${escapeHtml(slide.subtitle || slide.caption || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <label class="btn btn-outline btn-sm" style="cursor: pointer;">
+                Replace Image
+                <input type="file" accept="image/*" hidden data-slide-replace="${idx}" />
+              </label>
+              <button type="button" class="btn btn-primary btn-sm" data-slide-save="${idx}">Save Slide</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-coral btn-sm" data-slide-remove="${idx}">Remove</button>
+        </div>
+      `
+        )
+        .join('');
+
+      container.querySelectorAll('[data-slide-save]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.dataset.slideSave);
+          const titleVal = container.querySelector(`[data-slide-field="title"][data-idx="${idx}"]`).value.trim();
+          const subVal = container.querySelector(`[data-slide-field="subtitle"][data-idx="${idx}"]`).value.trim();
+          const updated = [...currentSettings.slideshow];
+          updated[idx] = { ...updated[idx], title: titleVal, subtitle: subVal };
+          await saveSettings({ slideshow: updated }, 'Slide updated.');
+        });
+      });
+
+      container.querySelectorAll('[data-slide-replace]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const idx = Number(input.dataset.slideReplace);
+          const file = input.files[0];
+          if (!file) return;
+          const newUrl = await uploadFileToMedia(file, 'Slideshow');
+          const updated = [...currentSettings.slideshow];
+          updated[idx] = { ...updated[idx], image_url: newUrl };
+          await saveSettings({ slideshow: updated }, 'Slide image replaced.');
+          await loadMediaLibrary();
+        });
+      });
+
+      container.querySelectorAll('[data-slide-remove]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.dataset.slideRemove);
+          const updated = currentSettings.slideshow.filter((_, i) => i !== idx);
+          await saveSettings({ slideshow: updated }, 'Slide removed.');
+        });
+      });
+    }
+
+    // JS: Renders category icon slots and site banner slots
+    function renderCategoryAndSiteAssets() {
+      const catContainer = document.getElementById('categorySlotsContainer');
+      const catMedia = currentSettings.category_media || {};
+
+      catContainer.innerHTML = DEFAULT_CATEGORIES.map((cat) => {
+        const imgUrl = catMedia[cat] || '';
+        return `
+          <div class="category-slot-card">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="category-slot-preview">
+                ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(cat)}" />` : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'}
+              </div>
+              <div>
+                <strong style="color: var(--plum); font-size: 0.92rem;">${escapeHtml(cat)}</strong>
+                <div style="font-size: 0.75rem; color: var(--muted);">Category Icon / Card Image</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <label class="btn btn-primary btn-sm" style="cursor: pointer;">
+                Upload Icon/Image
+                <input type="file" accept="image/*" hidden data-cat-upload="${escapeHtml(cat)}" />
+              </label>
+              ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-cat-remove="${escapeHtml(cat)}">Remove</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      catContainer.querySelectorAll('[data-cat-upload]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const cat = input.dataset.catUpload;
+          const file = input.files[0];
+          if (!file) return;
+          const url = await uploadFileToMedia(file, 'Icon');
+          const nextCatMedia = { ...(currentSettings.category_media || {}), [cat]: url };
+          await saveSettings({ category_media: nextCatMedia }, `Updated icon for ${cat}.`);
+          await loadMediaLibrary();
+        });
+      });
+
+      catContainer.querySelectorAll('[data-cat-remove]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const cat = btn.dataset.catRemove;
+          const nextCatMedia = { ...(currentSettings.category_media || {}) };
+          delete nextCatMedia[cat];
+          await saveSettings({ category_media: nextCatMedia }, `Removed icon for ${cat}.`);
+        });
+      });
+
+      const bannerContainer = document.getElementById('siteBannersContainer');
+      const siteAssets = currentSettings.site_assets || {};
+
+      bannerContainer.innerHTML = SITE_BANNER_SLOTS.map((slot) => {
+        const imgUrl = siteAssets[slot.key] || '';
+        return `
+          <div class="category-slot-card">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="category-slot-preview">
+                ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(slot.label)}" />` : '<span style="font-size:0.7rem;color:#888;">Empty</span>'}
+              </div>
+              <div>
+                <strong style="color: var(--plum); font-size: 0.88rem;">${escapeHtml(slot.label)}</strong>
+                <div style="font-size: 0.74rem; color: var(--muted);">Key: <code>${escapeHtml(slot.key)}</code></div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <label class="btn btn-primary btn-sm" style="cursor: pointer;">
+                Upload Image
+                <input type="file" accept="image/*" hidden data-slot-upload="${escapeHtml(slot.key)}" />
+              </label>
+              ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-slot-remove="${escapeHtml(slot.key)}">Remove</button>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      bannerContainer.querySelectorAll('[data-slot-upload]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const key = input.dataset.slotUpload;
+          const file = input.files[0];
+          if (!file) return;
+          const category = key === 'promo_flyer' ? 'Flyer' : 'Image';
+          const url = await uploadFileToMedia(file, category);
+          const nextAssets = { ...(currentSettings.site_assets || {}), [key]: url };
+          await saveSettings({ site_assets: nextAssets }, `Updated ${key}.`);
+          await loadMediaLibrary();
+        });
+      });
+
+      bannerContainer.querySelectorAll('[data-slot-remove]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const key = btn.dataset.slotRemove;
+          const nextAssets = { ...(currentSettings.site_assets || {}) };
+          delete nextAssets[key];
+          await saveSettings({ site_assets: nextAssets }, `Removed ${key}.`);
+        });
+      });
+    }
+
+    // JS: Featured on Campus helpers for approved businesses
+    function isBusinessFeatured(biz) {
+      const featuredIds = Array.isArray(currentSettings?.site_assets?.featured_business_ids)
         ? currentSettings.site_assets.featured_business_ids.map(String)
         : [];
-      return biz.featured_on_campus === true || ids.includes(String(biz.id));
+      return biz.featured_on_campus === true || featuredIds.includes(String(biz.id));
     }
 
-    async function setBusinessFeatured(bizId, enable) {
+    async function setFeaturedState(bizId, enable) {
       const biz = allBusinesses.find((b) => String(b.id) === String(bizId));
       if (!biz) return;
 
       if (enable && (biz.status || 'pending') !== 'approved') {
-        showAlert('Approve the business first before adding it to Featured on Campus.', 'error');
+        showAlert('globalAlert', 'Approve this business first before adding it to Featured on Campus.', 'error');
         return;
       }
 
-      const currentIds = Array.isArray(currentSettings?.site_assets?.featured_business_ids)
+      const existingIds = Array.isArray(currentSettings?.site_assets?.featured_business_ids)
         ? currentSettings.site_assets.featured_business_ids.map(String)
         : [];
       const nextIds = enable
-        ? Array.from(new Set([...currentIds, String(bizId)]))
-        : currentIds.filter((id) => id !== String(bizId));
+        ? Array.from(new Set([...existingIds, String(bizId)]))
+        : existingIds.filter((id) => id !== String(bizId));
+
+      const nextAssets = {
+        ...(currentSettings.site_assets || {}),
+        featured_business_ids: nextIds
+      };
 
       biz.featured_on_campus = enable;
-      saveBusinessesCacheSafely(allBusinesses);
+      try {
+        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+      } catch (_) {}
 
-      await sb.from('bisa_businesses').update({ featured_on_campus: enable }).eq('id', bizId);
-      await saveFeaturedIds(
-        nextIds,
+      await supabaseClient
+        .from('bisa_businesses')
+        .update({ featured_on_campus: enable })
+        .eq('id', bizId);
+
+      await saveSettings(
+        { site_assets: nextAssets },
         enable
           ? `"${biz.business_name || biz.name}" added to Featured on Campus.`
           : `"${biz.business_name || biz.name}" removed from Featured on Campus.`
       );
+
+      renderBusinesses();
     }
 
-    async function setApprovalStatus(bizId, nextStatus) {
-      const biz = allBusinesses.find((b) => String(b.id) === String(bizId));
-      if (!biz) return;
-
-      biz.status = nextStatus;
-      saveBusinessesCacheSafely(allBusinesses);
-
-      const { error } = await sb.from('bisa_businesses').update({ status: nextStatus }).eq('id', bizId);
-      if (error) {
-        showAlert(`Status updated locally (${error.message})`, 'error');
-      } else {
-        showAlert(`Business marked as ${nextStatus}.`, 'success');
-      }
-
-      if (nextStatus !== 'approved' && isFeatured(biz)) {
-        await setBusinessFeatured(bizId, false);
-      } else {
-        renderAllViews();
-      }
-    }
-
-    document.getElementById('addSelectedApprovedToFeaturedBtn').addEventListener('click', async () => {
-      const selectEl = document.getElementById('approvedBusinessSelect');
+    document.getElementById('addApprovedToFeaturedBtn').addEventListener('click', async () => {
+      const selectEl = document.getElementById('approvedToFeatureSelect');
       const selectedId = selectEl.value;
       if (!selectedId) {
-        showAlert('Select an approved business from the list first.', 'error');
+        showAlert('globalAlert', 'Please choose an approved business first.', 'error');
         return;
       }
-      await setBusinessFeatured(selectedId, true);
+      await setFeaturedState(selectedId, true);
       selectEl.value = '';
     });
 
-    document.getElementById('uploadFeaturedBizForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('submitUploadFeaturedBtn');
-      btn.disabled = true;
-      btn.textContent = 'Uploading...';
-
-      try {
-        const name = document.getElementById('upBizName').value.trim();
-        const category = document.getElementById('upBizCategory').value;
-        const location = document.getElementById('upBizLocation').value.trim();
-        const findUs = document.getElementById('upBizFindUs').value.trim();
-        const phone = document.getElementById('upBizPhone').value.trim();
-        const email = document.getElementById('upBizEmail').value.trim();
-        const rawWebsite = document.getElementById('upBizWebsite').value.trim();
-        const website = rawWebsite
-          ? (/^https?:\/\//i.test(rawWebsite) ? rawWebsite : `https://${rawWebsite}`)
-          : '';
-        const description = document.getElementById('upBizDescription').value.trim();
-        const file = document.getElementById('upBizImageFile').files[0];
-
-        let imageUrl = null;
-        if (file) {
-          imageUrl = await uploadImageToBucket(file);
-        }
-
-        const payload = {
-          business_name: name,
-          name,
-          category,
-          location,
-          service_location: findUs,
-          find_us: findUs,
-          phone,
-          email,
-          website,
-          description,
-          image_url: imageUrl,
-          status: 'approved'
-        };
-
-        const { data: inserted } = await sb.from('bisa_businesses').insert(payload).select();
-        const created = inserted && inserted[0]
-          ? inserted[0]
-          : { ...payload, id: `biz-${Date.now()}`, created_at: new Date().toISOString() };
-
-        created.featured_on_campus = true;
-        allBusinesses.unshift(created);
-        saveBusinessesCacheSafely(allBusinesses);
-
-        await setBusinessFeatured(created.id, true);
-        document.getElementById('uploadFeaturedBizForm').reset();
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Upload & Feature on Campus';
-      }
-    });
-
+    // JS: Business listing loading, modifying/updating, image moderation, and status updates
     async function loadBusinesses() {
-      const cached = readJsonSafely(LS_BUSINESSES_KEY, []);
-      if (Array.isArray(cached) && cached.length) allBusinesses = cached;
+      try {
+        const cached = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
+        if (Array.isArray(cached) && cached.length) allBusinesses = cached;
+      } catch (_) {}
 
-      const { data, error } = await sb
+      const { data, error } = await supabaseClient
         .from('bisa_businesses')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (!error && Array.isArray(data)) {
         allBusinesses = data;
-        saveBusinessesCacheSafely(allBusinesses);
+        try {
+          localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+        } catch (_) {}
       }
 
-      renderAllViews();
+      renderBusinesses();
     }
 
-    function renderBizCard(biz) {
-      const name = biz.business_name || biz.name || 'Unnamed Business';
-      const status = (biz.status || 'pending').toLowerCase();
-      const featured = isFeatured(biz);
-      const imgUrl = biz.image_url && !String(biz.image_url).startsWith('data:') ? biz.image_url : '';
+    async function updateBusinessRecord(id, updates, message) {
+      const idx = allBusinesses.findIndex((b) => String(b.id) === String(id));
+      if (idx !== -1) {
+        allBusinesses[idx] = { ...allBusinesses[idx], ...updates };
+        try {
+          localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+        } catch (_) {}
+      }
+
+      const { error } = await supabaseClient
+        .from('bisa_businesses')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) {
+        showAlert('globalAlert', `Updated locally (Supabase sync note: ${error.message})`, 'error');
+      } else {
+        showAlert('globalAlert', message, 'success');
+      }
+
+      renderBusinesses();
+    }
+
+    const editBusinessModal = document.getElementById('editBusinessModal');
+    const editBusinessForm = document.getElementById('editBusinessForm');
+
+    function openEditBusinessModal(biz) {
+      document.getElementById('editBizId').value = biz.id;
+      document.getElementById('editBizName').value = biz.business_name || biz.name || '';
+      document.getElementById('editBizCategory').value = biz.category || '';
+      document.getElementById('editBizLocation').value = biz.location || '';
+      document.getElementById('editBizFindUs').value = biz.service_location || biz.where_to_find || biz.find_us || '';
+      document.getElementById('editBizPhone').value = biz.phone || biz.tel || '';
+      document.getElementById('editBizEmail').value = biz.email || '';
+      document.getElementById('editBizWebsite').value = biz.website || biz.website_url || '';
+      document.getElementById('editBizStatus').value = biz.status || 'pending';
+      document.getElementById('editBizDescription').value = biz.description || '';
+      editBusinessModal.showModal();
+    }
+
+    document.getElementById('closeEditBizModalBtn').addEventListener('click', () => editBusinessModal.close());
+    document.getElementById('cancelEditBizBtn').addEventListener('click', () => editBusinessModal.close());
+
+    editBusinessForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('editBizId').value;
+      const updatedName = document.getElementById('editBizName').value.trim();
+      const updates = {
+        business_name: updatedName,
+        name: updatedName,
+        category: document.getElementById('editBizCategory').value.trim(),
+        location: document.getElementById('editBizLocation').value.trim(),
+        service_location: document.getElementById('editBizFindUs').value.trim(),
+        find_us: document.getElementById('editBizFindUs').value.trim(),
+        phone: document.getElementById('editBizPhone').value.trim(),
+        email: document.getElementById('editBizEmail').value.trim(),
+        website: document.getElementById('editBizWebsite').value.trim(),
+        status: document.getElementById('editBizStatus').value,
+        description: document.getElementById('editBizDescription').value.trim()
+      };
+
+      editBusinessModal.close();
+      await updateBusinessRecord(id, updates, `Updated "${updatedName}" listing.`);
+    });
+
+    function renderBusinessCard(biz) {
+      const imgState = biz.image_moderation_status || (biz.image_url ? 'pending_review' : 'removed');
+      const featured = isBusinessFeatured(biz);
+
+      let badgeText = 'Vendor Photo: Pending Review';
+      let badgeClass = '';
+      if (imgState === 'accepted') {
+        badgeText = 'Image Accepted';
+        badgeClass = 'accepted';
+      } else if (imgState === 'replaced') {
+        badgeText = 'Image Updated by Admin';
+        badgeClass = 'accepted';
+      } else if (imgState === 'removed' || !biz.image_url) {
+        badgeText = 'No Image / Removed';
+        badgeClass = 'removed';
+      }
 
       return `
         <article class="biz-card">
           <div class="biz-img-box">
-            ${featured ? '<span class="featured-pill-badge">Featured on Campus</span>' : ''}
+            ${featured ? '<span class="featured-tag-badge">Featured on Campus</span>' : ''}
+            <span class="img-review-badge ${badgeClass}">${badgeText}</span>
             ${
-              imgUrl
-                ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(name)}" />`
-                : `<div class="biz-img-placeholder">No Image</div>`
+              biz.image_url
+                ? `<img src="${escapeHtml(biz.image_url)}" alt="${escapeHtml(biz.business_name || biz.name || 'Business')}" />`
+                : `<div class="biz-img-placeholder">No Business Image Attached</div>`
             }
           </div>
+
+          <div class="biz-image-controls">
+            ${
+              biz.image_url
+                ? `<button type="button" class="btn btn-primary btn-sm" data-biz-accept-img="${escapeHtml(biz.id)}">Accept Image</button>`
+                : ''
+            }
+            <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+              ${biz.image_url ? 'Replace Image' : 'Upload Image'}
+              <input type="file" accept="image/*" hidden data-biz-replace-img="${escapeHtml(biz.id)}" />
+            </label>
+            ${
+              biz.image_url
+                ? `<button type="button" class="btn btn-coral btn-sm" data-biz-remove-img="${escapeHtml(biz.id)}">Remove Image</button>`
+                : ''
+            }
+          </div>
+
           <div class="biz-body">
-            <h3>${escapeHtml(name)}</h3>
+            <h3>${escapeHtml(biz.business_name || biz.name || 'Unnamed Business')}</h3>
             <div class="biz-meta">
               <strong>Category:</strong> ${escapeHtml(biz.category || 'General')} &bull;
-              <strong>Status:</strong> ${escapeHtml(status.toUpperCase())}
+              <strong>Status:</strong> ${escapeHtml((biz.status || 'pending').toUpperCase())}
             </div>
-            <p>${escapeHtml(biz.description || '')}</p>
+            <p>${escapeHtml(biz.description || 'No description provided.')}</p>
             <div class="biz-meta"><strong>Location:</strong> ${escapeHtml(biz.location || 'N/A')}</div>
+            <div class="biz-meta"><strong>Where to find:</strong> ${escapeHtml(biz.service_location || biz.where_to_find || biz.find_us || 'N/A')}</div>
+            <div class="biz-meta"><strong>Contact:</strong> ${escapeHtml(biz.phone || biz.tel || 'N/A')} | ${escapeHtml(biz.email || 'N/A')}</div>
           </div>
+
           <div class="biz-actions">
+            <button type="button" class="btn btn-outline btn-sm" data-biz-edit="${escapeHtml(biz.id)}">Edit / Modify</button>
             ${
-              status === 'approved'
+              (biz.status || '').toLowerCase() === 'approved'
                 ? (featured
-                    ? `<button type="button" class="btn btn-coral btn-sm" data-unfeat="${escapeHtml(biz.id)}">Remove from Featured</button>`
-                    : `<button type="button" class="btn btn-gold btn-sm" data-feat="${escapeHtml(biz.id)}">+ Feature on Campus</button>`)
-                : `<button type="button" class="btn btn-primary btn-sm" data-approve="${escapeHtml(biz.id)}">Approve Business</button>`
+                    ? `<button type="button" class="btn btn-coral btn-sm" data-biz-unfeat="${escapeHtml(biz.id)}">Unfeature</button>`
+                    : `<button type="button" class="btn btn-gold btn-sm" data-biz-feat="${escapeHtml(biz.id)}">Add to Featured</button>`)
+                : ''
             }
             ${
-              status === 'approved'
-                ? `<button type="button" class="btn btn-outline btn-sm" data-reject="${escapeHtml(biz.id)}">Set Rejected</button>`
+              biz.status !== 'approved'
+                ? `<button type="button" class="btn btn-primary btn-sm" style="flex:1;" data-biz-status="approved" data-biz-id="${escapeHtml(biz.id)}">Approve</button>`
+                : ''
+            }
+            ${
+              biz.status !== 'rejected'
+                ? `<button type="button" class="btn btn-coral btn-sm" style="flex:1;" data-biz-status="rejected" data-biz-id="${escapeHtml(biz.id)}">Reject</button>`
                 : ''
             }
           </div>
@@ -900,49 +1708,320 @@
       `;
     }
 
-    function renderAllViews() {
-      const approved = allBusinesses.filter((b) => (b.status || 'pending').toLowerCase() === 'approved');
-      const featuredApproved = approved.filter((b) => isFeatured(b));
-      const availableApproved = approved.filter((b) => !isFeatured(b));
-      const pending = allBusinesses.filter((b) => (b.status || 'pending').toLowerCase() === 'pending');
+    function renderBusinesses() {
+      const pendingContainer = document.getElementById('pendingBusinessList');
+      const reviewedContainer = document.getElementById('reviewedBusinessList');
+      const featuredListContainer = document.getElementById('currentlyFeaturedCampusList');
+      const availableFeaturedContainer = document.getElementById('approvedAvailableCampusList');
+      const selectEl = document.getElementById('approvedToFeatureSelect');
 
-      const selectEl = document.getElementById('approvedBusinessSelect');
+      const pending = allBusinesses.filter((b) => (b.status || 'pending') === 'pending');
+      const reviewed = allBusinesses.filter((b) => (b.status || 'pending') !== 'pending');
+      const approved = allBusinesses.filter((b) => (b.status || 'pending').toLowerCase() === 'approved');
+      const featuredApproved = approved.filter((b) => isBusinessFeatured(b));
+      const availableApproved = approved.filter((b) => !isBusinessFeatured(b));
+
+      pendingContainer.innerHTML = pending.length
+        ? pending.map(renderBusinessCard).join('')
+        : '<p class="panel-sub">No pending business registrations right now.</p>';
+
+      reviewedContainer.innerHTML = reviewed.length
+        ? reviewed.map(renderBusinessCard).join('')
+        : '<p class="panel-sub">No approved or rejected businesses yet.</p>';
+
       if (selectEl) {
-        selectEl.innerHTML = '<option value="">-- Choose an Approved Business --</option>' +
+        selectEl.innerHTML = '<option value="">-- Select an Approved Business --</option>' +
           availableApproved
             .map((b) => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.business_name || b.name)} (${escapeHtml(b.location || 'Ghana')})</option>`)
             .join('');
       }
 
-      document.getElementById('currentlyFeaturedGrid').innerHTML = featuredApproved.length
-        ? featuredApproved.map(renderBizCard).join('')
-        : '<p class="panel-sub">No businesses are currently featured on campus.</p>';
+      if (featuredListContainer) {
+        featuredListContainer.innerHTML = featuredApproved.length
+          ? featuredApproved.map(renderBusinessCard).join('')
+          : '<p class="panel-sub">No approved businesses are featured on campus yet. Select one above or click "Add to Featured" on an approved listing.</p>';
+      }
 
-      document.getElementById('approvedCandidateGrid').innerHTML = availableApproved.length
-        ? availableApproved.map(renderBizCard).join('')
-        : '<p class="panel-sub">No additional approved businesses available to feature.</p>';
+      if (availableFeaturedContainer) {
+        availableFeaturedContainer.innerHTML = availableApproved.length
+          ? availableApproved.map(renderBusinessCard).join('')
+          : '<p class="panel-sub">No additional approved businesses waiting to be featured.</p>';
+      }
 
-      document.getElementById('pendingListGrid').innerHTML = pending.length
-        ? pending.map(renderBizCard).join('')
-        : '<p class="panel-sub">No pending submissions right now.</p>';
-
-      document.getElementById('allListingsGrid').innerHTML = allBusinesses.length
-        ? allBusinesses.map(renderBizCard).join('')
-        : '<p class="panel-sub">No business records found.</p>';
-
-      document.querySelectorAll('[data-feat]').forEach((btn) => {
-        btn.addEventListener('click', () => setBusinessFeatured(btn.dataset.feat, true));
+      document.querySelectorAll('[data-biz-edit]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const biz = allBusinesses.find((b) => String(b.id) === String(btn.dataset.bizEdit));
+          if (biz) openEditBusinessModal(biz);
+        });
       });
-      document.querySelectorAll('[data-unfeat]').forEach((btn) => {
-        btn.addEventListener('click', () => setBusinessFeatured(btn.dataset.unfeat, false));
+
+      document.querySelectorAll('[data-biz-feat]').forEach((btn) => {
+        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizFeat, true));
       });
-      document.querySelectorAll('[data-approve]').forEach((btn) => {
-        btn.addEventListener('click', () => setApprovalStatus(btn.dataset.approve, 'approved'));
+
+      document.querySelectorAll('[data-biz-unfeat]').forEach((btn) => {
+        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizUnfeat, false));
       });
-      document.querySelectorAll('[data-reject]').forEach((btn) => {
-        btn.addEventListener('click', () => setApprovalStatus(btn.dataset.reject, 'rejected'));
+
+      document.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizAcceptImg;
+          await updateBusinessRecord(id, { image_moderation_status: 'accepted' }, 'Business image accepted.');
+        });
+      });
+
+      document.querySelectorAll('[data-biz-replace-img]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const id = input.dataset.bizReplaceImg;
+          const file = input.files[0];
+          if (!file) return;
+          const newUrl = await uploadFileToMedia(file, 'Business');
+          await updateBusinessRecord(
+            id,
+            { image_url: newUrl, image_moderation_status: 'replaced' },
+            'Business image replaced and saved.'
+          );
+          await loadMediaLibrary();
+        });
+      });
+
+      document.querySelectorAll('[data-biz-remove-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizRemoveImg;
+          await updateBusinessRecord(
+            id,
+            { image_url: null, image_moderation_status: 'removed' },
+            'Business image removed.'
+          );
+        });
+      });
+
+      document.querySelectorAll('[data-biz-status]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizId;
+          const status = btn.dataset.bizStatus;
+          const biz = allBusinesses.find((b) => String(b.id) === String(id));
+          const updates = { status };
+          if (status === 'approved' && biz && biz.image_url && !biz.image_moderation_status) {
+            updates.image_moderation_status = 'accepted';
+          }
+          if (status !== 'approved' && isBusinessFeatured(biz)) {
+            await setFeaturedState(id, false);
+          }
+          await updateBusinessRecord(id, updates, `Business marked as ${status}.`);
+        });
       });
     }
+
+    // JS: Media library upload, listing, copying URL, setting logo, and deletion
+    document.getElementById('mediaUploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const category = document.getElementById('mediaCategorySelect').value;
+      const file = document.getElementById('mediaFileInput').files[0];
+      if (!file) return;
+
+      await uploadFileToMedia(file, category);
+      document.getElementById('mediaUploadForm').reset();
+      showAlert('globalAlert', `Uploaded "${file.name}" under ${category}.`, 'success');
+      await loadMediaLibrary();
+    });
+
+    document.getElementById('mediaFilterSelect').addEventListener('change', renderMediaLibrary);
+
+    async function loadMediaLibrary() {
+      const categories = ['Icon', 'Image', 'Flyer', 'Slideshow', 'Business'];
+      const collected = [];
+
+      for (const cat of categories) {
+        const folder = cat.toLowerCase();
+        const { data, error } = await supabaseClient.storage
+          .from(STORAGE_BUCKET)
+          .list(folder, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+
+        if (!error && Array.isArray(data)) {
+          data.forEach((fileObj) => {
+            if (!fileObj.name || fileObj.name === '.emptyFolderPlaceholder') return;
+            const path = `${folder}/${fileObj.name}`;
+            const { data: pub } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
+            collected.push({
+              id: path,
+              name: fileObj.name,
+              category: cat,
+              url: pub.publicUrl,
+              path
+            });
+          });
+        }
+      }
+
+      try {
+        const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
+        const seenUrls = new Set(collected.map((m) => m.url));
+        cached.forEach((item) => {
+          if (item && item.url && !seenUrls.has(item.url)) {
+            collected.push(item);
+          }
+        });
+      } catch (_) {}
+
+      mediaLibrary = collected;
+      renderMediaLibrary();
+    }
+
+    function renderMediaLibrary() {
+      const grid = document.getElementById('mediaLibraryGrid');
+      const filter = document.getElementById('mediaFilterSelect').value;
+      const items = filter === 'ALL' ? mediaLibrary : mediaLibrary.filter((m) => m.category === filter);
+
+      if (!items.length) {
+        grid.innerHTML = '<p class="panel-sub">No media assets found in this category.</p>';
+        return;
+      }
+
+      grid.innerHTML = items
+        .map(
+          (item, index) => `
+        <div class="media-item">
+          <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.name)}" />
+          <div class="media-item-info">
+            <span class="badge-cat">${escapeHtml(item.category)}</span>
+            <div style="font-weight: 600; word-break: break-all;">${escapeHtml(item.name)}</div>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: auto;">
+              <button type="button" class="btn btn-outline btn-sm" data-copy-url="${escapeHtml(item.url)}">Copy URL</button>
+              <button type="button" class="btn btn-primary btn-sm" data-set-logo="${escapeHtml(item.url)}">Use as Logo</button>
+              <button type="button" class="btn btn-coral btn-sm" data-delete-media="${index}">Delete</button>
+            </div>
+          </div>
+        </div>
+      `
+        )
+        .join('');
+
+      grid.querySelectorAll('[data-copy-url]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(btn.dataset.copyUrl);
+          showAlert('globalAlert', 'Asset URL copied to clipboard.', 'success');
+        });
+      });
+
+      grid.querySelectorAll('[data-set-logo]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await saveSettings({ logo_url: btn.dataset.setLogo }, 'Active site logo updated.');
+        });
+      });
+
+      grid.querySelectorAll('[data-delete-media]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const item = items[Number(btn.dataset.deleteMedia)];
+          if (!item) return;
+
+          if (item.path) {
+            await supabaseClient.storage.from(STORAGE_BUCKET).remove([item.path]);
+          }
+          try {
+            const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]').filter((c) => c.url !== item.url);
+            localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached));
+          } catch (_) {}
+          showAlert('globalAlert', `Deleted "${item.name}".`, 'success');
+          await loadMediaLibrary();
+        });
+      });
+    }
+
+    // JS: Loads and renders messages submitted from contact.html
+    async function loadMessages() {
+      let merged = [];
+      try {
+        const cached = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]');
+        if (Array.isArray(cached)) merged = [...cached];
+      } catch (_) {}
+
+      const { data, error } = await supabaseClient
+        .from('bisa_messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data)) {
+        const seen = new Set(data.map((m) => m.id || `${m.email}-${m.created_at}-${m.message}`));
+        const localOnly = merged.filter((m) => !seen.has(m.id || `${m.email}-${m.created_at}-${m.message}`));
+        merged = [...data, ...localOnly];
+      }
+
+      contactMessages = merged;
+      renderMessages();
+    }
+
+    function renderMessages() {
+      const container = document.getElementById('messagesListContainer');
+      if (!container) return;
+
+      if (!contactMessages.length) {
+        container.innerHTML = '<p class="panel-sub">No messages received yet.</p>';
+        return;
+      }
+
+      container.innerHTML = contactMessages
+        .map((msg, idx) => {
+          const dateLabel = msg.created_at ? new Date(msg.created_at).toLocaleString() : 'Recent';
+          return `
+            <article class="message-card">
+              <div class="message-header">
+                <div>
+                  <div class="message-sender">${escapeHtml(msg.name || 'Visitor')}</div>
+                  <div class="message-email">${escapeHtml(msg.email || 'No email')}</div>
+                </div>
+                <span class="message-date">${escapeHtml(dateLabel)}</span>
+              </div>
+              <p class="message-body">${escapeHtml(msg.message || '')}</p>
+              <div class="message-actions">
+                ${
+                  msg.email
+                    ? `<button type="button" class="btn btn-outline btn-sm" data-copy-msg-email="${escapeHtml(msg.email)}">Copy Email</button>
+                       <a href="mailto:${escapeHtml(msg.email)}" class="btn btn-primary btn-sm">Reply via Email</a>`
+                    : ''
+                }
+                <button type="button" class="btn btn-coral btn-sm" data-delete-msg="${idx}">Delete</button>
+              </div>
+            </article>
+          `;
+        })
+        .join('');
+
+      container.querySelectorAll('[data-copy-msg-email]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          await navigator.clipboard.writeText(btn.dataset.copyMsgEmail);
+          showAlert('globalAlert', 'Sender email copied.', 'success');
+        });
+      });
+
+      container.querySelectorAll('[data-delete-msg]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const idx = Number(btn.dataset.deleteMsg);
+          const target = contactMessages[idx];
+          if (!target) return;
+
+          if (target.id !== undefined && target.id !== null) {
+            await supabaseClient.from('bisa_messages').delete().eq('id', target.id);
+          }
+
+          try {
+            const updatedCache = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]').filter(
+              (m) => !(m.email === target.email && m.message === target.message && m.created_at === target.created_at)
+            );
+            localStorage.setItem(LS_MESSAGES_KEY, JSON.stringify(updatedCache));
+          } catch (_) {}
+
+          contactMessages.splice(idx, 1);
+          renderMessages();
+          showAlert('globalAlert', 'Message deleted.', 'success');
+        });
+      });
+    }
+
+    document.getElementById('refreshMessagesBtn').addEventListener('click', async () => {
+      await loadMessages();
+      showAlert('globalAlert', 'Messages refreshed.', 'success');
+    });
 
     checkSession();
   </script>
