@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- HTML: Metadata, stylesheet, and Supabase v2 SDK -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - Contact Us</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Initialize Supabase client
-        const supabase = window.supabase = createSupabaseClient(
-            'https://vrgbataasdiyyhtsmjsp.supabase.co',
-            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
-        );
-    </script>
+    <style>
+        /* CSS: Feedback banner for contact form submissions */
+        .contact-feedback {
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: none;
+        }
+        .contact-feedback.show {
+            display: block;
+        }
+        .contact-feedback.success {
+            background-color: #e6f7ed;
+            color: #145c32;
+            border: 1px solid #9fd8b7;
+        }
+        .contact-feedback.error {
+            background-color: #fdecea;
+            color: #8a1f17;
+            border: 1px solid #f5b5b0;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- HTML: Site navigation header -->
     <header class="header">
         <div class="container header-container">
-            <a href="index.html" class="logo">BISA</a>
+            <a href="index.html" class="logo" id="siteLogoText">BISA</a>
             <nav class="nav">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="explore.html" class="nav-link">Explore</a>
@@ -30,7 +48,7 @@
         </div>
     </header>
 
-    <!-- MAIN -->
+    <!-- HTML: Main Contact page content -->
     <main class="main">
 
         <div class="page-header-section">
@@ -41,19 +59,20 @@
             </div>
         </div>
 
-        <!-- CONTACT FORM SECTION -->
         <section class="section contact-section">
             <div class="container contact-grid">
-                
+
                 <div class="contact-info">
                     <h3>Contact Information</h3>
                     <p><strong>Platform:</strong> BISA Directory</p>
-                    <p><strong>Location:</strong> Cape Coast & Campus Area, Ghana</p>
+                    <p><strong>Location:</strong> Cape Coast &amp; Campus Area, Ghana</p>
                     <p><strong>Email:</strong> support@bisa.edu.gh</p>
                     <p><strong>Motto:</strong> Think. Talk. Build.</p>
                 </div>
 
-                <form class="contact-form">
+                <form class="contact-form" id="contactMessageForm">
+                    <div id="contactFormFeedback" class="contact-feedback"></div>
+
                     <div class="form-group">
                         <label for="contact-name" class="form-label">Your Name</label>
                         <input type="text" id="contact-name" class="input" placeholder="Enter your name" required>
@@ -69,7 +88,7 @@
                         <textarea id="contact-msg" class="input textarea" placeholder="Type your message here..." rows="5" required></textarea>
                     </div>
 
-                    <button type="submit" class="button button-primary">Send Message</button>
+                    <button type="submit" class="button button-primary" id="sendContactBtn">Send Message</button>
                 </form>
 
             </div>
@@ -77,12 +96,12 @@
 
     </main>
 
-    <!-- FOOTER -->
+    <!-- HTML: Footer with Admin Portal link -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
-                <p>Let's Do Business & Share Ideas.</p>
+                <h4><a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a></h4>
+                <p>Let's Do Business &amp; Share Ideas.</p>
             </div>
             <div class="footer-col">
                 <h4>Quick Links</h4>
@@ -104,39 +123,89 @@
                 </div>
             </div>
         </div>
-<div class="footer-bottom">
+        <div class="footer-bottom">
             <p>&copy; 2026 BISA. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // Admin login via footer BISA logo
-        (function() {
+        // JS: Handles Supabase v2 client, contact message submission, settings sync, and admin sign-in
+        (function () {
+            const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const LS_SETTINGS_KEY = 'bisa_settings_cache';
+            const LS_CONFIG_KEY = 'bisa_admin_config_v1';
+            const LS_MESSAGES_KEY = 'bisa_messages_cache';
+
+            const contactForm = document.getElementById('contactMessageForm');
+            const feedbackEl = document.getElementById('contactFormFeedback');
+
+            function showFeedback(msg, type = 'success') {
+                feedbackEl.textContent = msg;
+                feedbackEl.className = `contact-feedback show ${type}`;
+            }
+
+            try {
+                const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY) || 'null');
+                const brand = cached && (cached.brand_name || cached.brandName);
+                if (brand) {
+                    document.getElementById('siteLogoText').textContent = brand;
+                    document.getElementById('footerBrandLink').textContent = brand;
+                }
+            } catch (_) {}
+
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('sendContactBtn');
+                btn.disabled = true;
+                btn.textContent = 'Sending...';
+
+                const entry = {
+                    name: document.getElementById('contact-name').value.trim(),
+                    email: document.getElementById('contact-email').value.trim(),
+                    message: document.getElementById('contact-msg').value.trim(),
+                    created_at: new Date().toISOString()
+                };
+
+                try {
+                    const msgs = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]');
+                    msgs.unshift(entry);
+                    localStorage.setItem(LS_MESSAGES_KEY, JSON.stringify(msgs));
+
+                    const { error } = await sb.from('bisa_messages').insert(entry);
+                    if (error) {
+                        showFeedback(`Message saved locally (Supabase note: ${error.message}).`, 'success');
+                    } else {
+                        showFeedback('Thank you! Your message has been sent.', 'success');
+                    }
+                    contactForm.reset();
+                } catch (err) {
+                    showFeedback(err.message || 'Could not send message.', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Send Message';
+                }
+            });
+
             const adminEmail = 'admin@bisa.edu.gh';
-            const footerAdminLink = document.getElementById('footer-admin-link');
-            
+            const footerAdminLink = document.getElementById('footerBrandLink');
             if (footerAdminLink) {
                 footerAdminLink.addEventListener('click', async (e) => {
                     e.preventDefault();
-                    const { data: { session } } = await supabase.auth.getSession();
-                    
+                    const { data: { session } } = await sb.auth.getSession();
                     if (session) {
-                        // User is logged in, show admin dashboard
-                        window.location.href = '/admin';
+                        window.location.href = 'admin.html';
+                        return;
+                    }
+                    const password = prompt(`Enter admin credentials:\n\nAdmin Email: ${adminEmail}\n\nPassword:`);
+                    if (!password) return;
+                    const { error } = await sb.auth.signInWithPassword({ email: adminEmail, password });
+                    if (error) {
+                        alert('Invalid credentials. Please try again.');
                     } else {
-                        // Show login prompt
-                        const password = prompt('Enter admin credentials:\n\nAdmin Email: admin@bisa.edu.gh\n\nPassword:');
-                        if (password) {
-                            const { data, error } = await supabase.auth.signInWithPassword({
-                                email: adminEmail,
-                                password: password
-                            });
-                            if (error) {
-                                alert('Invalid credentials. Please try again.');
-                            } else {
-                                window.location.href = '/admin';
-                            }
-                        }
+                        window.location.href = 'admin.html';
                     }
                 });
             }
