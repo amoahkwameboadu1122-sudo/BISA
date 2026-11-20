@@ -1,25 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- HTML: Metadata, stylesheet, and Supabase v2 SDK -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BISA - About Us</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // Initialize Supabase client
-        const supabase = window.supabase = createSupabaseClient(
-            'https://vrgbataasdiyyhtsmjsp.supabase.co',
-            'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY'
-        );
-    </script>
 </head>
 <body>
 
-    <!-- HEADER -->
+    <!-- HTML: Site navigation header -->
     <header class="header">
         <div class="container header-container">
-            <a href="index.html" class="logo">BISA</a>
+            <a href="index.html" class="logo" id="siteLogoText">BISA</a>
             <nav class="nav">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="explore.html" class="nav-link">Explore</a>
@@ -30,44 +24,43 @@
         </div>
     </header>
 
-    <!-- MAIN -->
+    <!-- HTML: Main About Us content -->
     <main class="main">
 
         <div class="page-header-section">
             <div class="container">
                 <p class="breadcrumb">Home / About Us</p>
-                <h1 class="page-title">About BISA</h1>
-                <p class="page-subtitle">Empowering student entrepreneurs and connecting campus innovators.</p>
+                <h1 class="page-title" id="aboutPageTitle">About BISA</h1>
+                <p class="page-subtitle" id="aboutPageSubtitle">Empowering student entrepreneurs and connecting campus innovators.</p>
             </div>
         </div>
 
-        <!-- ABOUT CONTENT SECTION -->
         <section class="section about-section">
             <div class="container about-grid">
                 <div class="about-text-content">
-                    <h2>Our Mission & Vision</h2>
+                    <h2>Our Mission &amp; Vision</h2>
                     <p>
-                        <strong>BISA</strong> stands for <strong>Business, Ideas, Sharing and Action</strong> (Motto: <em>"Think. Talk. Build."</em>). 
+                        <strong>BISA</strong> stands for <strong>Business, Ideas, Sharing and Action</strong> (Motto: <em>"Think. Talk. Build."</em>).
                         Our platform is designed to bridge the gap between talented student entrepreneurs offering unique products and services and the campus community looking for convenient, reliable solutions.
                     </p>
                     <p>
                         Whether you provide graphic design, coding services, catering, or handmade crafts, BISA gives you the digital space to display your work, build your brand, and grow your customer base.
                     </p>
                 </div>
-                <div class="about-image-box">
-                    <span class="image-placeholder-text">BISA COMMUNITY</span>
+                <div class="about-image-box" id="aboutImageBox">
+                    <span class="image-placeholder-text" id="aboutPlaceholderText">BISA COMMUNITY</span>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER -->
+    <!-- HTML: Footer with Admin Portal link -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4><a href="#" id="footer-admin-link" style="color: inherit; text-decoration: none;">BISA</a></h4>
-                <p>Let's Do Business & Share Ideas.</p>
+                <h4><a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a></h4>
+                <p>Let's Do Business &amp; Share Ideas.</p>
             </div>
             <div class="footer-col">
                 <h4>Quick Links</h4>
@@ -95,33 +88,67 @@
     </footer>
 
     <script>
-        // Admin login via footer BISA logo
-        (function() {
+        // JS: Syncs site branding/assets from Supabase and provides Supabase Auth admin access
+        (function () {
+            const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+            const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const LS_SETTINGS_KEY = 'bisa_settings_cache';
+            const LS_CONFIG_KEY = 'bisa_admin_config_v1';
+
+            function applyAboutSettings(cfg) {
+                if (!cfg) return;
+                const brand = cfg.brand_name || cfg.brandName;
+                if (brand) {
+                    const siteLogo = document.getElementById('siteLogoText');
+                    const footerLink = document.getElementById('footerBrandLink');
+                    if (siteLogo) siteLogo.textContent = brand;
+                    if (footerLink) footerLink.textContent = brand;
+                }
+
+                const assets = cfg.site_assets || {};
+                const aboutImgUrl = assets.about_image || assets.promo_flyer || '';
+                if (aboutImgUrl) {
+                    const box = document.getElementById('aboutImageBox');
+                    if (box) {
+                        box.style.border = 'none';
+                        box.innerHTML = `<img src="${aboutImgUrl}" alt="BISA Community">`;
+                    }
+                }
+            }
+
+            try {
+                const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY) || 'null');
+                if (cached) applyAboutSettings(cached);
+            } catch (_) {}
+
+            sb.from('bisa_settings')
+                .select('*')
+                .eq('id', 1)
+                .maybeSingle()
+                .then(({ data, error }) => {
+                    if (!error && data) applyAboutSettings(data);
+                })
+                .catch(() => {});
+
             const adminEmail = 'admin@bisa.edu.gh';
-            const footerAdminLink = document.getElementById('footer-admin-link');
-            
+            const footerAdminLink = document.getElementById('footerBrandLink');
             if (footerAdminLink) {
                 footerAdminLink.addEventListener('click', async (e) => {
                     e.preventDefault();
-                    const { data: { session } } = await supabase.auth.getSession();
-                    
+                    const { data: { session } } = await sb.auth.getSession();
                     if (session) {
-                        // User is logged in, show admin dashboard
-                        window.location.href = '/admin';
+                        window.location.href = 'admin.html';
+                        return;
+                    }
+                    const password = prompt(`Enter admin credentials:\n\nAdmin Email: ${adminEmail}\n\nPassword:`);
+                    if (!password) return;
+                    const { error } = await sb.auth.signInWithPassword({ email: adminEmail, password });
+                    if (error) {
+                        alert('Invalid credentials. Please try again.');
                     } else {
-                        // Show login prompt
-                        const password = prompt('Enter admin credentials:\n\nAdmin Email: admin@bisa.edu.gh\n\nPassword:');
-                        if (password) {
-                            const { data, error } = await supabase.auth.signInWithPassword({
-                                email: adminEmail,
-                                password: password
-                            });
-                            if (error) {
-                                alert('Invalid credentials. Please try again.');
-                            } else {
-                                window.location.href = '/admin';
-                            }
-                        }
+                        window.location.href = 'admin.html';
                     }
                 });
             }
