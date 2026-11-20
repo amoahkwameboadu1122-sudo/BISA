@@ -340,6 +340,18 @@
       background: var(--coral);
     }
 
+    .img-count-pill {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(42, 22, 37, 0.82);
+      color: #fff;
+    }
+
     .biz-image-controls {
       display: flex;
       flex-wrap: wrap;
@@ -875,7 +887,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label for="editBizWebsite">Main Page / Website (Optional)</label>
-            <input type="url" id="editBizWebsite" placeholder="https://..." />
+            <input type="text" id="editBizWebsite" placeholder="Optional" />
           </div>
           <div class="form-group">
             <label for="editBizStatus">Approval Status</label>
@@ -947,6 +959,48 @@
     let allBusinesses = [];
     let mediaLibrary = [];
     let contactMessages = [];
+
+    // JS: Quota-safe localStorage helpers (strips large base64 data URLs before caching)
+    function saveJsonSafely(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (_) {
+        try {
+          localStorage.removeItem(key);
+        } catch (__) {}
+      }
+    }
+
+    function readJsonSafely(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
+
+    function saveBusinessesCacheSafely(list) {
+      const sanitized = (Array.isArray(list) ? list : []).slice(0, 20).map((b) => {
+        const safeImg = b.image_url && String(b.image_url).startsWith('data:') ? null : (b.image_url || null);
+        const safeImages = b.images
+          ? String(b.images)
+              .split(',')
+              .map((u) => u.trim())
+              .filter((u) => u && !u.startsWith('data:'))
+              .join(',')
+          : '';
+        return { ...b, image_url: safeImg, images: safeImages };
+      });
+      saveJsonSafely(LS_BUSINESSES_KEY, sanitized);
+    }
+
+    function saveMediaCacheSafely(list) {
+      const sanitized = (Array.isArray(list) ? list : [])
+        .filter((m) => m && m.url && !String(m.url).startsWith('data:'))
+        .slice(0, 50);
+      saveJsonSafely(LS_MEDIA_KEY, sanitized);
+    }
 
     // JS: Helper to display transient feedback banners
     function showAlert(elementId, message, type = 'success') {
@@ -1031,7 +1085,7 @@
       await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary(), loadMessages()]);
     }
 
-    // JS: Converts selected image file to base64 data URL for localStorage fallback
+    // JS: Converts selected image file to base64 data URL only if storage upload fails
     function fileToDataUrl(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1041,7 +1095,7 @@
       });
     }
 
-    // JS: Uploads file to Supabase Storage bucket `bisa-media` with localStorage fallback
+    // JS: Uploads file to Supabase Storage bucket `bisa-media` with quota-safe local fallback
     async function uploadFileToMedia(file, category = 'Image') {
       const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
       const folder = category.toLowerCase();
@@ -1069,29 +1123,21 @@
         });
         return publicUrl;
       } catch (err) {
-        console.warn('Supabase storage upload fallback to localStorage:', err.message);
-        const dataUrl = await fileToDataUrl(file);
-        recordMediaLocally({
-          id: `local-${Date.now()}`,
-          name: file.name,
-          category,
-          url: dataUrl,
-          path: null,
-          created_at: new Date().toISOString()
-        });
-        return dataUrl;
+        console.warn('Supabase storage upload fallback:', err.message);
+        return await fileToDataUrl(file);
       }
     }
 
     function recordMediaLocally(item) {
-      const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
+      if (!item || !item.url || String(item.url).startsWith('data:')) return;
+      const cached = readJsonSafely(LS_MEDIA_KEY, []);
       cached.unshift(item);
-      localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached.slice(0, 100)));
+      saveMediaCacheSafely(cached);
     }
 
-    // JS: Loads and saves `bisa_settings` (row id = 1) with localStorage fallback
+    // JS: Loads and saves `bisa_settings` (row id = 1) with quota-safe localStorage fallback
     async function loadSettings() {
-      const cached = JSON.parse(localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY) || 'null');
+      const cached = readJsonSafely(LS_SETTINGS_KEY, null) || readJsonSafely(LS_CONFIG_KEY, null);
       if (cached) {
         currentSettings = { ...currentSettings, ...cached };
       }
@@ -1110,7 +1156,7 @@
           category_media: data.category_media && typeof data.category_media === 'object' ? data.category_media : {},
           site_assets: data.site_assets && typeof data.site_assets === 'object' ? data.site_assets : {}
         };
-        localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
+        saveJsonSafely(LS_SETTINGS_KEY, currentSettings);
       }
 
       populateSettingsUI();
@@ -1118,8 +1164,8 @@
 
     async function saveSettings(partialUpdates, successMessage = 'Settings saved.') {
       currentSettings = { ...currentSettings, ...partialUpdates, id: 1 };
-      localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
-      localStorage.setItem(LS_CONFIG_KEY, JSON.stringify({
+      saveJsonSafely(LS_SETTINGS_KEY, currentSettings);
+      saveJsonSafely(LS_CONFIG_KEY, {
         brandName: currentSettings.brand_name,
         mainHeadline: currentSettings.main_headline,
         heroSubtext: currentSettings.hero_subtext,
@@ -1132,7 +1178,7 @@
           caption: s.subtitle || s.caption || '',
           image: s.image_url || s.image || ''
         }))
-      }));
+      });
 
       const payload = {
         id: 1,
@@ -1419,8 +1465,8 @@
 
     // JS: Business listing loading, modifying/updating, image moderation, and status updates
     async function loadBusinesses() {
-      const cached = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
-      if (cached.length) allBusinesses = cached;
+      const cached = readJsonSafely(LS_BUSINESSES_KEY, []);
+      if (Array.isArray(cached) && cached.length) allBusinesses = cached;
 
       const { data, error } = await supabaseClient
         .from('bisa_businesses')
@@ -1429,7 +1475,7 @@
 
       if (!error && Array.isArray(data)) {
         allBusinesses = data;
-        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+        saveBusinessesCacheSafely(allBusinesses);
       }
 
       renderBusinesses();
@@ -1439,7 +1485,7 @@
       const idx = allBusinesses.findIndex((b) => String(b.id) === String(id));
       if (idx !== -1) {
         allBusinesses[idx] = { ...allBusinesses[idx], ...updates };
-        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
+        saveBusinessesCacheSafely(allBusinesses);
       }
 
       const { error } = await supabaseClient
@@ -1500,8 +1546,24 @@
       await updateBusinessRecord(id, updates, `Updated "${updatedName}" listing.`);
     });
 
+    function parseBizImages(biz) {
+      const list = [];
+      if (biz.image_url) list.push(String(biz.image_url).trim());
+      if (biz.images) {
+        String(biz.images)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .forEach((u) => {
+            if (!list.includes(u)) list.push(u);
+          });
+      }
+      return list;
+    }
+
     function renderBusinessCard(biz) {
-      const imgUrl = biz.image_url || biz.logo_url || '';
+      const allImgs = parseBizImages(biz);
+      const imgUrl = allImgs[0] || '';
       const imgState = biz.image_moderation_status || (imgUrl ? 'pending_review' : 'removed');
 
       let badgeText = 'Vendor Photo: Pending Review';
@@ -1521,6 +1583,7 @@
         <article class="biz-card">
           <div class="biz-img-box">
             <span class="img-review-badge ${badgeClass}">${badgeText}</span>
+            ${allImgs.length > 1 ? `<span class="img-count-pill">${allImgs.length} Photos</span>` : ''}
             ${
               imgUrl
                 ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(biz.business_name || biz.name || 'Business')}" />`
@@ -1611,7 +1674,7 @@
           const newImageUrl = await uploadFileToMedia(file, 'Business');
           await updateBusinessRecord(
             id,
-            { image_url: newImageUrl, image_moderation_status: 'replaced' },
+            { image_url: newImageUrl, images: newImageUrl, image_moderation_status: 'replaced' },
             'Business image replaced by admin.'
           );
           await loadMediaLibrary();
@@ -1623,7 +1686,7 @@
           const id = btn.dataset.bizRemoveImg;
           await updateBusinessRecord(
             id,
-            { image_url: null, image_moderation_status: 'removed' },
+            { image_url: null, images: '', image_moderation_status: 'removed' },
             'Business image removed.'
           );
         });
@@ -1684,15 +1747,16 @@
         }
       }
 
-      const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
+      const cached = readJsonSafely(LS_MEDIA_KEY, []);
       const seenUrls = new Set(collected.map((m) => m.url));
       cached.forEach((item) => {
-        if (!seenUrls.has(item.url)) {
+        if (item && item.url && !seenUrls.has(item.url)) {
           collected.push(item);
         }
       });
 
       mediaLibrary = collected;
+      saveMediaCacheSafely(collected);
       renderMediaLibrary();
     }
 
@@ -1746,10 +1810,8 @@
           if (item.path) {
             await supabaseClient.storage.from(STORAGE_BUCKET).remove([item.path]);
           }
-          const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]').filter(
-            (c) => c.url !== item.url
-          );
-          localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached));
+          const cached = readJsonSafely(LS_MEDIA_KEY, []).filter((c) => c.url !== item.url);
+          saveMediaCacheSafely(cached);
           showAlert('globalAlert', `Deleted "${item.name}".`, 'success');
           await loadMediaLibrary();
         });
@@ -1758,7 +1820,7 @@
 
     // JS: Loads and renders contact messages from `bisa_messages` with localStorage fallback
     async function loadMessages() {
-      const cached = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]');
+      const cached = readJsonSafely(LS_MESSAGES_KEY, []);
       let merged = Array.isArray(cached) ? [...cached] : [];
 
       const { data, error } = await supabaseClient
@@ -1829,10 +1891,10 @@
             await supabaseClient.from('bisa_messages').delete().eq('id', target.id);
           }
 
-          const updatedCache = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]').filter(
+          const updatedCache = readJsonSafely(LS_MESSAGES_KEY, []).filter(
             (m) => !(m.email === target.email && m.message === target.message && m.created_at === target.created_at)
           );
-          localStorage.setItem(LS_MESSAGES_KEY, JSON.stringify(updatedCache));
+          saveJsonSafely(LS_MESSAGES_KEY, updatedCache);
 
           contactMessages.splice(idx, 1);
           renderMessages();
