@@ -11,19 +11,6 @@
             text-decoration: none;
             cursor: pointer;
         }
-        .home-notice-strip {
-            background-color: var(--white);
-            border-bottom: 1px solid var(--light-gray);
-            padding: 12px 0;
-        }
-        .home-notice-box {
-            background-color: var(--bg-warm);
-            border-left: 4px solid var(--secondary);
-            color: var(--primary);
-            padding: 10px 16px;
-            border-radius: var(--border-radius);
-            font-size: 14px;
-        }
         .logo-placement-hero-top .hero-grid {
             align-items: start;
         }
@@ -77,15 +64,6 @@
             </nav>
         </div>
     </header>
-
-    <!-- OPTIONAL NOTICE BANNER (SYNCED WITH ADMIN PORTAL) -->
-    <div class="home-notice-strip" id="homeNoticeStrip">
-        <div class="container">
-            <div class="home-notice-box" id="homeNoticeText">
-                <strong>Notice:</strong> Welcome to BISA - Your campus marketplace for buying, selling, and connecting.
-            </div>
-        </div>
-    </div>
 
     <!-- MAIN -->
     <main class="main">
@@ -278,11 +256,6 @@
                 if (config.heroSubtext) {
                     const heroDesc = document.getElementById('homeHeroDescription');
                     if (heroDesc) heroDesc.textContent = config.heroSubtext;
-                }
-
-                const noticeBox = document.getElementById('homeNoticeText');
-                if (noticeBox && typeof config.noticeBannerText === 'string') {
-                    noticeBox.textContent = config.noticeBannerText;
                 }
 
                 const headerLogoImg = document.getElementById('headerLogoImg');
