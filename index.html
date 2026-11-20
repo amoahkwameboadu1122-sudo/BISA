@@ -45,6 +45,27 @@
             border-radius: var(--border-radius);
             background-color: rgba(255, 176, 46, 0.16);
         }
+        .category-icon-img {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+        }
+        .business-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: inherit;
+        }
+        .featured-empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 28px 20px;
+            color: var(--gray, #6c5867);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -132,28 +153,28 @@
         <section class="section">
             <div class="container">
                 <h2 class="section-title">Popular Categories</h2>
-                <div class="categories-grid">
-                    <a href="explore.html" class="card category-card">
+                <div class="categories-grid" id="homeCategoriesGrid">
+                    <a href="explore.html?category=Food%20%26%20Snacks" class="card category-card" data-category="Food & Snacks">
                         <div class="category-icon"></div>
                         <p class="category-name">Food &amp; Snacks</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
+                    <a href="explore.html?category=Graphics%20%26%20Art" class="card category-card" data-category="Graphics & Art">
                         <div class="category-icon"></div>
                         <p class="category-name">Graphics &amp; Art</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
+                    <a href="explore.html?category=Web%20%26%20Tech" class="card category-card" data-category="Web & Tech">
                         <div class="category-icon"></div>
                         <p class="category-name">Web &amp; Tech</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
+                    <a href="explore.html?category=Books%20%26%20Notes" class="card category-card" data-category="Books & Notes">
                         <div class="category-icon"></div>
                         <p class="category-name">Books &amp; Notes</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
+                    <a href="explore.html?category=Laundry" class="card category-card" data-category="Laundry">
                         <div class="category-icon"></div>
                         <p class="category-name">Laundry</p>
                     </a>
-                    <a href="explore.html" class="card category-card">
+                    <a href="explore.html?category=Campus%20Services" class="card category-card" data-category="Campus Services">
                         <div class="category-icon"></div>
                         <p class="category-name">Campus Services</p>
                     </a>
@@ -161,36 +182,11 @@
             </div>
         </section>
 
-        <!-- FEATURED BUSINESSES SECTION -->
+        <!-- FEATURED BUSINESSES SECTION (ONLY Admin-Approved & Featured Businesses) -->
         <section class="section">
             <div class="container">
                 <h2 class="section-title">Featured on Campus</h2>
-                <div class="businesses-grid">
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Campus Fresh Chop</h3>
-                        <p class="business-desc">Delicious local meals and snacks delivered to your hostel.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Luminex Creative Lab</h3>
-                        <p class="business-desc">Brand identity, event flyers, and motion graphics.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Amoah Web Solutions</h3>
-                        <p class="business-desc">Responsive websites and technical support for students.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                    <article class="card business-card">
-                        <div class="business-img-box"></div>
-                        <h3 class="business-name">Bamboo Craft &amp; Art</h3>
-                        <p class="business-desc">Handmade musical bamboo flutes and traditional art.</p>
-                        <a href="explore.html" class="business-link">View in Explore &rarr;</a>
-                    </article>
-                </div>
+                <div class="businesses-grid" id="featuredBusinessesGrid"></div>
             </div>
         </section>
 
@@ -240,8 +236,12 @@
 
             const CONFIG_KEY = 'bisa_admin_config_v1';
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
+            const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
 
+            const featuredGrid = document.getElementById('featuredBusinessesGrid');
             let currentSlide = 0;
+            let currentSettings = {};
+            let approvedBusinesses = [];
 
             function initSlideshowControls() {
                 const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
@@ -276,8 +276,74 @@
                 if (nextBtn) nextBtn.onclick = () => showSlide(currentSlide + 1);
             }
 
+            function renderFeaturedOnCampus() {
+                if (!featuredGrid) return;
+
+                const featuredIds = new Set(
+                    Array.isArray(currentSettings?.site_assets?.featured_business_ids)
+                        ? currentSettings.site_assets.featured_business_ids.map(String)
+                        : []
+                );
+
+                const featuredItems = approvedBusinesses.filter((biz) => {
+                    if ((biz.status || '').toLowerCase() !== 'approved') return false;
+                    return biz.featured_on_campus === true || featuredIds.has(String(biz.id));
+                });
+
+                if (!featuredItems.length) {
+                    featuredGrid.innerHTML = `
+                        <div class="featured-empty-state">
+                            No featured businesses selected yet. Approve and feature businesses in the Admin Portal to display them here.
+                        </div>
+                    `;
+                    return;
+                }
+
+                featuredGrid.innerHTML = '';
+                featuredItems.forEach((biz) => {
+                    const bizName = biz.business_name || biz.name || 'Campus Business';
+                    const desc = biz.description || '';
+                    const imgUrl = biz.image_url && !String(biz.image_url).startsWith('data:')
+                        ? biz.image_url
+                        : '';
+
+                    const article = document.createElement('article');
+                    article.className = 'card business-card';
+
+                    const imgBox = document.createElement('div');
+                    imgBox.className = 'business-img-box';
+                    if (imgUrl) {
+                        const img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.alt = bizName;
+                        imgBox.appendChild(img);
+                    }
+
+                    const h3 = document.createElement('h3');
+                    h3.className = 'business-name';
+                    h3.textContent = bizName;
+
+                    const p = document.createElement('p');
+                    p.className = 'business-desc';
+                    p.textContent = desc;
+
+                    const link = document.createElement('a');
+                    link.href = `explore.html?q=${encodeURIComponent(bizName)}`;
+                    link.className = 'business-link';
+                    link.innerHTML = 'View in Explore &rarr;';
+
+                    article.appendChild(imgBox);
+                    article.appendChild(h3);
+                    article.appendChild(p);
+                    article.appendChild(link);
+
+                    featuredGrid.appendChild(article);
+                });
+            }
+
             function applySettings(cfg) {
                 if (!cfg) return;
+                currentSettings = { ...currentSettings, ...cfg };
 
                 const brandText = cfg.brand_name || cfg.brandName || 'BISA';
                 const logoEl = document.getElementById('siteLogoText');
@@ -317,6 +383,20 @@
                 if (footerBrandWrap) {
                     footerBrandWrap.classList.toggle('footer-brand-highlight', placement === 'footer-brand');
                 }
+
+                const catMedia = cfg.category_media || {};
+                document.querySelectorAll('#homeCategoriesGrid .category-card').forEach((card) => {
+                    const catName = card.dataset.category;
+                    const iconBox = card.querySelector('.category-icon');
+                    const iconUrl = catMedia[catName];
+                    if (iconBox) {
+                        if (iconUrl) {
+                            iconBox.innerHTML = `<img src="${iconUrl}" alt="${catName}" class="category-icon-img">`;
+                        } else {
+                            iconBox.innerHTML = '';
+                        }
+                    }
+                });
 
                 const rawSlides = Array.isArray(cfg.slideshow) && cfg.slideshow.length
                     ? cfg.slideshow
@@ -367,13 +447,25 @@
                         initSlideshowControls();
                     }
                 }
+
+                renderFeaturedOnCampus();
             }
 
             initSlideshowControls();
+            renderFeaturedOnCampus();
 
             try {
                 const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(CONFIG_KEY);
                 if (cached) applySettings(JSON.parse(cached));
+            } catch (_) {}
+
+            try {
+                const rawBiz = localStorage.getItem(LS_BUSINESSES_KEY);
+                const cachedBiz = rawBiz ? JSON.parse(rawBiz) : [];
+                if (Array.isArray(cachedBiz)) {
+                    approvedBusinesses = cachedBiz.filter((b) => (b.status || '').toLowerCase() === 'approved');
+                    renderFeaturedOnCampus();
+                }
             } catch (_) {}
 
             if (sb) {
@@ -387,6 +479,18 @@
                                 localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
                             } catch (_) {}
                             applySettings(data);
+                        }
+                    })
+                    .catch(() => {});
+
+                sb.from('bisa_businesses')
+                    .select('*')
+                    .eq('status', 'approved')
+                    .order('created_at', { ascending: false })
+                    .then(({ data, error }) => {
+                        if (!error && Array.isArray(data)) {
+                            approvedBusinesses = data;
+                            renderFeaturedOnCampus();
                         }
                     })
                     .catch(() => {});
