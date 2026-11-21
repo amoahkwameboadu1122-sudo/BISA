@@ -52,17 +52,63 @@
             border-radius: 8px;
             display: block;
         }
-        .business-img-box img {
+
+        /* Horizontal row of moderately sized Featured on Campus cards */
+        #featuredBusinessesGrid.featured-horizontal-row {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scroll-snap-type: x proximity;
+            align-items: stretch;
+        }
+        #featuredBusinessesGrid.featured-horizontal-row .business-card {
+            flex: 0 0 245px;
+            max-width: 245px;
+            padding: 12px;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #featuredBusinessesGrid.featured-horizontal-row .business-img-box {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f6ede0;
+            flex-shrink: 0;
+        }
+        #featuredBusinessesGrid.featured-horizontal-row .business-img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            border-radius: inherit;
+        }
+        #featuredBusinessesGrid.featured-horizontal-row .business-name {
+            font-size: 15px;
+            line-height: 1.3;
+            margin: 0;
+        }
+        #featuredBusinessesGrid.featured-horizontal-row .business-desc {
+            font-size: 12.5px;
+            line-height: 1.45;
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        #featuredBusinessesGrid.featured-horizontal-row .business-link {
+            margin-top: auto;
+            font-size: 12.5px;
+            font-weight: 600;
         }
         .featured-empty-state {
-            grid-column: 1 / -1;
+            width: 100%;
             text-align: center;
-            padding: 28px 20px;
+            padding: 24px 16px;
             color: var(--gray, #6c5867);
             font-size: 14px;
         }
@@ -186,7 +232,7 @@
         <section class="section">
             <div class="container">
                 <h2 class="section-title">Featured on Campus</h2>
-                <div class="businesses-grid" id="featuredBusinessesGrid"></div>
+                <div class="businesses-grid featured-horizontal-row" id="featuredBusinessesGrid"></div>
             </div>
         </section>
 
