@@ -183,6 +183,31 @@
             padding: 8px 14px;
             font-size: 13px;
         }
+        .social-circles {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .social-circles .circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.15s ease;
+        }
+        .social-circles .circle:hover {
+            transform: translateY(-2px);
+        }
+        .social-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -377,9 +402,15 @@
             <div class="footer-col">
                 <h4>Socials</h4>
                 <div class="social-circles">
-                    <span class="circle"></span>
-                    <span class="circle"></span>
-                    <span class="circle"></span>
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Facebook">
+                        <img src="facebook.png" alt="Facebook" class="social-icon-img">
+                    </a>
+                    <a href="https://wa.me/233554611569" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on WhatsApp">
+                        <img src="whatsapp.png" alt="WhatsApp" class="social-icon-img">
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Instagram">
+                        <img src="instagram.png" alt="Instagram" class="social-icon-img">
+                    </a>
                 </div>
             </div>
         </div>
@@ -725,95 +756,7 @@
                     renderGrid();
                 });
             }
-            if (searchInput) {
-                searchInput.addEventListener('input', renderGrid);
-            }
-            if (sortSelect) {
-                sortSelect.addEventListener('change', renderGrid);
-            }
-            if (applyFiltersBtn) {
-                applyFiltersBtn.addEventListener('click', renderGrid);
-            }
-            document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]')
-                .forEach(cb => cb.addEventListener('change', renderGrid));
-
-            if (clearFiltersBtn) {
-                clearFiltersBtn.addEventListener('click', () => {
-                    if (searchInput) searchInput.value = '';
-                    if (sortSelect) sortSelect.value = 'newest';
-                    document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]')
-                        .forEach(cb => { cb.checked = false; });
-                    renderGrid();
-                });
-            }
-
-            cancelPolicyBtn.addEventListener('click', function () {
-                selectedCardData = null;
-                connectPolicyModal.close();
-            });
-
-            agreePolicyBtn.addEventListener('click', function () {
-                connectPolicyModal.close();
-                if (!selectedCardData) return;
-
-                document.getElementById('contactModalName').textContent = selectedCardData.name;
-                document.getElementById('contactModalLocation').textContent = selectedCardData.location ? `📍 ${selectedCardData.location}` : '';
-                document.getElementById('contactModalDescription').textContent = selectedCardData.description;
-                document.getElementById('contactModalFindUs').textContent = selectedCardData.findUs;
-
-                renderModalSlideshow(selectedCardData.images, selectedCardData.name);
-
-                const phoneEl = document.getElementById('contactModalPhone');
-                const quickCallBtn = document.getElementById('quickCallBtn');
-                const cleanTel = selectedCardData.phone.replace(/[^+\d]/g, '');
-                phoneEl.textContent = selectedCardData.phone || 'Not provided';
-                phoneEl.href = cleanTel ? `tel:${cleanTel}` : '#';
-                if (cleanTel) {
-                    quickCallBtn.href = `tel:${cleanTel}`;
-                    quickCallBtn.style.display = 'inline-block';
-                } else {
-                    quickCallBtn.style.display = 'none';
-                }
-                wireCopyBtn('copyPhoneBtn', selectedCardData.phone);
-
-                const emailEl = document.getElementById('contactModalEmail');
-                const quickEmailBtn = document.getElementById('quickEmailBtn');
-                emailEl.textContent = selectedCardData.email || 'Not provided';
-                emailEl.href = selectedCardData.email ? `mailto:${selectedCardData.email}` : '#';
-                if (selectedCardData.email) {
-                    quickEmailBtn.href = `mailto:${selectedCardData.email}`;
-                    quickEmailBtn.style.display = 'inline-block';
-                } else {
-                    quickEmailBtn.style.display = 'none';
-                }
-                wireCopyBtn('copyEmailBtn', selectedCardData.email);
-
-                const websiteRow = document.getElementById('contactWebsiteRow');
-                const websiteEl = document.getElementById('contactModalWebsite');
-                const quickWebsiteBtn = document.getElementById('quickWebsiteBtn');
-                if (selectedCardData.website) {
-                    const url = /^https?:\/\//i.test(selectedCardData.website)
-                        ? selectedCardData.website
-                        : `https://${selectedCardData.website}`;
-                    websiteEl.href = url;
-                    websiteRow.style.display = 'flex';
-                    quickWebsiteBtn.href = url;
-                    quickWebsiteBtn.style.display = 'inline-block';
-                } else {
-                    websiteRow.style.display = 'none';
-                    quickWebsiteBtn.style.display = 'none';
-                }
-
-                contactModal.showModal();
-            });
-
-            closeContactModalBtn.addEventListener('click', () => contactModal.close());
-            doneContactModalBtn.addEventListener('click', () => contactModal.close());
-
-            renderGrid();
-            syncSupabaseData();
         })();
     </script>
-
 </body>
 </html>
