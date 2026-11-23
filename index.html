@@ -45,11 +45,44 @@
             border-radius: var(--border-radius);
             background-color: rgba(255, 176, 46, 0.16);
         }
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 8px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .category-icon-img {
             width: 44px;
             height: 44px;
-            object-fit: cover;
+            object-fit: contain;
             border-radius: 8px;
+            display: block;
+        }
+        .social-circles {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .social-circles .circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.15s ease;
+        }
+        .social-circles .circle:hover {
+            transform: translateY(-2px);
+        }
+        .social-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
         }
 
@@ -275,27 +308,39 @@
                 <h2 class="section-title">Popular Categories</h2>
                 <div class="categories-grid" id="homeCategoriesGrid">
                     <a href="explore.html?category=Food%20%26%20Snacks" class="card category-card" data-category="Food & Snacks">
-                        <div class="category-icon"></div>
+                        <div class="category-icon">
+                            <img src="food-snacks.png" alt="Food & Snacks" class="category-icon-img">
+                        </div>
                         <p class="category-name">Food &amp; Snacks</p>
                     </a>
                     <a href="explore.html?category=Graphics%20%26%20Art" class="card category-card" data-category="Graphics & Art">
-                        <div class="category-icon"></div>
+                        <div class="category-icon">
+                            <img src="graphics-art.png" alt="Graphics & Art" class="category-icon-img">
+                        </div>
                         <p class="category-name">Graphics &amp; Art</p>
                     </a>
                     <a href="explore.html?category=Web%20%26%20Tech" class="card category-card" data-category="Web & Tech">
-                        <div class="category-icon"></div>
+                        <div class="category-icon">
+                            <img src="web-tech.png" alt="Web & Tech" class="category-icon-img">
+                        </div>
                         <p class="category-name">Web &amp; Tech</p>
                     </a>
                     <a href="explore.html?category=Books%20%26%20Notes" class="card category-card" data-category="Books & Notes">
-                        <div class="category-icon"></div>
+                        <div class="category-icon">
+                            <img src="books-notes.png" alt="Books & Notes" class="category-icon-img">
+                        </div>
                         <p class="category-name">Books &amp; Notes</p>
                     </a>
                     <a href="explore.html?category=Laundry" class="card category-card" data-category="Laundry">
-                        <div class="category-icon"></div>
+                        <div class="category-icon">
+                            <img src="laundry.png" alt="Laundry" class="category-icon-img">
+                        </div>
                         <p class="category-name">Laundry</p>
                     </a>
                     <a href="explore.html?category=Campus%20Services" class="card category-card" data-category="Campus Services">
-                        <div class="category-icon"></div>
+                        <div class="category-icon">
+                            <img src="campus-service.png" alt="Campus Services" class="category-icon-img">
+                        </div>
                         <p class="category-name">Campus Services</p>
                     </a>
                 </div>
@@ -335,9 +380,15 @@
             <div class="footer-col">
                 <h4>Socials</h4>
                 <div class="social-circles">
-                    <span class="circle"></span>
-                    <span class="circle"></span>
-                    <span class="circle"></span>
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Facebook">
+                        <img src="facebook.png" alt="Facebook" class="social-icon-img">
+                    </a>
+                    <a href="https://wa.me/233554611569" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on WhatsApp">
+                        <img src="whatsapp.png" alt="WhatsApp" class="social-icon-img">
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Instagram">
+                        <img src="instagram.png" alt="Instagram" class="social-icon-img">
+                    </a>
                 </div>
             </div>
         </div>
@@ -643,12 +694,8 @@
                     const catName = card.dataset.category;
                     const iconBox = card.querySelector('.category-icon');
                     const iconUrl = catMedia[catName];
-                    if (iconBox) {
-                        if (iconUrl) {
-                            iconBox.innerHTML = `<img src="${iconUrl}" alt="${catName}" class="category-icon-img">`;
-                        } else {
-                            iconBox.innerHTML = '';
-                        }
+                    if (iconBox && iconUrl) {
+                        iconBox.innerHTML = `<img src="${iconUrl}" alt="${catName}" class="category-icon-img">`;
                     }
                 });
 
@@ -723,37 +770,24 @@
             } catch (_) {}
 
             if (sb) {
-                sb.from('bisa_settings')
-                    .select('*')
-                    .eq('id', 1)
-                    .maybeSingle()
-                    .then(({ data, error }) => {
-                        if (!error && data) {
-                            try {
-                                localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
-                            } catch (_) {}
-                            applySettings(data);
+                (async function syncSupabase() {
+                    try {
+                        const { data: settingsRows } = await sb.from('site_settings').select('*').limit(1);
+                        if (Array.isArray(settingsRows) && settingsRows[0]) {
+                            applySettings(settingsRows[0]);
                         }
-                    })
-                    .catch(() => {});
+                    } catch (_) {}
 
-                sb.from('bisa_businesses')
-                    .select('*')
-                    .eq('status', 'approved')
-                    .order('created_at', { ascending: false })
-                    .then(({ data, error }) => {
-                        if (!error && Array.isArray(data)) {
-                            approvedBusinesses = data;
+                    try {
+                        const { data: bizRows } = await sb.from('businesses').select('*').eq('status', 'approved');
+                        if (Array.isArray(bizRows)) {
+                            approvedBusinesses = bizRows;
                             renderFeaturedOnCampus();
-                            if (searchInput && searchInput.value.trim()) {
-                                renderSearchSuggestions(searchInput.value, false);
-                            }
                         }
-                    })
-                    .catch(() => {});
+                    } catch (_) {}
+                })();
             }
         })();
     </script>
-
 </body>
 </html>
