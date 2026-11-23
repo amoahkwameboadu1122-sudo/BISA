@@ -51,6 +51,31 @@
             color: var(--primary);
             font-weight: 500;
         }
+        .social-circles {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .social-circles .circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: transform 0.15s ease;
+        }
+        .social-circles .circle:hover {
+            transform: translateY(-2px);
+        }
+        .social-icon-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -185,9 +210,15 @@
             <div class="footer-col">
                 <h4>Socials</h4>
                 <div class="social-circles">
-                    <span class="circle"></span>
-                    <span class="circle"></span>
-                    <span class="circle"></span>
+                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Facebook">
+                        <img src="facebook.png" alt="Facebook" class="social-icon-img">
+                    </a>
+                    <a href="https://wa.me/233554611569" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on WhatsApp">
+                        <img src="whatsapp.png" alt="WhatsApp" class="social-icon-img">
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Instagram">
+                        <img src="instagram.png" alt="Instagram" class="social-icon-img">
+                    </a>
                 </div>
             </div>
         </div>
