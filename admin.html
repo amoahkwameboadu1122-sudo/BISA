@@ -219,6 +219,7 @@
       font-size: 0.88rem;
       cursor: pointer;
       transition: 0.18s ease;
+      text-decoration: none;
     }
 
     .btn-primary {
@@ -281,6 +282,28 @@
       border: 1px solid #f5b5b0;
     }
 
+    .broken-img-warning {
+      background: #fdecea;
+      color: #8a1f17;
+      border: 1.5px dashed #e06c62;
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      line-height: 1.4;
+      text-align: center;
+      width: 100%;
+    }
+
+    .broken-url-hint {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #5c1914;
+      word-break: break-all;
+    }
+
     .featured-picker-bar {
       display: flex;
       gap: 0.75rem;
@@ -315,17 +338,19 @@
     .biz-img-box {
       position: relative;
       background: #f6ede0;
-      height: 190px;
+      min-height: 190px;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0.5rem;
       border-bottom: 1px solid var(--border);
     }
 
     .biz-img-box img {
       width: 100%;
-      height: 100%;
+      height: 180px;
       object-fit: cover;
+      border-radius: 8px;
     }
 
     .biz-img-placeholder {
@@ -346,13 +371,15 @@
       font-weight: 800;
       background: var(--plum);
       color: #fff;
+      z-index: 2;
     }
 
     .img-review-badge.accepted {
       background: #1c7c43;
     }
 
-    .img-review-badge.removed {
+    .img-review-badge.removed,
+    .img-review-badge.broken {
       background: var(--coral);
     }
 
@@ -366,6 +393,7 @@
       font-weight: 800;
       background: var(--gold);
       color: var(--plum-dark);
+      z-index: 2;
     }
 
     .biz-image-controls {
@@ -460,11 +488,21 @@
       flex-direction: column;
     }
 
-    .media-item img {
+    .media-thumb-box {
       width: 100%;
       height: 135px;
-      object-fit: cover;
       background: #f5ece0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem;
+    }
+
+    .media-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
     }
 
     .media-item-info {
@@ -490,7 +528,7 @@
 
     .category-slot-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 1rem;
     }
 
@@ -505,8 +543,9 @@
     }
 
     .category-slot-preview {
-      width: 68px;
-      height: 68px;
+      min-width: 72px;
+      max-width: 140px;
+      min-height: 68px;
       border-radius: 12px;
       border: 1px solid var(--border);
       background: #fff;
@@ -515,17 +554,19 @@
       justify-content: center;
       overflow: hidden;
       flex-shrink: 0;
+      padding: 0.25rem;
     }
 
     .category-slot-preview img {
-      width: 100%;
-      height: 100%;
+      width: 64px;
+      height: 64px;
       object-fit: cover;
+      border-radius: 8px;
     }
 
     .slide-row {
       display: grid;
-      grid-template-columns: 120px 1fr auto;
+      grid-template-columns: 140px 1fr auto;
       gap: 1rem;
       align-items: center;
       border: 1.5px solid var(--border);
@@ -535,12 +576,22 @@
       background: #fffcf8;
     }
 
-    .slide-row img {
-      width: 120px;
-      height: 75px;
-      object-fit: cover;
+    .slide-thumb-box {
+      width: 140px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5ece0;
       border-radius: 8px;
-      background: #eee;
+      padding: 0.25rem;
+    }
+
+    .slide-row img {
+      width: 132px;
+      height: 76px;
+      object-fit: cover;
+      border-radius: 6px;
     }
 
     /* CSS: Contact message cards inside the Messages tab */
@@ -605,6 +656,9 @@
     @media (max-width: 680px) {
       .slide-row {
         grid-template-columns: 1fr;
+      }
+      .slide-thumb-box {
+        width: 100%;
       }
       .admin-topbar {
         padding: 0.9rem 1rem;
@@ -737,8 +791,13 @@
               </div>
             </div>
 
-            <div id="logoPreviewWrap" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-              <img id="activeLogoPreview" src="" alt="Active Logo" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 10px; background: #fff; display: none;" />
+            <div id="logoPreviewWrap" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+              <div id="activeLogoPreviewBox" style="display: none; align-items: center; gap: 0.75rem;">
+                <img id="activeLogoPreview" src="" alt="Active Logo" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 10px; background: #fff;" />
+              </div>
+              <div id="activeLogoBrokenWarning" class="broken-img-warning hidden" style="max-width: 420px; text-align: left;">
+                Warning: Active logo URL could not be loaded. Upload a replacement file or update the URL above.
+              </div>
               <button type="button" class="btn btn-outline btn-sm" id="clearLogoBtn">Remove Active Logo</button>
             </div>
 
@@ -788,7 +847,7 @@
       <div id="siteAssetsTab" class="tab-panel">
         <div class="panel-card">
           <h2>Category Icons &amp; Images</h2>
-          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category.</p>
+          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category, or re-upload any broken asset.</p>
           <div id="categorySlotsContainer" class="category-slot-grid"></div>
         </div>
 
@@ -830,7 +889,7 @@
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
             <div>
               <h2>Media Library</h2>
-              <p class="panel-sub" style="margin-bottom: 0;">Copy asset URLs, set as site logo, or delete files from storage.</p>
+              <p class="panel-sub" style="margin-bottom: 0;">Copy asset URLs, replace broken files, set as site logo, or delete files from storage.</p>
             </div>
             <select id="mediaFilterSelect" style="max-width: 200px;">
               <option value="ALL">All Categories</option>
@@ -997,6 +1056,7 @@
     let allBusinesses = [];
     let mediaLibrary = [];
     let contactMessages = [];
+    const brokenUrlSet = new Set();
 
     // JS: Helper to display transient feedback banners
     function showAlert(elementId, message, type = 'success') {
@@ -1018,6 +1078,52 @@
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+    }
+
+    function shortUrlLabel(url) {
+      const s = String(url || '');
+      if (s.startsWith('data:')) return 'Local data image';
+      return s.length > 65 ? `${s.slice(0, 62)}...` : s;
+    }
+
+    // JS: Renders an image or a clear warning box when the URL is known/detected as broken
+    function renderMonitoredImage(url, altText, imgAttrs = '', compact = false) {
+      const cleanUrl = String(url || '').trim();
+      if (!cleanUrl) {
+        return `<div class="biz-img-placeholder">No Image Attached</div>`;
+      }
+
+      if (brokenUrlSet.has(cleanUrl)) {
+        return `
+          <div class="broken-img-warning" style="${compact ? 'padding:0.4rem 0.5rem;font-size:0.72rem;' : ''}">
+            Broken image URL — upload a replacement
+            <span class="broken-url-hint">${escapeHtml(shortUrlLabel(cleanUrl))}</span>
+          </div>
+        `;
+      }
+
+      return `<img src="${escapeHtml(cleanUrl)}" alt="${escapeHtml(altText || 'Image')}" data-monitored-img="1" ${imgAttrs} />`;
+    }
+
+    // JS: Attaches error listeners to any rendered monitored <img> so broken URLs trigger a warning immediately
+    function bindMonitoredImages(rootEl, onBrokenUrl) {
+      if (!rootEl) return;
+      rootEl.querySelectorAll('img[data-monitored-img="1"]').forEach((img) => {
+        const srcVal = img.getAttribute('src') || '';
+        img.addEventListener('error', () => {
+          if (srcVal) brokenUrlSet.add(srcVal);
+          const warning = document.createElement('div');
+          warning.className = 'broken-img-warning';
+          warning.innerHTML = `
+            Broken image URL — upload a replacement
+            <span class="broken-url-hint">${escapeHtml(shortUrlLabel(srcVal))}</span>
+          `;
+          img.replaceWith(warning);
+          if (typeof onBrokenUrl === 'function') {
+            onBrokenUrl(srcVal);
+          }
+        }, { once: true });
+      });
     }
 
     // JS: Switches between dashboard tabs
@@ -1109,6 +1215,7 @@
           .getPublicUrl(storagePath);
 
         const publicUrl = publicData.publicUrl;
+        brokenUrlSet.delete(publicUrl);
         recordMediaLocally({
           id: storagePath,
           name: file.name,
@@ -1121,6 +1228,7 @@
       } catch (err) {
         console.warn('Supabase storage upload fallback:', err.message);
         const dataUrl = await fileToDataUrl(file);
+        brokenUrlSet.delete(dataUrl);
         recordMediaLocally({
           id: `local-${Date.now()}`,
           name: file.name,
@@ -1231,12 +1339,26 @@
       document.getElementById('heroSubtextInput').value = currentSettings.hero_subtext || '';
       document.getElementById('activeLogoUrlInput').value = currentSettings.logo_url || '';
 
+      const logoBox = document.getElementById('activeLogoPreviewBox');
       const logoImg = document.getElementById('activeLogoPreview');
-      if (currentSettings.logo_url) {
-        logoImg.src = currentSettings.logo_url;
-        logoImg.style.display = 'block';
+      const logoWarn = document.getElementById('activeLogoBrokenWarning');
+      const logoUrl = String(currentSettings.logo_url || '').trim();
+
+      if (logoUrl && !brokenUrlSet.has(logoUrl)) {
+        logoImg.src = logoUrl;
+        logoBox.style.display = 'flex';
+        logoWarn.classList.add('hidden');
+        logoImg.onerror = () => {
+          brokenUrlSet.add(logoUrl);
+          logoBox.style.display = 'none';
+          logoWarn.classList.remove('hidden');
+        };
+      } else if (logoUrl && brokenUrlSet.has(logoUrl)) {
+        logoBox.style.display = 'none';
+        logoWarn.classList.remove('hidden');
       } else {
-        logoImg.style.display = 'none';
+        logoBox.style.display = 'none';
+        logoWarn.classList.add('hidden');
       }
 
       document.getElementById('exploreNoticeInput').value = currentSettings.explore_notice || '';
@@ -1256,6 +1378,8 @@
         logoUrl = await uploadFileToMedia(logoFile, 'Icon');
         document.getElementById('logoFileUpload').value = '';
       }
+
+      if (logoUrl) brokenUrlSet.delete(logoUrl);
 
       await saveSettings(
         {
@@ -1302,6 +1426,7 @@
         return;
       }
 
+      brokenUrlSet.delete(imageUrl);
       const newSlide = {
         id: `slide-${Date.now()}`,
         image_url: imageUrl,
@@ -1325,26 +1450,31 @@
       }
 
       container.innerHTML = slides
-        .map(
-          (slide, idx) => `
-        <div class="slide-row">
-          <img src="${escapeHtml(slide.image_url || slide.image || '')}" alt="Slide ${idx + 1}" />
-          <div style="display: grid; gap: 0.45rem;">
-            <input type="text" value="${escapeHtml(slide.title || '')}" placeholder="Slide Title" data-slide-field="title" data-idx="${idx}" />
-            <input type="text" value="${escapeHtml(slide.subtitle || slide.caption || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-              <label class="btn btn-outline btn-sm" style="cursor: pointer;">
-                Replace Image
-                <input type="file" accept="image/*" hidden data-slide-replace="${idx}" />
-              </label>
-              <button type="button" class="btn btn-primary btn-sm" data-slide-save="${idx}">Save Slide</button>
+        .map((slide, idx) => {
+          const slideUrl = slide.image_url || slide.image || '';
+          return `
+            <div class="slide-row">
+              <div class="slide-thumb-box">
+                ${renderMonitoredImage(slideUrl, `Slide ${idx + 1}`, '', true)}
+              </div>
+              <div style="display: grid; gap: 0.45rem;">
+                <input type="text" value="${escapeHtml(slide.title || '')}" placeholder="Slide Title" data-slide-field="title" data-idx="${idx}" />
+                <input type="text" value="${escapeHtml(slide.subtitle || slide.caption || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+                    Replace Image
+                    <input type="file" accept="image/*" hidden data-slide-replace="${idx}" />
+                  </label>
+                  <button type="button" class="btn btn-primary btn-sm" data-slide-save="${idx}">Save Slide</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-coral btn-sm" data-slide-remove="${idx}">Remove</button>
             </div>
-          </div>
-          <button type="button" class="btn btn-coral btn-sm" data-slide-remove="${idx}">Remove</button>
-        </div>
-      `
-        )
+          `;
+        })
         .join('');
+
+      bindMonitoredImages(container);
 
       container.querySelectorAll('[data-slide-save]').forEach((btn) => {
         btn.addEventListener('click', async () => {
@@ -1390,7 +1520,11 @@
           <div class="category-slot-card">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
               <div class="category-slot-preview">
-                ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(cat)}" />` : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'}
+                ${
+                  imgUrl
+                    ? renderMonitoredImage(imgUrl, cat, '', true)
+                    : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'
+                }
               </div>
               <div>
                 <strong style="color: var(--plum); font-size: 0.92rem;">${escapeHtml(cat)}</strong>
@@ -1398,8 +1532,8 @@
               </div>
             </div>
             <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-              <label class="btn btn-primary btn-sm" style="cursor: pointer;">
-                Upload Icon/Image
+              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+                ${imgUrl ? 'Replace Icon/Image' : 'Upload Icon/Image'}
                 <input type="file" accept="image/*" hidden data-cat-upload="${escapeHtml(cat)}" />
               </label>
               ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-cat-remove="${escapeHtml(cat)}">Remove</button>` : ''}
@@ -1407,6 +1541,8 @@
           </div>
         `;
       }).join('');
+
+      bindMonitoredImages(catContainer);
 
       catContainer.querySelectorAll('[data-cat-upload]').forEach((input) => {
         input.addEventListener('change', async () => {
@@ -1438,7 +1574,11 @@
           <div class="category-slot-card">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
               <div class="category-slot-preview">
-                ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(slot.label)}" />` : '<span style="font-size:0.7rem;color:#888;">Empty</span>'}
+                ${
+                  imgUrl
+                    ? renderMonitoredImage(imgUrl, slot.label, '', true)
+                    : '<span style="font-size:0.7rem;color:#888;">Empty</span>'
+                }
               </div>
               <div>
                 <strong style="color: var(--plum); font-size: 0.88rem;">${escapeHtml(slot.label)}</strong>
@@ -1446,8 +1586,8 @@
               </div>
             </div>
             <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-              <label class="btn btn-primary btn-sm" style="cursor: pointer;">
-                Upload Image
+              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+                ${imgUrl ? 'Replace Image' : 'Upload Image'}
                 <input type="file" accept="image/*" hidden data-slot-upload="${escapeHtml(slot.key)}" />
               </label>
               ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-slot-remove="${escapeHtml(slot.key)}">Remove</button>` : ''}
@@ -1455,6 +1595,8 @@
           </div>
         `;
       }).join('');
+
+      bindMonitoredImages(bannerContainer);
 
       bannerContainer.querySelectorAll('[data-slot-upload]').forEach((input) => {
         input.addEventListener('change', async () => {
@@ -1627,46 +1769,47 @@
     });
 
     function renderBusinessCard(biz) {
-      const imgState = biz.image_moderation_status || (biz.image_url ? 'pending_review' : 'removed');
+      const imgUrl = String(biz.image_url || '').trim();
+      const isBroken = imgUrl && brokenUrlSet.has(imgUrl);
+      const imgState = biz.image_moderation_status || (imgUrl ? 'pending_review' : 'removed');
       const featured = isBusinessFeatured(biz);
 
       let badgeText = 'Vendor Photo: Pending Review';
       let badgeClass = '';
-      if (imgState === 'accepted') {
+      if (isBroken) {
+        badgeText = 'Broken URL Warning';
+        badgeClass = 'broken';
+      } else if (imgState === 'accepted') {
         badgeText = 'Image Accepted';
         badgeClass = 'accepted';
       } else if (imgState === 'replaced') {
         badgeText = 'Image Updated by Admin';
         badgeClass = 'accepted';
-      } else if (imgState === 'removed' || !biz.image_url) {
+      } else if (imgState === 'removed' || !imgUrl) {
         badgeText = 'No Image / Removed';
         badgeClass = 'removed';
       }
 
       return `
-        <article class="biz-card">
+        <article class="biz-card" data-biz-card-id="${escapeHtml(biz.id)}">
           <div class="biz-img-box">
             ${featured ? '<span class="featured-tag-badge">Featured on Campus</span>' : ''}
-            <span class="img-review-badge ${badgeClass}">${badgeText}</span>
-            ${
-              biz.image_url
-                ? `<img src="${escapeHtml(biz.image_url)}" alt="${escapeHtml(biz.business_name || biz.name || 'Business')}" />`
-                : `<div class="biz-img-placeholder">No Business Image Attached</div>`
-            }
+            <span class="img-review-badge ${badgeClass}" data-biz-badge="${escapeHtml(biz.id)}">${badgeText}</span>
+            ${renderMonitoredImage(imgUrl, biz.business_name || biz.name || 'Business')}
           </div>
 
           <div class="biz-image-controls">
             ${
-              biz.image_url
+              imgUrl && !isBroken
                 ? `<button type="button" class="btn btn-primary btn-sm" data-biz-accept-img="${escapeHtml(biz.id)}">Accept Image</button>`
                 : ''
             }
             <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-              ${biz.image_url ? 'Replace Image' : 'Upload Image'}
+              ${imgUrl ? 'Replace / Re-upload Image' : 'Upload Image'}
               <input type="file" accept="image/*" hidden data-biz-replace-img="${escapeHtml(biz.id)}" />
             </label>
             ${
-              biz.image_url
+              imgUrl
                 ? `<button type="button" class="btn btn-coral btn-sm" data-biz-remove-img="${escapeHtml(biz.id)}">Remove Image</button>`
                 : ''
             }
@@ -1706,6 +1849,90 @@
           </div>
         </article>
       `;
+    }
+
+    function wireBusinessCardEvents(container) {
+      if (!container) return;
+
+      bindMonitoredImages(container, () => {
+        container.querySelectorAll('[data-biz-card-id]').forEach((card) => {
+          const id = card.dataset.bizCardId;
+          const biz = allBusinesses.find((b) => String(b.id) === String(id));
+          if (biz && biz.image_url && brokenUrlSet.has(String(biz.image_url).trim())) {
+            const badge = card.querySelector('[data-biz-badge]');
+            if (badge) {
+              badge.textContent = 'Broken URL Warning';
+              badge.className = 'img-review-badge broken';
+            }
+            const acceptBtn = card.querySelector('[data-biz-accept-img]');
+            if (acceptBtn) acceptBtn.remove();
+          }
+        });
+      });
+
+      container.querySelectorAll('[data-biz-edit]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const biz = allBusinesses.find((b) => String(b.id) === String(btn.dataset.bizEdit));
+          if (biz) openEditBusinessModal(biz);
+        });
+      });
+
+      container.querySelectorAll('[data-biz-feat]').forEach((btn) => {
+        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizFeat, true));
+      });
+
+      container.querySelectorAll('[data-biz-unfeat]').forEach((btn) => {
+        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizUnfeat, false));
+      });
+
+      container.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizAcceptImg;
+          await updateBusinessRecord(id, { image_moderation_status: 'accepted' }, 'Business image accepted.');
+        });
+      });
+
+      container.querySelectorAll('[data-biz-replace-img]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const id = input.dataset.bizReplaceImg;
+          const file = input.files[0];
+          if (!file) return;
+          const newUrl = await uploadFileToMedia(file, 'Business');
+          await updateBusinessRecord(
+            id,
+            { image_url: newUrl, image_moderation_status: 'replaced' },
+            'Business image replaced and saved.'
+          );
+          await loadMediaLibrary();
+        });
+      });
+
+      container.querySelectorAll('[data-biz-remove-img]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizRemoveImg;
+          await updateBusinessRecord(
+            id,
+            { image_url: null, image_moderation_status: 'removed' },
+            'Business image removed.'
+          );
+        });
+      });
+
+      container.querySelectorAll('[data-biz-status]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.bizId;
+          const status = btn.dataset.bizStatus;
+          const biz = allBusinesses.find((b) => String(b.id) === String(id));
+          const updates = { status };
+          if (status === 'approved' && biz && biz.image_url && !biz.image_moderation_status) {
+            updates.image_moderation_status = 'accepted';
+          }
+          if (status !== 'approved' && isBusinessFeatured(biz)) {
+            await setFeaturedState(id, false);
+          }
+          await updateBusinessRecord(id, updates, `Business marked as ${status}.`);
+        });
+      });
     }
 
     function renderBusinesses() {
@@ -1748,72 +1975,12 @@
           : '<p class="panel-sub">No additional approved businesses waiting to be featured.</p>';
       }
 
-      document.querySelectorAll('[data-biz-edit]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const biz = allBusinesses.find((b) => String(b.id) === String(btn.dataset.bizEdit));
-          if (biz) openEditBusinessModal(biz);
-        });
-      });
-
-      document.querySelectorAll('[data-biz-feat]').forEach((btn) => {
-        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizFeat, true));
-      });
-
-      document.querySelectorAll('[data-biz-unfeat]').forEach((btn) => {
-        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizUnfeat, false));
-      });
-
-      document.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizAcceptImg;
-          await updateBusinessRecord(id, { image_moderation_status: 'accepted' }, 'Business image accepted.');
-        });
-      });
-
-      document.querySelectorAll('[data-biz-replace-img]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const id = input.dataset.bizReplaceImg;
-          const file = input.files[0];
-          if (!file) return;
-          const newUrl = await uploadFileToMedia(file, 'Business');
-          await updateBusinessRecord(
-            id,
-            { image_url: newUrl, image_moderation_status: 'replaced' },
-            'Business image replaced and saved.'
-          );
-          await loadMediaLibrary();
-        });
-      });
-
-      document.querySelectorAll('[data-biz-remove-img]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizRemoveImg;
-          await updateBusinessRecord(
-            id,
-            { image_url: null, image_moderation_status: 'removed' },
-            'Business image removed.'
-          );
-        });
-      });
-
-      document.querySelectorAll('[data-biz-status]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizId;
-          const status = btn.dataset.bizStatus;
-          const biz = allBusinesses.find((b) => String(b.id) === String(id));
-          const updates = { status };
-          if (status === 'approved' && biz && biz.image_url && !biz.image_moderation_status) {
-            updates.image_moderation_status = 'accepted';
-          }
-          if (status !== 'approved' && isBusinessFeatured(biz)) {
-            await setFeaturedState(id, false);
-          }
-          await updateBusinessRecord(id, updates, `Business marked as ${status}.`);
-        });
+      [pendingContainer, reviewedContainer, featuredListContainer, availableFeaturedContainer].forEach((el) => {
+        wireBusinessCardEvents(el);
       });
     }
 
-    // JS: Media library upload, listing, copying URL, setting logo, and deletion
+    // JS: Media library upload, listing, replacing broken files, copying URL, setting logo, and deletion
     document.getElementById('mediaUploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const category = document.getElementById('mediaCategorySelect').value;
@@ -1882,11 +2049,17 @@
         .map(
           (item, index) => `
         <div class="media-item">
-          <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.name)}" />
+          <div class="media-thumb-box">
+            ${renderMonitoredImage(item.url, item.name, '', true)}
+          </div>
           <div class="media-item-info">
             <span class="badge-cat">${escapeHtml(item.category)}</span>
             <div style="font-weight: 600; word-break: break-all;">${escapeHtml(item.name)}</div>
             <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: auto;">
+              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+                Re-upload
+                <input type="file" accept="image/*" hidden data-reupload-media="${index}" />
+              </label>
               <button type="button" class="btn btn-outline btn-sm" data-copy-url="${escapeHtml(item.url)}">Copy URL</button>
               <button type="button" class="btn btn-primary btn-sm" data-set-logo="${escapeHtml(item.url)}">Use as Logo</button>
               <button type="button" class="btn btn-coral btn-sm" data-delete-media="${index}">Delete</button>
@@ -1896,6 +2069,27 @@
       `
         )
         .join('');
+
+      bindMonitoredImages(grid);
+
+      grid.querySelectorAll('[data-reupload-media]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const item = items[Number(input.dataset.reuploadMedia)];
+          const file = input.files[0];
+          if (!item || !file) return;
+
+          await uploadFileToMedia(file, item.category || 'Image');
+          try {
+            const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]').filter((c) => c.url !== item.url);
+            localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached));
+          } catch (_) {}
+
+          showAlert('globalAlert', `Replaced "${item.name}" with "${file.name}".`, 'success');
+          await loadMediaLibrary();
+          await loadSettings();
+          await loadBusinesses();
+        });
+      });
 
       grid.querySelectorAll('[data-copy-url]').forEach((btn) => {
         btn.addEventListener('click', async () => {
