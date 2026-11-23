@@ -528,7 +528,7 @@
 
     .category-slot-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
       gap: 1rem;
     }
 
@@ -560,7 +560,7 @@
     .category-slot-preview img {
       width: 64px;
       height: 64px;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 8px;
     }
 
@@ -704,6 +704,7 @@
         <button type="button" class="tab-btn" data-tab="brandingTab">Branding &amp; Logo Upload</button>
         <button type="button" class="tab-btn" data-tab="slideshowTab">Hero Slideshow</button>
         <button type="button" class="tab-btn" data-tab="siteAssetsTab">Category Icons &amp; Site Images</button>
+        <button type="button" class="tab-btn" data-tab="socialIconsTab">Social Media Icons</button>
         <button type="button" class="tab-btn" data-tab="mediaLibraryTab">All Uploaded Media</button>
         <button type="button" class="tab-btn" data-tab="noticesTab">Policy Notices</button>
         <button type="button" class="tab-btn" data-tab="messagesTab">Messages</button>
@@ -858,17 +859,61 @@
         </div>
       </div>
 
-      <!-- TAB 6: ALL MEDIA LIBRARY -->
+      <!-- TAB 6: SOCIAL MEDIA ICONS UPLOAD & UPDATE -->
+      <div id="socialIconsTab" class="tab-panel">
+        <div class="panel-card">
+          <h2>Social Media Icons &amp; Links</h2>
+          <p class="panel-sub">Upload or replace icons for each social platform (and optionally set each social URL), or add a custom social icon.</p>
+
+          <div id="socialIconsGrid" class="category-slot-grid" style="margin-bottom: 1.5rem;"></div>
+
+          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 1.75rem;">
+            <button type="button" class="btn btn-primary" id="saveAllSocialIconsBtn">Save All Social Icons &amp; Links</button>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid var(--border); margin-bottom: 1.35rem;" />
+
+          <h3 style="color: var(--plum); font-size: 1rem; font-weight: 800; margin-bottom: 0.35rem;">Add Custom Social Platform Icon</h3>
+          <p class="panel-sub">Upload an icon file or paste an icon image URL for an additional social channel.</p>
+
+          <form id="addCustomSocialForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="customSocialNameInput">Platform Name</label>
+                <input type="text" id="customSocialNameInput" placeholder="e.g., LinkedIn or Discord" required />
+              </div>
+              <div class="form-group">
+                <label for="customSocialUrlInput">Profile / Page URL (Optional)</label>
+                <input type="url" id="customSocialUrlInput" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="customSocialFileInput">Upload Icon Image</label>
+                <input type="file" id="customSocialFileInput" accept="image/*" />
+              </div>
+              <div class="form-group">
+                <label for="customSocialIconUrlInput">Or Icon Image URL</label>
+                <input type="url" id="customSocialIconUrlInput" placeholder="https://..." />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-gold">+ Add Social Icon</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 7: ALL MEDIA LIBRARY -->
       <div id="mediaLibraryTab" class="tab-panel">
         <div class="panel-card">
           <h2>Upload Media to Storage (<code>bisa-media</code>)</h2>
-          <p class="panel-sub">Upload assets under Icon, Image, Flyer, Slideshow, or Business categories.</p>
+          <p class="panel-sub">Upload assets under Icon, Social, Image, Flyer, Slideshow, or Business categories.</p>
 
           <form id="mediaUploadForm" class="form-grid" style="align-items: end;">
             <div class="form-group" style="margin-bottom: 0;">
               <label for="mediaCategorySelect">Asset Category</label>
               <select id="mediaCategorySelect">
                 <option value="Icon">Icon</option>
+                <option value="Social">Social</option>
                 <option value="Image">Image</option>
                 <option value="Flyer">Flyer</option>
                 <option value="Slideshow">Slideshow</option>
@@ -894,6 +939,7 @@
             <select id="mediaFilterSelect" style="max-width: 200px;">
               <option value="ALL">All Categories</option>
               <option value="Icon">Icon</option>
+              <option value="Social">Social</option>
               <option value="Image">Image</option>
               <option value="Flyer">Flyer</option>
               <option value="Slideshow">Slideshow</option>
@@ -904,7 +950,7 @@
         </div>
       </div>
 
-      <!-- TAB 7: POLICY NOTICES -->
+      <!-- TAB 8: POLICY NOTICES -->
       <div id="noticesTab" class="tab-panel">
         <div class="panel-card">
           <h2>Policy Notice Modals</h2>
@@ -923,7 +969,7 @@
         </div>
       </div>
 
-      <!-- TAB 8: CONTACT MESSAGES FROM contact.html -->
+      <!-- TAB 9: CONTACT MESSAGES FROM contact.html -->
       <div id="messagesTab" class="tab-panel">
         <div class="panel-card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
@@ -1039,6 +1085,15 @@
       { key: 'default_business_placeholder', label: 'Default Business Fallback Image (When Removed)' }
     ];
 
+    const DEFAULT_SOCIAL_PLATFORMS = [
+      { key: 'instagram', label: 'Instagram' },
+      { key: 'tiktok', label: 'TikTok' },
+      { key: 'whatsapp', label: 'WhatsApp' },
+      { key: 'x', label: 'X (Twitter)' },
+      { key: 'facebook', label: 'Facebook' },
+      { key: 'youtube', label: 'YouTube' }
+    ];
+
     let currentSettings = {
       id: 1,
       brand_name: 'BISA',
@@ -1050,7 +1105,8 @@
       business_notice: 'All business listings are reviewed by BISA administrators before appearing publicly on Explore.',
       slideshow: [],
       category_media: {},
-      site_assets: { featured_business_ids: [] }
+      social_icons: {},
+      site_assets: { featured_business_ids: [], social_links: {} }
     };
 
     let allBusinesses = [];
@@ -1270,6 +1326,7 @@
           ...data,
           slideshow: Array.isArray(data.slideshow) ? data.slideshow : [],
           category_media: data.category_media && typeof data.category_media === 'object' ? data.category_media : {},
+          social_icons: data.social_icons && typeof data.social_icons === 'object' ? data.social_icons : {},
           site_assets: data.site_assets && typeof data.site_assets === 'object' ? data.site_assets : {}
         };
         try {
@@ -1298,6 +1355,7 @@
             caption: s.subtitle || s.caption || '',
             image: s.image_url || s.image || ''
           })),
+          socialIcons: currentSettings.social_icons || {},
           site_assets: currentSettings.site_assets
         }));
       } catch (_) {}
@@ -1313,6 +1371,7 @@
         business_notice: currentSettings.business_notice,
         slideshow: currentSettings.slideshow,
         category_media: currentSettings.category_media,
+        social_icons: currentSettings.social_icons,
         site_assets: currentSettings.site_assets
       };
 
@@ -1366,6 +1425,7 @@
 
       renderSlideshowList();
       renderCategoryAndSiteAssets();
+      renderSocialIconsTab();
     }
 
     // JS: Saves Branding, Headlines, and Logo Upload
@@ -1620,6 +1680,223 @@
         });
       });
     }
+
+    // JS: Social Media Icons upload, replacement, URL update, and custom social platforms
+    function getSocialPlatformsList() {
+      const iconsMap = currentSettings.social_icons && typeof currentSettings.social_icons === 'object'
+        ? currentSettings.social_icons
+        : {};
+      const customList = Array.isArray(currentSettings?.site_assets?.custom_social_platforms)
+        ? currentSettings.site_assets.custom_social_platforms
+        : [];
+
+      const map = new Map();
+      DEFAULT_SOCIAL_PLATFORMS.forEach((p) => map.set(p.key, { ...p, isCustom: false }));
+      customList.forEach((p) => {
+        if (p && p.key) map.set(p.key, { key: p.key, label: p.label || p.key, isCustom: true });
+      });
+      Object.keys(iconsMap).forEach((k) => {
+        if (!map.has(k)) {
+          map.set(k, { key: k, label: k.charAt(0).toUpperCase() + k.slice(1), isCustom: true });
+        }
+      });
+      return Array.from(map.values());
+    }
+
+    function renderSocialIconsTab() {
+      const grid = document.getElementById('socialIconsGrid');
+      if (!grid) return;
+
+      const platforms = getSocialPlatformsList();
+      const iconsMap = currentSettings.social_icons || {};
+      const linksMap = (currentSettings.site_assets && currentSettings.site_assets.social_links) || {};
+
+      grid.innerHTML = platforms.map((plat) => {
+        const iconUrl = String(iconsMap[plat.key] || '').trim();
+        const profileUrl = String(linksMap[plat.key] || '').trim();
+        return `
+          <div class="category-slot-card" data-social-key="${escapeHtml(plat.key)}">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="category-slot-preview">
+                ${
+                  iconUrl
+                    ? renderMonitoredImage(iconUrl, `${plat.label} icon`, '', true)
+                    : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'
+                }
+              </div>
+              <div>
+                <strong style="color: var(--plum); font-size: 0.92rem;">${escapeHtml(plat.label)}</strong>
+                <div style="font-size: 0.74rem; color: var(--muted);">Key: <code>${escapeHtml(plat.key)}</code></div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.25rem;">
+              <label style="font-size: 0.76rem;">Icon Image URL</label>
+              <input type="url" value="${escapeHtml(iconUrl)}" placeholder="https://..." data-social-icon-url="${escapeHtml(plat.key)}" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.25rem;">
+              <label style="font-size: 0.76rem;">Profile / Link URL (Optional)</label>
+              <input type="url" value="${escapeHtml(profileUrl)}" placeholder="https://..." data-social-link-url="${escapeHtml(plat.key)}" />
+            </div>
+
+            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
+                ${iconUrl ? 'Replace Icon' : 'Upload Icon'}
+                <input type="file" accept="image/*" hidden data-social-upload="${escapeHtml(plat.key)}" />
+              </label>
+              ${
+                iconUrl
+                  ? `<button type="button" class="btn btn-coral btn-sm" data-social-clear-icon="${escapeHtml(plat.key)}">Remove Icon</button>`
+                  : ''
+              }
+              ${
+                plat.isCustom
+                  ? `<button type="button" class="btn btn-outline btn-sm" data-social-remove-platform="${escapeHtml(plat.key)}">Delete</button>`
+                  : ''
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      bindMonitoredImages(grid);
+
+      grid.querySelectorAll('[data-social-upload]').forEach((input) => {
+        input.addEventListener('change', async () => {
+          const key = input.dataset.socialUpload;
+          const file = input.files[0];
+          if (!file) return;
+
+          const url = await uploadFileToMedia(file, 'Social');
+          const nextIcons = { ...(currentSettings.social_icons || {}), [key]: url };
+          const nextLinks = {
+            ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}),
+            [key]: (grid.querySelector(`[data-social-link-url="${key}"]`)?.value || '').trim()
+          };
+          const nextAssets = { ...(currentSettings.site_assets || {}), social_links: nextLinks };
+
+          await saveSettings(
+            { social_icons: nextIcons, site_assets: nextAssets },
+            `Uploaded icon for ${key}.`
+          );
+          await loadMediaLibrary();
+        });
+      });
+
+      grid.querySelectorAll('[data-social-clear-icon]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const key = btn.dataset.socialClearIcon;
+          const nextIcons = { ...(currentSettings.social_icons || {}) };
+          delete nextIcons[key];
+          await saveSettings({ social_icons: nextIcons }, `Removed icon for ${key}.`);
+        });
+      });
+
+      grid.querySelectorAll('[data-social-remove-platform]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const key = btn.dataset.socialRemovePlatform;
+          const nextIcons = { ...(currentSettings.social_icons || {}) };
+          delete nextIcons[key];
+
+          const existingCustom = Array.isArray(currentSettings?.site_assets?.custom_social_platforms)
+            ? currentSettings.site_assets.custom_social_platforms
+            : [];
+          const nextCustom = existingCustom.filter((p) => p.key !== key);
+
+          const nextLinks = { ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}) };
+          delete nextLinks[key];
+
+          const nextAssets = {
+            ...(currentSettings.site_assets || {}),
+            custom_social_platforms: nextCustom,
+            social_links: nextLinks
+          };
+
+          await saveSettings({ social_icons: nextIcons, site_assets: nextAssets }, `Deleted custom social platform "${key}".`);
+        });
+      });
+    }
+
+    document.getElementById('saveAllSocialIconsBtn').addEventListener('click', async () => {
+      const grid = document.getElementById('socialIconsGrid');
+      const platforms = getSocialPlatformsList();
+      const nextIcons = { ...(currentSettings.social_icons || {}) };
+      const nextLinks = { ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}) };
+
+      platforms.forEach((plat) => {
+        const iconInput = grid.querySelector(`[data-social-icon-url="${plat.key}"]`);
+        const linkInput = grid.querySelector(`[data-social-link-url="${plat.key}"]`);
+        const iconVal = iconInput ? iconInput.value.trim() : '';
+        const linkVal = linkInput ? linkInput.value.trim() : '';
+
+        if (iconVal) {
+          brokenUrlSet.delete(iconVal);
+          nextIcons[plat.key] = iconVal;
+        } else {
+          delete nextIcons[plat.key];
+        }
+
+        if (linkVal) {
+          nextLinks[plat.key] = linkVal;
+        } else {
+          delete nextLinks[plat.key];
+        }
+      });
+
+      const nextAssets = { ...(currentSettings.site_assets || {}), social_links: nextLinks };
+      await saveSettings(
+        { social_icons: nextIcons, site_assets: nextAssets },
+        'Social media icons and links saved.'
+      );
+    });
+
+    document.getElementById('addCustomSocialForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rawName = document.getElementById('customSocialNameInput').value.trim();
+      const profileUrl = document.getElementById('customSocialUrlInput').value.trim();
+      const file = document.getElementById('customSocialFileInput').files[0];
+      let iconUrl = document.getElementById('customSocialIconUrlInput').value.trim();
+
+      if (!rawName) return;
+
+      if (file) {
+        iconUrl = await uploadFileToMedia(file, 'Social');
+      }
+
+      if (!iconUrl) {
+        showAlert('globalAlert', 'Please upload an icon image or enter an icon image URL.', 'error');
+        return;
+      }
+
+      brokenUrlSet.delete(iconUrl);
+      const key = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || `social_${Date.now()}`;
+
+      const existingCustom = Array.isArray(currentSettings?.site_assets?.custom_social_platforms)
+        ? currentSettings.site_assets.custom_social_platforms
+        : [];
+      const filteredCustom = existingCustom.filter((p) => p.key !== key);
+      filteredCustom.push({ key, label: rawName });
+
+      const nextIcons = { ...(currentSettings.social_icons || {}), [key]: iconUrl };
+      const nextLinks = { ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}) };
+      if (profileUrl) {
+        nextLinks[key] = profileUrl;
+      }
+
+      const nextAssets = {
+        ...(currentSettings.site_assets || {}),
+        custom_social_platforms: filteredCustom,
+        social_links: nextLinks
+      };
+
+      document.getElementById('addCustomSocialForm').reset();
+      await saveSettings(
+        { social_icons: nextIcons, site_assets: nextAssets },
+        `Added "${rawName}" social icon.`
+      );
+      await loadMediaLibrary();
+    });
 
     // JS: Featured on Campus helpers for approved businesses
     function isBusinessFeatured(biz) {
@@ -1996,7 +2273,7 @@
     document.getElementById('mediaFilterSelect').addEventListener('change', renderMediaLibrary);
 
     async function loadMediaLibrary() {
-      const categories = ['Icon', 'Image', 'Flyer', 'Slideshow', 'Business'];
+      const categories = ['Icon', 'Social', 'Image', 'Flyer', 'Slideshow', 'Business'];
       const collected = [];
 
       for (const cat of categories) {
