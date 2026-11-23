@@ -60,6 +60,19 @@
             font-size: 14px;
             margin-bottom: 16px;
         }
+        .explore-img-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-warm, #f6ede0);
+            color: var(--gray, #6c5867);
+            font-size: 12.5px;
+            font-weight: 600;
+            padding: 12px;
+            text-align: center;
+        }
         .biz-modal-slideshow {
             position: relative;
             width: 100%;
@@ -393,11 +406,14 @@
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
             const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
-            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            const sb = window.supabase && typeof window.supabase.createClient === 'function'
+                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+                : null;
 
             const CONFIG_KEY = 'bisa_admin_config_v1';
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
+            const PENDING_NOTICE_KEY = 'bisa_pending_explore_notice';
 
             const connectPolicyModal = document.getElementById('connectPolicyModal');
             const contactModal = document.getElementById('contactModal');
@@ -422,12 +438,16 @@
 
             let approvedBusinesses = [];
             let selectedCardData = null;
+            let pendingNoticePayload = null;
             let currentSlides = [];
             let currentSlideIdx = 0;
 
             const urlParams = new URLSearchParams(window.location.search);
             const initialQuery = (urlParams.get('q') || '').trim();
             const initialCategory = (urlParams.get('category') || '').trim().toLowerCase();
+            const initialBizId = (urlParams.get('biz') || '').trim();
+            const requireNoticeParam = urlParams.get('require_notice') === '1';
+
             if (initialQuery && searchInput) {
                 searchInput.value = initialQuery;
             }
@@ -438,6 +458,14 @@
                     }
                 });
             }
+
+            try {
+                const rawNotice = sessionStorage.getItem(PENDING_NOTICE_KEY);
+                if (rawNotice) {
+                    pendingNoticePayload = JSON.parse(rawNotice);
+                    sessionStorage.removeItem(PENDING_NOTICE_KEY);
+                }
+            } catch (_) {}
 
             function parseImageList(biz) {
                 const list = [];
@@ -455,6 +483,29 @@
                 return list;
             }
 
+            function buildCardData(biz) {
+                const bizName = biz.business_name || biz.name || 'Unnamed Business';
+                const desc = biz.description || '';
+                const loc = biz.location || 'Elmina, Central Region';
+                const findUs = biz.service_location || biz.where_to_find || biz.find_us || loc;
+                const phone = biz.phone || biz.tel || '';
+                const email = biz.email || '';
+                const imgs = parseImageList(biz);
+                const website = biz.website || biz.website_url || '';
+
+                return {
+                    id: biz.id,
+                    name: bizName,
+                    description: desc,
+                    location: loc,
+                    findUs: findUs,
+                    phone: phone,
+                    email: email,
+                    images: imgs,
+                    website: website
+                };
+            }
+
             function renderModalSlideshow(images, businessName) {
                 currentSlides = images;
                 currentSlideIdx = 0;
@@ -466,7 +517,7 @@
 
                 slideshowWrap.style.display = 'block';
                 slidesTrack.innerHTML = currentSlides
-                    .map((src, idx) => `<div class="biz-modal-slide"><img src="${src}" alt="${businessName} photo ${idx + 1}"></div>`)
+                    .map((src, idx) => `<div class="biz-modal-slide"><img src="${src}" alt="${businessName} photo ${idx + 1}" onerror="this.closest('.biz-modal-slide').style.display='none'"></div>`)
                     .join('');
 
                 const hasMultiple = currentSlides.length > 1;
@@ -519,6 +570,112 @@
                     }
                 };
             }
+
+            function openContactDetailsModal(data) {
+                if (!data) return;
+                document.getElementById('contactModalName').textContent = data.name || 'Business';
+                document.getElementById('contactModalLocation').textContent = `📍 ${data.location || 'Ghana'}`;
+                document.getElementById('contactModalDescription').textContent = data.description || '';
+                document.getElementById('contactModalFindUs').textContent = data.findUs || data.location || 'Not specified';
+
+                const phoneEl = document.getElementById('contactModalPhone');
+                const quickCallBtn = document.getElementById('quickCallBtn');
+                if (data.phone) {
+                    phoneEl.textContent = data.phone;
+                    phoneEl.href = `tel:${data.phone}`;
+                    quickCallBtn.href = `tel:${data.phone}`;
+                    quickCallBtn.style.display = 'inline-flex';
+                } else {
+                    phoneEl.textContent = 'Not provided';
+                    phoneEl.removeAttribute('href');
+                    quickCallBtn.style.display = 'none';
+                }
+
+                const emailEl = document.getElementById('contactModalEmail');
+                const quickEmailBtn = document.getElementById('quickEmailBtn');
+                if (data.email) {
+                    emailEl.textContent = data.email;
+                    emailEl.href = `mailto:${data.email}`;
+                    quickEmailBtn.href = `mailto:${data.email}`;
+                    quickEmailBtn.style.display = 'inline-flex';
+                } else {
+                    emailEl.textContent = 'Not provided';
+                    emailEl.removeAttribute('href');
+                    quickEmailBtn.style.display = 'none';
+                }
+
+                const websiteRow = document.getElementById('contactWebsiteRow');
+                const websiteLink = document.getElementById('contactModalWebsite');
+                const quickWebsiteBtn = document.getElementById('quickWebsiteBtn');
+                if (data.website) {
+                    websiteRow.style.display = 'flex';
+                    websiteLink.href = data.website;
+                    quickWebsiteBtn.href = data.website;
+                    quickWebsiteBtn.style.display = 'inline-flex';
+                } else {
+                    websiteRow.style.display = 'none';
+                    quickWebsiteBtn.style.display = 'none';
+                }
+
+                wireCopyBtn('copyPhoneBtn', data.phone);
+                wireCopyBtn('copyEmailBtn', data.email);
+                renderModalSlideshow(data.images || [], data.name || 'Business');
+
+                if (typeof contactModal.showModal === 'function') {
+                    contactModal.showModal();
+                } else {
+                    contactModal.setAttribute('open', '');
+                }
+            }
+
+            function openPolicyNoticeModal(data, customNoticeText) {
+                selectedCardData = data;
+                const noticeEl = document.getElementById('explorePolicyText');
+                if (customNoticeText && noticeEl) {
+                    noticeEl.textContent = customNoticeText;
+                }
+                if (typeof connectPolicyModal.showModal === 'function') {
+                    if (!connectPolicyModal.open) connectPolicyModal.showModal();
+                } else {
+                    connectPolicyModal.setAttribute('open', '');
+                }
+            }
+
+            if (cancelPolicyBtn) {
+                cancelPolicyBtn.addEventListener('click', () => {
+                    selectedCardData = null;
+                    if (typeof connectPolicyModal.close === 'function') {
+                        connectPolicyModal.close();
+                    } else {
+                        connectPolicyModal.removeAttribute('open');
+                    }
+                });
+            }
+
+            if (agreePolicyBtn) {
+                agreePolicyBtn.addEventListener('click', () => {
+                    const targetData = selectedCardData;
+                    if (typeof connectPolicyModal.close === 'function') {
+                        connectPolicyModal.close();
+                    } else {
+                        connectPolicyModal.removeAttribute('open');
+                    }
+                    if (targetData) {
+                        openContactDetailsModal(targetData);
+                    }
+                });
+            }
+
+            function closeContactModal() {
+                if (typeof contactModal.close === 'function') {
+                    contactModal.close();
+                } else {
+                    contactModal.removeAttribute('open');
+                }
+            }
+
+            if (closeContactModalBtn) closeContactModalBtn.addEventListener('click', closeContactModal);
+            if (doneContactModalBtn) doneContactModalBtn.addEventListener('click', closeContactModal);
 
             function applySettings(cfg) {
                 if (!cfg) return;
@@ -594,6 +751,26 @@
                 return list;
             }
 
+            function maybeTriggerMandatoryNotice(items) {
+                if (!pendingNoticePayload && !requireNoticeParam) return;
+                if (!items || !items.length) return;
+
+                let matchedBiz = null;
+                if (pendingNoticePayload && pendingNoticePayload.businessId !== null && pendingNoticePayload.businessId !== undefined) {
+                    matchedBiz = items.find(b => String(b.id) === String(pendingNoticePayload.businessId));
+                }
+                if (!matchedBiz && initialBizId) {
+                    matchedBiz = items.find(b => String(b.id) === String(initialBizId));
+                }
+                if (!matchedBiz) {
+                    matchedBiz = items[0];
+                }
+
+                const noticeText = pendingNoticePayload && pendingNoticePayload.notice ? pendingNoticePayload.notice : '';
+                pendingNoticePayload = null;
+                openPolicyNoticeModal(buildCardData(matchedBiz), noticeText);
+            }
+
             function renderGrid() {
                 if (!resultsGrid) return;
                 const items = getFilteredAndSortedBusinesses();
@@ -617,56 +794,51 @@
 
                 resultsGrid.innerHTML = '';
                 items.forEach(biz => {
-                    const bizName = biz.business_name || biz.name || 'Unnamed Business';
-                    const desc = biz.description || '';
-                    const loc = biz.location || 'Elmina, Central Region';
-                    const findUs = biz.service_location || biz.where_to_find || biz.find_us || loc;
-                    const phone = biz.phone || biz.tel || '';
-                    const email = biz.email || '';
-                    const imgs = parseImageList(biz);
-                    const website = biz.website || biz.website_url || '';
+                    const cardData = buildCardData(biz);
+                    const desc = cardData.description;
 
                     const article = document.createElement('article');
                     article.className = 'card explore-card';
 
                     const imgBox = document.createElement('div');
                     imgBox.className = 'explore-img-box';
-                    if (imgs[0]) {
+                    if (cardData.images[0]) {
                         const img = document.createElement('img');
-                        img.src = imgs[0];
-                        img.alt = bizName;
+                        img.src = cardData.images[0];
+                        img.alt = cardData.name;
+                        img.onerror = () => {
+                            img.replaceWith(Object.assign(document.createElement('div'), {
+                                className: 'explore-img-fallback',
+                                textContent: 'Image unavailable'
+                            }));
+                        };
                         imgBox.appendChild(img);
+                    } else {
+                        imgBox.appendChild(Object.assign(document.createElement('div'), {
+                            className: 'explore-img-fallback',
+                            textContent: 'No photo provided'
+                        }));
                     }
 
                     const content = document.createElement('div');
                     content.className = 'explore-card-content';
 
                     const h3 = document.createElement('h3');
-                    h3.textContent = bizName;
+                    h3.textContent = cardData.name;
 
                     const p = document.createElement('p');
                     p.textContent = desc.length > 70 ? desc.slice(0, 70) + '...' : desc;
 
                     const locSpan = document.createElement('span');
                     locSpan.className = 'location-tag';
-                    locSpan.textContent = `📍 ${loc}`;
+                    locSpan.textContent = `📍 ${cardData.location}`;
 
                     const contactBtn = document.createElement('button');
                     contactBtn.type = 'button';
                     contactBtn.className = 'button button-secondary card-btn contact-btn';
                     contactBtn.textContent = 'Contact';
                     contactBtn.addEventListener('click', () => {
-                        selectedCardData = {
-                            name: bizName,
-                            description: desc,
-                            location: loc,
-                            findUs: findUs,
-                            phone: phone,
-                            email: email,
-                            images: imgs,
-                            website: website
-                        };
-                        connectPolicyModal.showModal();
+                        openPolicyNoticeModal(cardData);
                     });
 
                     content.appendChild(h3);
@@ -678,6 +850,8 @@
                     article.appendChild(content);
                     resultsGrid.appendChild(article);
                 });
+
+                maybeTriggerMandatoryNotice(items);
             }
 
             async function syncSupabaseData() {
@@ -695,6 +869,8 @@
                     }
                 } catch (_) {}
 
+                if (!sb) return;
+
                 try {
                     const { data: settings } = await sb
                         .from('bisa_settings')
@@ -702,7 +878,12 @@
                         .eq('id', 1)
                         .maybeSingle();
 
-                    if (settings) applySettings(settings);
+                    if (settings) {
+                        try {
+                            localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings));
+                        } catch (_) {}
+                        applySettings(settings);
+                    }
                 } catch (_) {}
 
                 try {
@@ -714,12 +895,60 @@
 
                     if (!error && Array.isArray(approvedRows)) {
                         approvedBusinesses = approvedRows;
+                        try {
+                            localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(approvedBusinesses));
+                        } catch (_) {}
                         renderGrid();
                     }
                 } catch (_) {}
             }
 
             if (searchForm) {
-                searchForm.addEventListener('submit', e => {
+                searchForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-            
+                    renderGrid();
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    renderGrid();
+                });
+            }
+
+            if (sortSelect) {
+                sortSelect.addEventListener('change', () => {
+                    renderGrid();
+                });
+            }
+
+            if (applyFiltersBtn) {
+                applyFiltersBtn.addEventListener('click', () => {
+                    renderGrid();
+                });
+            }
+
+            document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    renderGrid();
+                });
+            });
+
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    if (sortSelect) sortSelect.value = 'newest';
+                    document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]').forEach(cb => {
+                        cb.checked = false;
+                    });
+                    renderGrid();
+                });
+            }
+
+            renderGrid();
+            syncSupabaseData();
+        })();
+    </script>
+
+</body>
+</html>
