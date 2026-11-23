@@ -45,115 +45,12 @@
             border-radius: var(--border-radius);
             background-color: rgba(255, 176, 46, 0.16);
         }
-        .category-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 8px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
         .category-icon-img {
             width: 44px;
             height: 44px;
-            object-fit: contain;
+            object-fit: cover;
             border-radius: 8px;
             display: block;
-        }
-        .social-circles {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .social-circles .circle {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            overflow: hidden;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: transform 0.15s ease;
-        }
-        .social-circles .circle:hover {
-            transform: translateY(-2px);
-        }
-        .social-icon-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        /* Search bar live suggestions & notice box */
-        .search-section .container {
-            position: relative;
-        }
-        .search-results-box {
-            display: none;
-            margin-top: 10px;
-            background: #ffffff;
-            border: 1.5px solid #e6d7c3;
-            border-radius: 12px;
-            box-shadow: 0 10px 26px rgba(84, 35, 74, 0.12);
-            overflow: hidden;
-            text-align: left;
-        }
-        .search-results-box.open {
-            display: block;
-        }
-        .search-notice-banner {
-            padding: 12px 16px;
-            background: #fff9ef;
-            border-bottom: 1px solid #e6d7c3;
-            color: #54234A;
-            font-size: 13.5px;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-        .search-suggestion-list {
-            list-style: none;
-            margin: 0;
-            padding: 6px 0;
-            max-height: 290px;
-            overflow-y: auto;
-        }
-        .search-suggestion-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 10px 16px;
-            cursor: pointer;
-            border-bottom: 1px solid #f5ece0;
-            transition: background 0.15s ease;
-        }
-        .search-suggestion-item:last-child {
-            border-bottom: none;
-        }
-        .search-suggestion-item:hover {
-            background: #fff1da;
-        }
-        .suggestion-main {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .suggestion-title {
-            font-weight: 700;
-            font-size: 14px;
-            color: #2a1625;
-        }
-        .suggestion-meta {
-            font-size: 12px;
-            color: #6c5867;
-        }
-        .suggestion-cta {
-            font-size: 12px;
-            font-weight: 700;
-            color: #54234A;
-            white-space: nowrap;
         }
 
         /* Horizontal row of moderately sized Featured on Campus cards */
@@ -289,16 +186,12 @@
         </section>
 
         <!-- SEARCH SECTION -->
-        <section class="search-section" id="homeSearchSection">
+        <section class="search-section">
             <div class="container">
-                <form class="search-form" id="homeSearchForm" action="explore.html" method="get">
-                    <input type="text" id="homeSearchInput" name="q" class="input" autocomplete="off" placeholder="Search for food, design, web services, or hostels...">
+                <form class="search-form" action="explore.html" method="get">
+                    <input type="text" name="q" class="input" placeholder="Search for food, design, web services, or hostels...">
                     <button type="submit" class="button button-search">Search</button>
                 </form>
-                <div class="search-results-box" id="homeSearchResultsBox" role="region" aria-live="polite">
-                    <div class="search-notice-banner" id="homeSearchNoticeBanner"></div>
-                    <ul class="search-suggestion-list" id="homeSearchSuggestionList"></ul>
-                </div>
             </div>
         </section>
 
@@ -308,39 +201,27 @@
                 <h2 class="section-title">Popular Categories</h2>
                 <div class="categories-grid" id="homeCategoriesGrid">
                     <a href="explore.html?category=Food%20%26%20Snacks" class="card category-card" data-category="Food & Snacks">
-                        <div class="category-icon">
-                            <img src="food-snacks.png" alt="Food & Snacks" class="category-icon-img">
-                        </div>
+                        <div class="category-icon"></div>
                         <p class="category-name">Food &amp; Snacks</p>
                     </a>
                     <a href="explore.html?category=Graphics%20%26%20Art" class="card category-card" data-category="Graphics & Art">
-                        <div class="category-icon">
-                            <img src="graphics-art.png" alt="Graphics & Art" class="category-icon-img">
-                        </div>
+                        <div class="category-icon"></div>
                         <p class="category-name">Graphics &amp; Art</p>
                     </a>
                     <a href="explore.html?category=Web%20%26%20Tech" class="card category-card" data-category="Web & Tech">
-                        <div class="category-icon">
-                            <img src="web-tech.png" alt="Web & Tech" class="category-icon-img">
-                        </div>
+                        <div class="category-icon"></div>
                         <p class="category-name">Web &amp; Tech</p>
                     </a>
                     <a href="explore.html?category=Books%20%26%20Notes" class="card category-card" data-category="Books & Notes">
-                        <div class="category-icon">
-                            <img src="books-notes.png" alt="Books & Notes" class="category-icon-img">
-                        </div>
+                        <div class="category-icon"></div>
                         <p class="category-name">Books &amp; Notes</p>
                     </a>
                     <a href="explore.html?category=Laundry" class="card category-card" data-category="Laundry">
-                        <div class="category-icon">
-                            <img src="laundry.png" alt="Laundry" class="category-icon-img">
-                        </div>
+                        <div class="category-icon"></div>
                         <p class="category-name">Laundry</p>
                     </a>
                     <a href="explore.html?category=Campus%20Services" class="card category-card" data-category="Campus Services">
-                        <div class="category-icon">
-                            <img src="campus-service.png" alt="Campus Services" class="category-icon-img">
-                        </div>
+                        <div class="category-icon"></div>
                         <p class="category-name">Campus Services</p>
                     </a>
                 </div>
@@ -380,15 +261,9 @@
             <div class="footer-col">
                 <h4>Socials</h4>
                 <div class="social-circles">
-                    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Facebook">
-                        <img src="facebook.png" alt="Facebook" class="social-icon-img">
-                    </a>
-                    <a href="https://wa.me/233554611569" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on WhatsApp">
-                        <img src="whatsapp.png" alt="WhatsApp" class="social-icon-img">
-                    </a>
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="circle" aria-label="BISA on Instagram">
-                        <img src="instagram.png" alt="Instagram" class="social-icon-img">
-                    </a>
+                    <span class="circle"></span>
+                    <span class="circle"></span>
+                    <span class="circle"></span>
                 </div>
             </div>
         </div>
@@ -408,141 +283,11 @@
             const CONFIG_KEY = 'bisa_admin_config_v1';
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
-            const PENDING_NOTICE_KEY = 'bisa_pending_explore_notice';
 
             const featuredGrid = document.getElementById('featuredBusinessesGrid');
-            const searchForm = document.getElementById('homeSearchForm');
-            const searchInput = document.getElementById('homeSearchInput');
-            const searchResultsBox = document.getElementById('homeSearchResultsBox');
-            const searchNoticeBanner = document.getElementById('homeSearchNoticeBanner');
-            const searchSuggestionList = document.getElementById('homeSearchSuggestionList');
-
             let currentSlide = 0;
             let currentSettings = {};
             let approvedBusinesses = [];
-
-            function escapeHtml(str) {
-                return String(str || '')
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#039;');
-            }
-
-            function goToExploreWithNotice(queryText, selectedBusiness) {
-                const cleanQuery = String(queryText || '').trim();
-                const noticeText =
-                    currentSettings.explore_notice ||
-                    currentSettings.exploreNotice ||
-                    'Before viewing this business or service\'s contact details, location, and offerings, please read and accept the BISA notice.';
-
-                try {
-                    sessionStorage.setItem(
-                        PENDING_NOTICE_KEY,
-                        JSON.stringify({
-                            query: cleanQuery,
-                            businessId: selectedBusiness && selectedBusiness.id ? selectedBusiness.id : null,
-                            businessName: selectedBusiness ? (selectedBusiness.business_name || selectedBusiness.name || '') : '',
-                            notice: noticeText,
-                            mandatory: true
-                        })
-                    );
-                } catch (_) {}
-
-                const params = new URLSearchParams();
-                if (cleanQuery) params.set('q', cleanQuery);
-                if (selectedBusiness && selectedBusiness.id) params.set('biz', String(selectedBusiness.id));
-                params.set('require_notice', '1');
-                window.location.href = `explore.html?${params.toString()}`;
-            }
-
-            function renderSearchSuggestions(rawQuery, forceOpenNotice) {
-                const q = String(rawQuery || '').trim().toLowerCase();
-
-                if (!q && !forceOpenNotice) {
-                    searchResultsBox.classList.remove('open');
-                    searchNoticeBanner.textContent = '';
-                    searchSuggestionList.innerHTML = '';
-                    return;
-                }
-
-                const matches = approvedBusinesses.filter((biz) => {
-                    if ((biz.status || '').toLowerCase() !== 'approved') return false;
-                    if (!q) return true;
-                    const haystack = [
-                        biz.business_name || biz.name || '',
-                        biz.category || '',
-                        biz.description || '',
-                        biz.location || '',
-                        biz.service_location || biz.where_to_find || biz.find_us || ''
-                    ]
-                        .join(' ')
-                        .toLowerCase();
-                    return haystack.includes(q);
-                });
-
-                searchResultsBox.classList.add('open');
-
-                if (matches.length > 0) {
-                    searchNoticeBanner.textContent = q
-                        ? `Found ${matches.length} matching approved service${matches.length === 1 ? '' : 's'} for "${rawQuery.trim()}". Click a suggestion below to open Explore (you will be asked to read the notice before viewing details).`
-                        : `Showing available approved services. Click one to open Explore (you will be asked to read the notice before viewing details).`;
-
-                    searchSuggestionList.innerHTML = matches
-                        .slice(0, 8)
-                        .map((biz, index) => {
-                            const name = biz.business_name || biz.name || 'Campus Business';
-                            const cat = biz.category || 'Service';
-                            const loc = biz.location || biz.service_location || '';
-                            return `
-                                <li class="search-suggestion-item" data-suggest-index="${index}">
-                                    <div class="suggestion-main">
-                                        <span class="suggestion-title">${escapeHtml(name)}</span>
-                                        <span class="suggestion-meta">${escapeHtml(cat)}${loc ? ` &bull; ${escapeHtml(loc)}` : ''}</span>
-                                    </div>
-                                    <span class="suggestion-cta">Open in Explore &rarr;</span>
-                                </li>
-                            `;
-                        })
-                        .join('');
-
-                    searchSuggestionList.querySelectorAll('[data-suggest-index]').forEach((li) => {
-                        li.addEventListener('click', () => {
-                            const idx = Number(li.dataset.suggestIndex);
-                            const chosen = matches[idx];
-                            const targetQuery = chosen ? (chosen.business_name || chosen.name || rawQuery.trim()) : rawQuery.trim();
-                            goToExploreWithNotice(targetQuery, chosen);
-                        });
-                    });
-                } else {
-                    searchNoticeBanner.textContent = `No approved business or service matched "${rawQuery.trim()}". Try another keyword like food, design, tech, laundry, or campus services.`;
-                    searchSuggestionList.innerHTML = '';
-                }
-            }
-
-            if (searchForm && searchInput) {
-                searchInput.addEventListener('input', () => {
-                    renderSearchSuggestions(searchInput.value, false);
-                });
-
-                searchInput.addEventListener('focus', () => {
-                    if (searchInput.value.trim()) {
-                        renderSearchSuggestions(searchInput.value, false);
-                    }
-                });
-
-                searchForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    renderSearchSuggestions(searchInput.value, true);
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('#homeSearchSection')) {
-                        searchResultsBox.classList.remove('open');
-                    }
-                });
-            }
 
             function initSlideshowControls() {
                 const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
@@ -632,10 +377,6 @@
                     link.href = `explore.html?q=${encodeURIComponent(bizName)}`;
                     link.className = 'business-link';
                     link.innerHTML = 'View in Explore &rarr;';
-                    link.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        goToExploreWithNotice(bizName, biz);
-                    });
 
                     article.appendChild(imgBox);
                     article.appendChild(h3);
@@ -694,8 +435,12 @@
                     const catName = card.dataset.category;
                     const iconBox = card.querySelector('.category-icon');
                     const iconUrl = catMedia[catName];
-                    if (iconBox && iconUrl) {
-                        iconBox.innerHTML = `<img src="${iconUrl}" alt="${catName}" class="category-icon-img">`;
+                    if (iconBox) {
+                        if (iconUrl) {
+                            iconBox.innerHTML = `<img src="${iconUrl}" alt="${catName}" class="category-icon-img">`;
+                        } else {
+                            iconBox.innerHTML = '';
+                        }
                     }
                 });
 
@@ -770,24 +515,34 @@
             } catch (_) {}
 
             if (sb) {
-                (async function syncSupabase() {
-                    try {
-                        const { data: settingsRows } = await sb.from('site_settings').select('*').limit(1);
-                        if (Array.isArray(settingsRows) && settingsRows[0]) {
-                            applySettings(settingsRows[0]);
+                sb.from('bisa_settings')
+                    .select('*')
+                    .eq('id', 1)
+                    .maybeSingle()
+                    .then(({ data, error }) => {
+                        if (!error && data) {
+                            try {
+                                localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
+                            } catch (_) {}
+                            applySettings(data);
                         }
-                    } catch (_) {}
+                    })
+                    .catch(() => {});
 
-                    try {
-                        const { data: bizRows } = await sb.from('businesses').select('*').eq('status', 'approved');
-                        if (Array.isArray(bizRows)) {
-                            approvedBusinesses = bizRows;
+                sb.from('bisa_businesses')
+                    .select('*')
+                    .eq('status', 'approved')
+                    .order('created_at', { ascending: false })
+                    .then(({ data, error }) => {
+                        if (!error && Array.isArray(data)) {
+                            approvedBusinesses = data;
                             renderFeaturedOnCampus();
                         }
-                    } catch (_) {}
-                })();
+                    })
+                    .catch(() => {});
             }
         })();
     </script>
+
 </body>
 </html>
