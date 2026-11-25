@@ -3,86 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BISA - Admin Portal</title>
+    <title>BISA - Admin Control Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        .admin-main {
-            max-width: 1180px;
-            margin: 0 auto;
-            padding: 32px 20px 60px;
+        body {
+            background: var(--bg-warm, #FFF1DA);
+            color: var(--dark, #222222);
+            font-family: 'Montserrat', sans-serif;
         }
-        .admin-header-bar {
+        .dash-shell {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 26px 20px 64px;
+        }
+        .dash-topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
-            margin-bottom: 24px;
-            background: var(--white);
-            padding: 20px 24px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--light-gray);
+            background: var(--primary, #54234A);
+            color: var(--white, #FFFFFF);
+            padding: 22px 26px;
+            border-radius: 12px;
+            margin-bottom: 18px;
         }
-        .admin-tabs {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
+        .dash-topbar h1 {
+            color: var(--secondary, #FFB02E);
+            font-size: 24px;
+            margin-bottom: 4px;
         }
-        .admin-tab-btn {
-            padding: 10px 18px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--primary);
-            background: var(--white);
-            color: var(--primary);
-            font-family: inherit;
-            font-weight: 600;
+        .dash-topbar p {
+            color: #f5e7f2;
             font-size: 13px;
-            cursor: pointer;
         }
-        .admin-tab-btn.active {
-            background: var(--primary);
-            color: var(--white);
+        .dash-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
         }
-        .admin-panel {
+        .dash-alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-weight: 600;
             display: none;
-            background: var(--white);
-            padding: 24px;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--light-gray);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
         }
-        .admin-panel.active {
+        .dash-alert.show {
             display: block;
         }
-        .admin-table-wrap {
-            overflow-x: auto;
-            margin-top: 16px;
+        .dash-alert.success {
+            background: #e6f7ed;
+            color: #145c32;
+            border: 1px solid #9fd8b7;
         }
-        .admin-table {
+        .dash-alert.error {
+            background: #fdecea;
+            color: #8a1f17;
+            border: 1px solid #f5b5b0;
+        }
+        .dash-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .dash-tab {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--primary, #54234A);
+            background: var(--white, #FFFFFF);
+            color: var(--primary, #54234A);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .dash-tab.active {
+            background: var(--primary, #54234A);
+            color: var(--white, #FFFFFF);
+        }
+        .dash-panel {
+            display: none;
+            background: var(--white, #FFFFFF);
+            border: 1px solid var(--light-gray, #E5E5E5);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .dash-panel.active {
+            display: block;
+        }
+        .dash-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .dash-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .dash-box {
+            border: 1px solid var(--light-gray, #E5E5E5);
+            border-radius: 10px;
+            padding: 16px;
+            background: #fcfaf7;
+            margin-bottom: 18px;
+        }
+        .dash-box h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        .field-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .field-row label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary, #54234A);
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 14px;
+        }
+        table.dash-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
         }
-        .admin-table th,
-        .admin-table td {
-            padding: 12px 10px;
-            border-bottom: 1px solid var(--light-gray);
+        table.dash-table th,
+        table.dash-table td {
+            padding: 11px 10px;
+            border-bottom: 1px solid var(--light-gray, #E5E5E5);
             text-align: left;
             vertical-align: top;
         }
-        .admin-table th {
-            color: var(--primary);
+        table.dash-table th {
+            background: var(--bg-warm, #FFF1DA);
+            color: var(--primary, #54234A);
             font-weight: 700;
-            background: var(--bg-warm);
         }
-        .status-badge {
+        .badge {
             display: inline-block;
             padding: 3px 9px;
             border-radius: 999px;
@@ -90,24 +165,10 @@
             font-weight: 700;
             text-transform: capitalize;
         }
-        .status-pending {
-            background: #fff4d6;
-            color: #8a5a00;
-        }
-        .status-approved {
-            background: #e6f7ed;
-            color: #145c32;
-        }
-        .status-rejected {
-            background: #fdecea;
-            color: #8a1f17;
-        }
-        .action-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .mini-btn {
+        .badge-pending { background: #fff4d6; color: #8a5a00; }
+        .badge-approved { background: #e6f7ed; color: #145c32; }
+        .badge-rejected { background: #fdecea; color: #8a1f17; }
+        .btn-xs {
             padding: 6px 10px;
             font-size: 11px;
             font-weight: 600;
@@ -116,64 +177,23 @@
             cursor: pointer;
             font-family: inherit;
         }
-        .btn-approve {
-            background: #198754;
-            color: #fff;
-        }
-        .btn-reject {
-            background: #dc3545;
-            color: #fff;
-        }
-        .btn-feature {
-            background: var(--secondary);
-            color: var(--dark);
-        }
-        .btn-delete {
-            background: #333;
-            color: #fff;
-        }
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-        .admin-alert {
-            padding: 12px 16px;
-            border-radius: var(--border-radius);
-            margin-bottom: 18px;
-            font-size: 13px;
-            font-weight: 600;
-            display: none;
-        }
-        .admin-alert.show {
-            display: block;
-        }
-        .admin-alert.success {
-            background: #e6f7ed;
-            color: #145c32;
-            border: 1px solid #9fd8b7;
-        }
-        .admin-alert.error {
-            background: #fdecea;
-            color: #8a1f17;
-            border: 1px solid #f5b5b0;
-        }
-        .admin-auth-box {
-            max-width: 460px;
-            margin-top: 16px;
-        }
-        .admin-profile-top {
+        .btn-ok { background: #198754; color: #fff; }
+        .btn-no { background: #dc3545; color: #fff; }
+        .btn-edit { background: var(--primary, #54234A); color: #fff; }
+        .btn-gold { background: var(--secondary, #FFB02E); color: var(--dark, #222); }
+        .btn-del { background: #222; color: #fff; }
+        .action-cluster {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: var(--border-radius);
-            background: var(--bg-warm);
-            border: 1px solid var(--light-gray);
-            margin: 16px 0 20px;
+            gap: 6px;
+        }
+        .preview-thumb {
+            width: 72px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--light-gray, #E5E5E5);
+            display: block;
         }
         .hidden {
             display: none !important;
@@ -181,238 +201,424 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container header-container">
-            <a href="index.html" class="logo">
-                <img src="assets/bisa-logo-mark.png" alt="BISA Logo Mark">
-                <span id="adminBrandLabel">BISA Admin</span>
-            </a>
-            <nav class="nav" aria-label="Main Navigation">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="about.html" class="nav-link">About</a>
-                <a href="explore.html" class="nav-link">Explore</a>
-                <a href="business.html" class="nav-link">List Your Business</a>
-                <a href="contact.html" class="nav-link">Contact</a>
-                <a href="account.html" class="nav-link" id="navAccountLink">Login</a>
-            </nav>
-        </div>
-    </header>
-
-    <main class="admin-main">
-        <div class="admin-header-bar">
+    <main class="dash-shell">
+        <div class="dash-topbar">
             <div>
-                <h1 class="page-title">BISA Admin Portal</h1>
-                <p class="page-subtitle">Manage vendor submissions, homepage branding &amp; featured listings, contact messages, and your profile.</p>
+                <h1 id="dashTitle">BISA Admin Control Dashboard</h1>
+                <p id="dashSubtitle">Full structure control: approve &amp; edit businesses, upload images to sections, update headlines, link profiles to approved businesses, and read messages.</p>
             </div>
-            <div class="action-row">
-                <button type="button" class="button button-secondary" id="refreshAllBtn">Refresh from Supabase</button>
-                <a href="explore.html" class="button button-primary">View Explore</a>
+            <div class="dash-actions">
+                <button type="button" class="button button-secondary" id="syncAllBtn">Fetch &amp; Sync Supabase</button>
+                <a href="index.html" class="button button-primary">Home</a>
+                <a href="explore.html" class="button button-secondary">Explore</a>
+                <a href="business.html" class="button button-secondary">List Business</a>
+                <a href="account.html" class="button button-primary" id="dashAccountLink">Login / Profile</a>
             </div>
         </div>
 
-        <div id="adminAlert" class="admin-alert" role="status" aria-live="polite"></div>
+        <div id="dashAlert" class="dash-alert" role="status" aria-live="polite"></div>
 
-        <div class="admin-tabs" role="tablist">
-            <button type="button" class="admin-tab-btn active" data-tab="businessesTab">Businesses</button>
-            <button type="button" class="admin-tab-btn" data-tab="settingsTab">Site Settings &amp; Branding</button>
-            <button type="button" class="admin-tab-btn" data-tab="messagesTab">Contact Messages</button>
-            <button type="button" class="admin-tab-btn" data-tab="profileTab" id="tabProfileBtn">Login &amp; Profile</button>
+        <div class="dash-tabs" id="dashTabsBar" role="tablist">
+            <button type="button" class="dash-tab active" data-panel="panelBusinesses">Businesses &amp; Approvals</button>
+            <button type="button" class="dash-tab" data-panel="panelHeadlines">Headlines &amp; Text</button>
+            <button type="button" class="dash-tab" data-panel="panelMedia">Section &amp; Category Images</button>
+            <button type="button" class="dash-tab" data-panel="panelProfile">Profile &amp; Approved Link</button>
+            <button type="button" class="dash-tab" data-panel="panelMessages">Received Messages</button>
+            <button type="button" class="dash-tab" data-panel="panelSiteSync">Site &amp; Tab Structure</button>
         </div>
 
-        <!-- TAB 1: BUSINESSES -->
-        <section id="businessesTab" class="admin-panel active">
-            <h2>Vendor Listings</h2>
-            <p class="page-subtitle">Approve submissions so they appear on Explore, and toggle Featured on Campus for the homepage.</p>
-            <div class="admin-table-wrap">
-                <table class="admin-table">
+        <!-- TAB 1: BUSINESSES, APPROVALS, IMAGE UPLOAD & EDIT -->
+        <section id="panelBusinesses" class="dash-panel active">
+            <div class="dash-box">
+                <h3 id="bizEditorHeading">Create or Edit Business Details</h3>
+                <form id="adminBusinessForm">
+                    <input type="hidden" id="editBizId">
+                    <div class="dash-grid-3">
+                        <div class="field-row">
+                            <label for="bizEditName">Business Name</label>
+                            <input type="text" id="bizEditName" class="input" required>
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditCategory">Category</label>
+                            <select id="bizEditCategory" class="input" required>
+                                <option value="Products">Products</option>
+                                <option value="Services">Services</option>
+                                <option value="Businesses">Businesses</option>
+                                <option value="Food & Snacks">Food &amp; Snacks</option>
+                                <option value="Graphics & Art">Graphics &amp; Art</option>
+                                <option value="Web & Tech">Web &amp; Tech</option>
+                                <option value="Books & Notes">Books &amp; Notes</option>
+                                <option value="Laundry">Laundry</option>
+                                <option value="Campus Services">Campus Services</option>
+                            </select>
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditPrice">Price (GH₵)</label>
+                            <input type="number" id="bizEditPrice" class="input" min="0" step="1" value="25">
+                        </div>
+                    </div>
+
+                    <div class="dash-grid-3">
+                        <div class="field-row">
+                            <label for="bizEditLocation">Town / Campus Location</label>
+                            <input type="text" id="bizEditLocation" class="input" placeholder="Elmina / Campus">
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditFindUs">Where Customers Find You</label>
+                            <input type="text" id="bizEditFindUs" class="input" placeholder="Hall / Campus Spot">
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditStatus">Approval Status</label>
+                            <select id="bizEditStatus" class="input">
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="dash-grid-3">
+                        <div class="field-row">
+                            <label for="bizEditPhone">Phone / WhatsApp</label>
+                            <input type="text" id="bizEditPhone" class="input">
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditEmail">Email</label>
+                            <input type="email" id="bizEditEmail" class="input">
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditWebsite">Website / Link</label>
+                            <input type="text" id="bizEditWebsite" class="input">
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <label for="bizEditDesc">Business Description</label>
+                        <textarea id="bizEditDesc" class="input textarea" rows="3" required></textarea>
+                    </div>
+
+                    <div class="dash-grid-2">
+                        <div class="field-row">
+                            <label for="bizEditImageUrl">Business Image URL</label>
+                            <input type="text" id="bizEditImageUrl" class="input" placeholder="https://... or assets/...">
+                        </div>
+                        <div class="field-row">
+                            <label for="bizEditImageFile">Upload Business Image to Supabase (bisa-media)</label>
+                            <input type="file" id="bizEditImageFile" class="input file-input" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="action-cluster">
+                        <button type="submit" class="button button-primary" id="saveBizBtn">Save Business</button>
+                        <button type="button" class="button button-secondary" id="clearBizFormBtn">Clear Form</button>
+                        <button type="button" class="btn-xs btn-gold" id="attachProfileToBizFormBtn">Fill Form From Profile Details</button>
+                    </div>
+                </form>
+            </div>
+
+            <h2>Received &amp; Listed Businesses</h2>
+            <div class="table-wrap">
+                <table class="dash-table">
                     <thead>
                         <tr>
-                            <th>Business</th>
-                            <th>Category</th>
+                            <th>Image</th>
+                            <th>Business &amp; Description</th>
+                            <th>Category &amp; Price</th>
                             <th>Location &amp; Contact</th>
-                            <th>Status</th>
-                            <th>Featured</th>
+                            <th>Status &amp; Featured</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="adminBusinessesBody">
-                        <tr><td colspan="6">Loading businesses...</td></tr>
+                    <tbody id="dashBusinessesBody">
+                        <tr><td colspan="6">Fetching businesses from Supabase...</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <!-- TAB 2: SITE SETTINGS -->
-        <section id="settingsTab" class="admin-panel">
-            <h2>Site Settings &amp; Homepage Sync</h2>
-            <p class="page-subtitle">Updates here save to <code>bisa_settings</code> and sync to <code>index.html</code>, <code>explore.html</code>, <code>about.html</code>, and <code>contact.html</code>.</p>
+        <!-- TAB 2: HEADLINES & TEXT ACROSS SECTIONS -->
+        <section id="panelHeadlines" class="dash-panel">
+            <h2>Headlines &amp; Section Text</h2>
+            <form id="headlinesForm">
+                <div class="dash-grid-2">
+                    <div class="field-row">
+                        <label for="hlBrandName">Brand Name</label>
+                        <input type="text" id="hlBrandName" class="input" placeholder="BISA">
+                    </div>
+                    <div class="field-row">
+                        <label for="hlHeroTitle">Home Hero Headline</label>
+                        <input type="text" id="hlHeroTitle" class="input" placeholder="Let's Do Business &amp; Share Ideas">
+                    </div>
+                </div>
 
-            <form id="adminSettingsForm">
-                <div class="settings-grid">
-                    <div class="form-group">
-                        <label for="cfgBrandName" class="form-label">Brand Name</label>
-                        <input type="text" id="cfgBrandName" class="input" placeholder="BISA">
+                <div class="field-row">
+                    <label for="hlHeroSubtext">Home Hero Description</label>
+                    <textarea id="hlHeroSubtext" class="input textarea" rows="2"></textarea>
+                </div>
+
+                <div class="dash-grid-2">
+                    <div class="field-row">
+                        <label for="hlAboutMission">About Page Mission Text</label>
+                        <textarea id="hlAboutMission" class="input textarea" rows="3"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="cfgHeadline" class="form-label">Hero Headline</label>
-                        <input type="text" id="cfgHeadline" class="input" placeholder="Let's Do Business &amp; Share Ideas">
+                    <div class="field-row">
+                        <label for="hlAboutVision">About Page Vision Text</label>
+                        <textarea id="hlAboutVision" class="input textarea" rows="3"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="cfgLogoPlacement" class="form-label">Logo Placement</label>
-                        <select id="cfgLogoPlacement" class="input">
+                </div>
+
+                <div class="dash-grid-2">
+                    <div class="field-row">
+                        <label for="hlExploreNotice">Explore Page Policy Notice</label>
+                        <textarea id="hlExploreNotice" class="input textarea" rows="2"></textarea>
+                    </div>
+                    <div class="field-row">
+                        <label for="hlFooterTagline">Footer Tagline</label>
+                        <input type="text" id="hlFooterTagline" class="input" placeholder="Let's Do Business &amp; Share Ideas.">
+                    </div>
+                </div>
+
+                <button type="submit" class="button button-primary">Save Headlines &amp; Text</button>
+            </form>
+        </section>
+
+        <!-- TAB 3: IMAGE UPLOADS TO SECTIONS, CATEGORIES & SLIDESHOW -->
+        <section id="panelMedia" class="dash-panel">
+            <h2>Upload Images to Sections, Categories &amp; Slideshow</h2>
+            <form id="mediaForm">
+                <div class="dash-box">
+                    <h3>Logo, Hero Section &amp; About Section Images</h3>
+                    <div class="dash-grid-2">
+                        <div class="field-row">
+                            <label for="logoUrlInput">Logo Image URL</label>
+                            <input type="text" id="logoUrlInput" class="input" placeholder="assets/bisa-logo-mark.png">
+                        </div>
+                        <div class="field-row">
+                            <label for="logoFileUpload">Upload Logo Image</label>
+                            <input type="file" id="logoFileUpload" class="input file-input" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="dash-grid-2">
+                        <div class="field-row">
+                            <label for="heroSectionImgUrl">Hero / Main Section Image URL</label>
+                            <input type="text" id="heroSectionImgUrl" class="input" placeholder="assets/bisa-flyer.png.png">
+                        </div>
+                        <div class="field-row">
+                            <label for="heroSectionImgFile">Upload Hero Section Image</label>
+                            <input type="file" id="heroSectionImgFile" class="input file-input" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="dash-grid-2">
+                        <div class="field-row">
+                            <label for="aboutImgUrlInput">About Section Image URL</label>
+                            <input type="text" id="aboutImgUrlInput" class="input" placeholder="assets/bisa-logo-full.png">
+                        </div>
+                        <div class="field-row">
+                            <label for="aboutImgFileUpload">Upload About Section Image</label>
+                            <input type="file" id="aboutImgFileUpload" class="input file-input" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-box">
+                    <h3>Category Section Images</h3>
+                    <div class="dash-grid-3" id="categoryMediaInputs">
+                        <div class="field-row">
+                            <label for="catImg_Food & Snacks">Food &amp; Snacks Image</label>
+                            <input type="text" id="catImg_Food & Snacks" class="input" data-cat="Food & Snacks" placeholder="assets/food-snacks.png">
+                            <input type="file" class="input file-input cat-file-upload" data-cat="Food & Snacks" accept="image/*">
+                        </div>
+                        <div class="field-row">
+                            <label for="catImg_Graphics & Art">Graphics &amp; Art Image</label>
+                            <input type="text" id="catImg_Graphics & Art" class="input" data-cat="Graphics & Art" placeholder="assets/graphics-art.png">
+                            <input type="file" class="input file-input cat-file-upload" data-cat="Graphics & Art" accept="image/*">
+                        </div>
+                        <div class="field-row">
+                            <label for="catImg_Web & Tech">Web &amp; Tech Image</label>
+                            <input type="text" id="catImg_Web & Tech" class="input" data-cat="Web & Tech" placeholder="assets/web-tech.png">
+                            <input type="file" class="input file-input cat-file-upload" data-cat="Web & Tech" accept="image/*">
+                        </div>
+                        <div class="field-row">
+                            <label for="catImg_Books & Notes">Books &amp; Notes Image</label>
+                            <input type="text" id="catImg_Books & Notes" class="input" data-cat="Books & Notes" placeholder="assets/books-notes.png">
+                            <input type="file" class="input file-input cat-file-upload" data-cat="Books & Notes" accept="image/*">
+                        </div>
+                        <div class="field-row">
+                            <label for="catImg_Laundry">Laundry Image</label>
+                            <input type="text" id="catImg_Laundry" class="input" data-cat="Laundry" placeholder="assets/laundry.png">
+                            <input type="file" class="input file-input cat-file-upload" data-cat="Laundry" accept="image/*">
+                        </div>
+                        <div class="field-row">
+                            <label for="catImg_Campus Services">Campus Services Image</label>
+                            <input type="text" id="catImg_Campus Services" class="input" data-cat="Campus Services" placeholder="assets/campus-service.png">
+                            <input type="file" class="input file-input cat-file-upload" data-cat="Campus Services" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-box">
+                    <h3>Slideshow Slides</h3>
+                    <div class="dash-grid-3">
+                        <div class="field-row">
+                            <label for="slideTitleInput">Slide Title</label>
+                            <input type="text" id="slideTitleInput" class="input" placeholder="Slide headline">
+                        </div>
+                        <div class="field-row">
+                            <label for="slideSubtitleInput">Slide Subtitle</label>
+                            <input type="text" id="slideSubtitleInput" class="input" placeholder="Slide caption">
+                        </div>
+                        <div class="field-row">
+                            <label for="slideImageUrlInput">Slide Image URL</label>
+                            <input type="text" id="slideImageUrlInput" class="input" placeholder="https://... or assets/...">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <label for="slideFileUpload">Upload Slide Image</label>
+                        <input type="file" id="slideFileUpload" class="input file-input" accept="image/*">
+                    </div>
+                    <button type="button" class="button button-secondary" id="addSlideBtn">Add Slide</button>
+                    <div id="slidesPreviewList" style="margin-top: 12px; font-size: 13px;"></div>
+                </div>
+
+                <button type="submit" class="button button-primary">Save All Section &amp; Category Media</button>
+            </form>
+        </section>
+
+        <!-- TAB 4: PROFILE DETAILS & ADDING PROFILE DETAILS TO APPROVED BUSINESSES -->
+        <section id="panelProfile" class="dash-panel">
+            <h2>Login, Profile Details &amp; Link to Approved Businesses</h2>
+
+            <div id="dashLoginCard" class="dash-box" style="max-width: 480px;">
+                <h3>Sign In</h3>
+                <form id="dashLoginForm">
+                    <div class="field-row">
+                        <label for="dashLoginEmail">Email Address</label>
+                        <input type="email" id="dashLoginEmail" class="input" required>
+                    </div>
+                    <div class="field-row">
+                        <label for="dashLoginPassword">Password</label>
+                        <input type="password" id="dashLoginPassword" class="input" required>
+                    </div>
+                    <button type="submit" class="button button-primary">Log In</button>
+                </form>
+            </div>
+
+            <div id="dashProfileCard" class="dash-box hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                    <div>
+                        <strong id="dashActiveProfileName">Member</strong>
+                        <div id="dashActiveProfileEmail" style="font-size:12px; color:var(--gray);"></div>
+                    </div>
+                    <button type="button" class="btn-xs btn-no" id="dashLogoutBtn">Log Out</button>
+                </div>
+
+                <form id="dashProfileForm">
+                    <div class="dash-grid-2">
+                        <div class="field-row">
+                            <label for="profFullName">Full Name</label>
+                            <input type="text" id="profFullName" class="input" required>
+                        </div>
+                        <div class="field-row">
+                            <label for="profPhone">Phone / WhatsApp</label>
+                            <input type="text" id="profPhone" class="input">
+                        </div>
+                        <div class="field-row">
+                            <label for="profLocation">Location / Campus Area</label>
+                            <input type="text" id="profLocation" class="input">
+                        </div>
+                        <div class="field-row">
+                            <label for="profRole">Account Role</label>
+                            <input type="text" id="profRole" class="input" value="Vendor / Admin">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <label for="profBio">Bio / Notes</label>
+                        <textarea id="profBio" class="input textarea" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="button button-primary">Save Profile Details</button>
+                </form>
+
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--light-gray);">
+
+                <h3>Add Profile Details to an Approved Business</h3>
+                <div class="dash-grid-2">
+                    <div class="field-row">
+                        <label for="linkTargetBusinessSelect">Approved Business</label>
+                        <select id="linkTargetBusinessSelect" class="input"></select>
+                    </div>
+                    <div class="field-row" style="justify-content: flex-end;">
+                        <button type="button" class="button button-secondary" id="applyProfileToApprovedBtn">Apply Profile Details to Approved Business</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: RECEIVED MESSAGES -->
+        <section id="panelMessages" class="dash-panel">
+            <h2>Received Contact Messages</h2>
+            <div class="table-wrap">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>Sender</th>
+                            <th>Email</th>
+                            <th>Message</th>
+                            <th>Received</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashMessagesBody">
+                        <tr><td colspan="4">Fetching messages from Supabase...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 6: SITE STRUCTURE, LOGO PLACEMENT, SOCIAL LINKS & TABS -->
+        <section id="panelSiteSync" class="dash-panel">
+            <h2>Site Structure, Logo Placement, Social Links &amp; Tabs</h2>
+            <form id="siteControlForm">
+                <div class="dash-grid-2">
+                    <div class="field-row">
+                        <label for="siteLogoPlacement">Logo Placement</label>
+                        <select id="siteLogoPlacement" class="input">
                             <option value="header-left">Header Left</option>
                             <option value="header-center">Header Center</option>
                             <option value="hero-top">Hero Top</option>
                             <option value="footer-brand">Footer Brand Highlight</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="cfgLogoUrl" class="form-label">Logo Image URL (or asset path)</label>
-                        <input type="text" id="cfgLogoUrl" class="input" placeholder="assets/bisa-logo-mark.png">
+                    <div class="field-row">
+                        <label for="siteSocialFb">Facebook URL</label>
+                        <input type="text" id="siteSocialFb" class="input">
+                    </div>
+                    <div class="field-row">
+                        <label for="siteSocialIg">Instagram URL</label>
+                        <input type="text" id="siteSocialIg" class="input">
+                    </div>
+                    <div class="field-row">
+                        <label for="siteSocialWa">WhatsApp URL</label>
+                        <input type="text" id="siteSocialWa" class="input">
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="cfgSubtext" class="form-label">Hero Description</label>
-                    <textarea id="cfgSubtext" class="input textarea" rows="2"></textarea>
-                </div>
-
-                <div class="settings-grid">
-                    <div class="form-group">
-                        <label for="cfgSocialFb" class="form-label">Facebook URL</label>
-                        <input type="text" id="cfgSocialFb" class="input" placeholder="https://facebook.com/...">
-                    </div>
-                    <div class="form-group">
-                        <label for="cfgSocialIg" class="form-label">Instagram URL</label>
-                        <input type="text" id="cfgSocialIg" class="input" placeholder="https://instagram.com/...">
-                    </div>
-                    <div class="form-group">
-                        <label for="cfgSocialWa" class="form-label">WhatsApp URL</label>
-                        <input type="text" id="cfgSocialWa" class="input" placeholder="https://wa.me/233...">
+                <div class="field-row">
+                    <label>Enabled Dashboard Tabs</label>
+                    <div class="action-cluster" id="tabVisibilityCheckboxes">
+                        <label><input type="checkbox" value="panelBusinesses" checked> Businesses &amp; Approvals</label>
+                        <label><input type="checkbox" value="panelHeadlines" checked> Headlines &amp; Text</label>
+                        <label><input type="checkbox" value="panelMedia" checked> Section &amp; Category Images</label>
+                        <label><input type="checkbox" value="panelProfile" checked> Profile &amp; Approved Link</label>
+                        <label><input type="checkbox" value="panelMessages" checked> Received Messages</label>
+                        <label><input type="checkbox" value="panelSiteSync" checked> Site &amp; Tab Structure</label>
                     </div>
                 </div>
 
-                <button type="submit" class="button button-primary" id="saveSettingsBtn">Save &amp; Sync Settings</button>
+                <button type="submit" class="button button-primary">Save Site &amp; Tab Structure</button>
             </form>
         </section>
-
-        <!-- TAB 3: MESSAGES -->
-        <section id="messagesTab" class="admin-panel">
-            <h2>Messages from Contact Page</h2>
-            <p class="page-subtitle">Messages submitted on <code>contact.html</code> appear here when saved to <code>bisa_messages</code>.</p>
-            <div class="admin-table-wrap">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Sender</th>
-                            <th>Email</th>
-                            <th>Message</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminMessagesBody">
-                        <tr><td colspan="4">Loading messages...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- TAB 4: LOGIN & PROFILE -->
-        <section id="profileTab" class="admin-panel">
-            <h2>Login &amp; Admin Profile</h2>
-            <p class="page-subtitle">Sign in with your Supabase account or edit your profile saved in <code>profiles</code> and synced with <code>account.html</code>.</p>
-
-            <div id="adminAuthBox" class="admin-auth-box">
-                <form id="adminLoginForm">
-                    <div class="form-group">
-                        <label for="adminLoginEmail" class="form-label">Email Address</label>
-                        <input type="email" id="adminLoginEmail" class="input" placeholder="admin@bisa.edu.gh" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="adminLoginPassword" class="form-label">Password</label>
-                        <input type="password" id="adminLoginPassword" class="input" placeholder="Enter your password" required>
-                    </div>
-                    <div class="action-row">
-                        <button type="submit" class="button button-primary" id="adminLoginBtn">Log In</button>
-                        <a href="account.html" class="button button-secondary">Open Full Account Page</a>
-                    </div>
-                </form>
-            </div>
-
-            <div id="adminProfileBox" class="hidden">
-                <div class="admin-profile-top">
-                    <div>
-                        <strong id="adminProfileDisplayName">Admin User</strong>
-                        <div class="page-subtitle" id="adminProfileDisplayEmail"></div>
-                    </div>
-                    <div class="action-row">
-                        <a href="account.html" class="button button-secondary">Account Page</a>
-                        <button type="button" class="mini-btn btn-reject" id="adminLogoutBtn">Log Out</button>
-                    </div>
-                </div>
-
-                <form id="adminProfileForm">
-                    <div class="settings-grid">
-                        <div class="form-group">
-                            <label for="adminProfileName" class="form-label">Full Name</label>
-                            <input type="text" id="adminProfileName" class="input" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="adminProfilePhone" class="form-label">Phone / WhatsApp</label>
-                            <input type="text" id="adminProfilePhone" class="input" placeholder="+233 ...">
-                        </div>
-                        <div class="form-group">
-                            <label for="adminProfileLocation" class="form-label">Location / Campus Area</label>
-                            <input type="text" id="adminProfileLocation" class="input" placeholder="e.g., Elmina, Central Region">
-                        </div>
-                        <div class="form-group">
-                            <label for="adminProfileRole" class="form-label">Account Role</label>
-                            <input type="text" id="adminProfileRole" class="input" placeholder="Admin / Coordinator">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="adminProfileBio" class="form-label">Bio / Notes</label>
-                        <textarea id="adminProfileBio" class="input textarea" rows="3" placeholder="Admin or member notes..."></textarea>
-                    </div>
-
-                    <button type="submit" class="button button-primary" id="adminSaveProfileBtn">Save Profile</button>
-                </form>
-            </div>
-        </section>
     </main>
-
-    <footer class="footer">
-        <div class="container footer-content">
-            <div class="footer-col">
-                <h4><a href="admin.html">BISA</a></h4>
-                <p>Let's Do Business &amp; Share Ideas.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Quick Links</h4>
-                <a href="index.html">Home</a>
-                <a href="explore.html">Explore</a>
-                <a href="business.html">List Your Business</a>
-                <a href="account.html">Login &amp; Profile</a>
-            </div>
-            <div class="footer-col">
-                <h4>Support</h4>
-                <a href="about.html">About Us</a>
-                <a href="contact.html">Contact Us</a>
-            </div>
-            <div class="footer-col">
-                <h4>Socials</h4>
-                <div class="social-circles">
-                    <a href="#" class="circle" aria-label="BISA on Facebook"><img src="assets/facebook.png" alt="Facebook"></a>
-                    <a href="#" class="circle" aria-label="BISA on Instagram"><img src="assets/instagram.png" alt="Instagram"></a>
-                    <a href="#" class="circle" aria-label="BISA on WhatsApp"><img src="assets/whatsapp.png" alt="WhatsApp"></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 BISA. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script>
         (function () {
@@ -422,276 +628,166 @@
                 ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
                 : null;
 
-            const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const CONFIG_KEY = 'bisa_admin_config_v1';
+            const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
             const PROFILE_CACHE_PREFIX = 'bisa_profile_cache_';
+            const STORAGE_BUCKET = 'bisa-media';
 
-            const alertEl = document.getElementById('adminAlert');
-            const bizBody = document.getElementById('adminBusinessesBody');
-            const msgBody = document.getElementById('adminMessagesBody');
-            const navAccountLink = document.getElementById('navAccountLink');
-            const tabProfileBtn = document.getElementById('tabProfileBtn');
-            const adminAuthBox = document.getElementById('adminAuthBox');
-            const adminProfileBox = document.getElementById('adminProfileBox');
-            const adminLoginForm = document.getElementById('adminLoginForm');
-            const adminProfileForm = document.getElementById('adminProfileForm');
+            const alertEl = document.getElementById('dashAlert');
+            const bizBody = document.getElementById('dashBusinessesBody');
+            const msgBody = document.getElementById('dashMessagesBody');
+            const linkTargetSelect = document.getElementById('linkTargetBusinessSelect');
 
             let currentSettings = {};
+            let businessesList = [];
+            let slidesList = [];
             let activeUser = null;
+            let activeProfile = null;
 
             function showAlert(msg, type) {
                 alertEl.textContent = msg;
-                alertEl.className = 'admin-alert show ' + (type || 'success');
+                alertEl.className = 'dash-alert show ' + (type || 'success');
             }
 
-            document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.admin-tab-btn').forEach((b) => b.classList.remove('active'));
-                    document.querySelectorAll('.admin-panel').forEach((p) => p.classList.remove('active'));
-                    btn.classList.add('active');
-                    const panel = document.getElementById(btn.dataset.tab);
-                    if (panel) panel.classList.add('active');
+            document.querySelectorAll('.dash-tab').forEach((tab) => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.dataset.panel;
+                    document.querySelectorAll('.dash-tab').forEach((t) => t.classList.toggle('active', t === tab));
+                    document.querySelectorAll('.dash-panel').forEach((p) => p.classList.toggle('active', p.id === targetId));
                 });
             });
 
-            function applyAdminProfileUI(user, profileData) {
-                const displayName =
-                    (profileData && profileData.full_name) ||
-                    (user.user_metadata && user.user_metadata.full_name) ||
-                    user.email.split('@')[0];
-
-                document.getElementById('adminProfileDisplayName').textContent = displayName;
-                document.getElementById('adminProfileDisplayEmail').textContent = user.email;
-                document.getElementById('adminProfileName').value = displayName;
-                document.getElementById('adminProfilePhone').value = (profileData && profileData.phone) || '';
-                document.getElementById('adminProfileLocation').value = (profileData && profileData.location) || '';
-                document.getElementById('adminProfileRole').value = (profileData && profileData.role) || 'Admin';
-                document.getElementById('adminProfileBio').value = (profileData && profileData.bio) || '';
-            }
-
-            async function syncSessionState(user) {
-                if (user) {
-                    activeUser = user;
-                    if (navAccountLink) navAccountLink.textContent = 'Profile';
-                    if (tabProfileBtn) tabProfileBtn.textContent = 'Profile (' + user.email.split('@')[0] + ')';
-                    adminAuthBox.classList.add('hidden');
-                    adminProfileBox.classList.remove('hidden');
-
-                    let cachedProfile = null;
-                    try {
-                        const raw = localStorage.getItem(PROFILE_CACHE_PREFIX + user.id);
-                        if (raw) cachedProfile = JSON.parse(raw);
-                    } catch (_) {}
-                    applyAdminProfileUI(user, cachedProfile);
-
-                    if (sb) {
-                        const { data, error } = await sb
-                            .from('profiles')
-                            .select('*')
-                            .eq('id', user.id)
-                            .maybeSingle();
-                        if (!error && data) {
-                            try {
-                                localStorage.setItem(PROFILE_CACHE_PREFIX + user.id, JSON.stringify(data));
-                            } catch (_) {}
-                            applyAdminProfileUI(user, data);
-                        }
-                    }
-                } else {
-                    activeUser = null;
-                    if (navAccountLink) navAccountLink.textContent = 'Login';
-                    if (tabProfileBtn) tabProfileBtn.textContent = 'Login & Profile';
-                    adminProfileBox.classList.add('hidden');
-                    adminAuthBox.classList.remove('hidden');
-                }
-            }
-
-            adminLoginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (!sb) {
-                    showAlert('Supabase authentication is unavailable.', 'error');
-                    return;
-                }
-                const btn = document.getElementById('adminLoginBtn');
-                btn.disabled = true;
-                btn.textContent = 'Logging In...';
-
-                const email = document.getElementById('adminLoginEmail').value.trim();
-                const password = document.getElementById('adminLoginPassword').value;
-
-                const { data, error } = await sb.auth.signInWithPassword({ email, password });
-                btn.disabled = false;
-                btn.textContent = 'Log In';
-
+            async function uploadToStorage(file, folder) {
+                if (!file || !sb) return '';
+                const cleanName = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                const { error } = await sb.storage.from(STORAGE_BUCKET).upload(cleanName, file, { upsert: true });
                 if (error) {
-                    showAlert(error.message || 'Login failed.', 'error');
+                    showAlert('Storage upload failed: ' + error.message, 'error');
+                    return '';
+                }
+                const { data } = sb.storage.from(STORAGE_BUCKET).getPublicUrl(cleanName);
+                return (data && data.publicUrl) || '';
+            }
+
+            function renderSlidesPreview() {
+                const wrap = document.getElementById('slidesPreviewList');
+                if (!wrap) return;
+                if (!slidesList.length) {
+                    wrap.textContent = 'No custom slides added.';
                     return;
                 }
-                await syncSessionState(data.user || null);
-                showAlert('Logged in to BISA Admin.', 'success');
-            });
+                wrap.innerHTML = slidesList.map((s, idx) => `
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px;border:1px solid var(--light-gray);border-radius:8px;margin-bottom:6px;">
+                        <span><strong>${idx + 1}.</strong> ${s.title || 'Slide'} — ${s.image_url || s.image || ''}</span>
+                        <button type="button" class="btn-xs btn-del" data-remove-slide="${idx}">Remove</button>
+                    </div>
+                `).join('');
+            }
 
-            adminProfileForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (!activeUser) return;
-
-                const btn = document.getElementById('adminSaveProfileBtn');
-                btn.disabled = true;
-                btn.textContent = 'Saving...';
-
-                const payload = {
-                    id: activeUser.id,
-                    email: activeUser.email,
-                    full_name: document.getElementById('adminProfileName').value.trim(),
-                    phone: document.getElementById('adminProfilePhone').value.trim(),
-                    location: document.getElementById('adminProfileLocation').value.trim(),
-                    role: document.getElementById('adminProfileRole').value.trim() || 'Admin',
-                    bio: document.getElementById('adminProfileBio').value.trim(),
-                    updated_at: new Date().toISOString()
-                };
-
-                try {
-                    localStorage.setItem(PROFILE_CACHE_PREFIX + activeUser.id, JSON.stringify(payload));
-                } catch (_) {}
-
-                let dbError = null;
-                if (sb) {
-                    const { error } = await sb.from('profiles').upsert(payload, { onConflict: 'id' });
-                    dbError = error;
-                    await sb.auth.updateUser({ data: { full_name: payload.full_name } });
+            document.getElementById('addSlideBtn').addEventListener('click', async () => {
+                const fileEl = document.getElementById('slideFileUpload');
+                const uploaded = fileEl.files && fileEl.files[0]
+                    ? await uploadToStorage(fileEl.files[0], 'slides')
+                    : '';
+                const imgUrl = uploaded || document.getElementById('slideImageUrlInput').value.trim();
+                const title = document.getElementById('slideTitleInput').value.trim();
+                const subtitle = document.getElementById('slideSubtitleInput').value.trim();
+                if (!imgUrl && !title) {
+                    showAlert('Add a slide title or image first.', 'error');
+                    return;
                 }
-
-                btn.disabled = false;
-                btn.textContent = 'Save Profile';
-                applyAdminProfileUI(activeUser, payload);
-
-                if (dbError) {
-                    showAlert('Profile saved locally, but Supabase returned: ' + dbError.message, 'error');
-                } else {
-                    showAlert('Profile saved and synced.', 'success');
-                }
+                slidesList.push({ title, subtitle, image_url: imgUrl, image: imgUrl });
+                document.getElementById('slideTitleInput').value = '';
+                document.getElementById('slideSubtitleInput').value = '';
+                document.getElementById('slideImageUrlInput').value = '';
+                fileEl.value = '';
+                renderSlidesPreview();
             });
 
-            document.getElementById('adminLogoutBtn').addEventListener('click', async () => {
-                if (sb) await sb.auth.signOut();
-                await syncSessionState(null);
-                showAlert('Logged out.', 'success');
+            document.getElementById('slidesPreviewList').addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-remove-slide]');
+                if (!btn) return;
+                slidesList.splice(Number(btn.dataset.removeSlide), 1);
+                renderSlidesPreview();
             });
 
-            function fillSettingsForm(cfg) {
+            function fillAllSettingFields(cfg) {
                 if (!cfg) return;
                 currentSettings = { ...currentSettings, ...cfg };
-                document.getElementById('cfgBrandName').value = cfg.brand_name || cfg.brandName || 'BISA';
-                document.getElementById('cfgHeadline').value = cfg.main_headline || cfg.mainHeadline || "Let's Do Business & Share Ideas";
-                document.getElementById('cfgSubtext').value = cfg.hero_subtext || cfg.heroSubtext || 'Discover student-run businesses, creative services, and campus products all in one place.';
-                document.getElementById('cfgLogoPlacement').value = cfg.logo_placement || cfg.logoPlacement || 'header-left';
-                document.getElementById('cfgLogoUrl').value = cfg.logo_url || cfg.activeLogo || 'assets/bisa-logo-mark.png';
+                const assets = currentSettings.site_assets || {};
 
-                const links = (cfg.site_assets && cfg.site_assets.social_links) || {};
-                document.getElementById('cfgSocialFb').value = links.facebook || '';
-                document.getElementById('cfgSocialIg').value = links.instagram || '';
-                document.getElementById('cfgSocialWa').value = links.whatsapp || '';
+                const brand = cfg.brand_name || cfg.brandName || 'BISA';
+                document.getElementById('dashTitle').textContent = brand + ' — Admin Control Dashboard';
+                document.getElementById('hlBrandName').value = brand;
+                document.getElementById('hlHeroTitle').value = cfg.main_headline || cfg.mainHeadline || "Let's Do Business & Share Ideas";
+                document.getElementById('hlHeroSubtext').value = cfg.hero_subtext || cfg.heroSubtext || 'Discover student-run businesses, creative services, and campus products all in one place.';
+                document.getElementById('hlAboutMission').value = cfg.about_mission || '';
+                document.getElementById('hlAboutVision').value = cfg.about_vision || '';
+                document.getElementById('hlExploreNotice').value = cfg.explore_notice || '';
+                document.getElementById('hlFooterTagline').value = assets.footer_tagline || "Let's Do Business & Share Ideas.";
+
+                document.getElementById('logoUrlInput').value = cfg.logo_url || cfg.activeLogo || 'assets/bisa-logo-mark.png';
+                document.getElementById('heroSectionImgUrl').value = assets.hero_image_url || '';
+                document.getElementById('aboutImgUrlInput').value = assets.about_image_url || cfg.about_image_url || 'assets/bisa-logo-full.png';
+
+                const catMedia = cfg.category_media || {};
+                document.querySelectorAll('#categoryMediaInputs input[data-cat].input').forEach((inp) => {
+                    const cat = inp.dataset.cat;
+                    if (catMedia[cat]) inp.value = catMedia[cat];
+                });
+
+                slidesList = Array.isArray(cfg.slideshow) ? [...cfg.slideshow] : (Array.isArray(cfg.slides) ? [...cfg.slides] : []);
+                renderSlidesPreview();
+
+                document.getElementById('siteLogoPlacement').value = cfg.logo_placement || cfg.logoPlacement || 'header-left';
+                const socialLinks = assets.social_links || {};
+                document.getElementById('siteSocialFb').value = socialLinks.facebook || '';
+                document.getElementById('siteSocialIg').value = socialLinks.instagram || '';
+                document.getElementById('siteSocialWa').value = socialLinks.whatsapp || '';
+
+                const hiddenTabs = assets.hidden_tabs || [];
+                document.querySelectorAll('#tabVisibilityCheckboxes input[type="checkbox"]').forEach((cb) => {
+                    const isHidden = hiddenTabs.includes(cb.value);
+                    cb.checked = !isHidden;
+                    const tabBtn = document.querySelector(`.dash-tab[data-panel="${cb.value}"]`);
+                    if (tabBtn) tabBtn.classList.toggle('hidden', isHidden);
+                });
             }
 
-            async function loadBusinesses() {
-                if (!sb) {
-                    bizBody.innerHTML = '<tr><td colspan="6">Supabase client unavailable.</td></tr>';
-                    return;
-                }
-                const { data, error } = await sb
-                    .from('bisa_businesses')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) {
-                    bizBody.innerHTML = '<tr><td colspan="6">Could not load businesses: ' + error.message + '</td></tr>';
-                    return;
-                }
-
-                const list = Array.isArray(data) ? data : [];
-                try {
-                    localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(list));
-                } catch (_) {}
-
-                if (!list.length) {
-                    bizBody.innerHTML = '<tr><td colspan="6">No business submissions yet.</td></tr>';
-                    return;
-                }
-
-                bizBody.innerHTML = list.map((b) => {
-                    const status = (b.status || 'pending').toLowerCase();
-                    const badgeClass = status === 'approved' ? 'status-approved' : (status === 'rejected' ? 'status-rejected' : 'status-pending');
-                    const featured = Boolean(b.featured_on_campus);
-                    return `
-                        <tr data-id="${b.id}">
-                            <td><strong>${b.business_name || b.name || 'Unnamed'}</strong><br><span style="color:var(--gray);font-size:12px;">${b.description || ''}</span></td>
-                            <td>${b.category || '-'}</td>
-                            <td>${b.location || '-'}<br><span style="font-size:12px;">${b.phone || ''} ${b.email ? '· ' + b.email : ''}</span></td>
-                            <td><span class="status-badge ${badgeClass}">${status}</span></td>
-                            <td>${featured ? 'Yes' : 'No'}</td>
-                            <td>
-                                <div class="action-row">
-                                    <button type="button" class="mini-btn btn-approve" data-action="approve" data-id="${b.id}">Approve</button>
-                                    <button type="button" class="mini-btn btn-reject" data-action="reject" data-id="${b.id}">Reject</button>
-                                    <button type="button" class="mini-btn btn-feature" data-action="feature" data-id="${b.id}" data-featured="${featured}">${featured ? 'Unfeature' : 'Feature'}</button>
-                                    <button type="button" class="mini-btn btn-delete" data-action="delete" data-id="${b.id}">Delete</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            bizBody.addEventListener('click', async (e) => {
-                const btn = e.target.closest('button[data-action]');
-                if (!btn || !sb) return;
-                const id = btn.dataset.id;
-                const action = btn.dataset.action;
-
-                if (action === 'approve') {
-                    await sb.from('bisa_businesses').update({ status: 'approved' }).eq('id', id);
-                    showAlert('Listing approved for Explore.', 'success');
-                } else if (action === 'reject') {
-                    await sb.from('bisa_businesses').update({ status: 'rejected', featured_on_campus: false }).eq('id', id);
-                    showAlert('Listing marked as rejected.', 'success');
-                } else if (action === 'feature') {
-                    const nextFeat = btn.dataset.featured !== 'true';
-                    await sb.from('bisa_businesses').update({ featured_on_campus: nextFeat, status: 'approved' }).eq('id', id);
-                    showAlert(nextFeat ? 'Listing featured on campus.' : 'Listing removed from featured.', 'success');
-                } else if (action === 'delete') {
-                    await sb.from('bisa_businesses').delete().eq('id', id);
-                    showAlert('Listing deleted.', 'success');
-                }
-                await loadBusinesses();
-            });
-
-            document.getElementById('adminSettingsForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const mergedAssets = {
-                    ...(currentSettings.site_assets || {}),
+            async function persistSettings(patchObj) {
+                const existingAssets = currentSettings.site_assets || {};
+                const existingSocial = existingAssets.social_links || {};
+                const nextAssets = {
+                    ...existingAssets,
+                    ...(patchObj.site_assets || {}),
                     social_links: {
-                        facebook: document.getElementById('cfgSocialFb').value.trim(),
-                        instagram: document.getElementById('cfgSocialIg').value.trim(),
-                        whatsapp: document.getElementById('cfgSocialWa').value.trim()
+                        ...existingSocial,
+                        ...((patchObj.site_assets && patchObj.site_assets.social_links) || {})
                     }
                 };
 
                 const payload = {
                     id: 1,
-                    brand_name: document.getElementById('cfgBrandName').value.trim() || 'BISA',
-                    main_headline: document.getElementById('cfgHeadline').value.trim() || "Let's Do Business & Share Ideas",
-                    hero_subtext: document.getElementById('cfgSubtext').value.trim(),
-                    logo_placement: document.getElementById('cfgLogoPlacement').value,
-                    logo_url: document.getElementById('cfgLogoUrl').value.trim(),
+                    brand_name: patchObj.brand_name ?? currentSettings.brand_name ?? 'BISA',
+                    main_headline: patchObj.main_headline ?? currentSettings.main_headline ?? "Let's Do Business & Share Ideas",
+                    hero_subtext: patchObj.hero_subtext ?? currentSettings.hero_subtext ?? '',
+                    about_mission: patchObj.about_mission ?? currentSettings.about_mission ?? '',
+                    about_vision: patchObj.about_vision ?? currentSettings.about_vision ?? '',
+                    explore_notice: patchObj.explore_notice ?? currentSettings.explore_notice ?? '',
+                    logo_url: patchObj.logo_url ?? currentSettings.logo_url ?? 'assets/bisa-logo-mark.png',
+                    logo_placement: patchObj.logo_placement ?? currentSettings.logo_placement ?? 'header-left',
+                    category_media: patchObj.category_media ?? currentSettings.category_media ?? {},
+                    slideshow: patchObj.slideshow ?? slidesList,
                     social_icons: currentSettings.social_icons || {
                         facebook: 'assets/facebook.png',
                         instagram: 'assets/instagram.png',
                         whatsapp: 'assets/whatsapp.png'
                     },
-                    site_assets: mergedAssets
+                    site_assets: nextAssets
                 };
 
+                currentSettings = payload;
                 try {
                     localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(payload));
                     localStorage.setItem(CONFIG_KEY, JSON.stringify(payload));
@@ -700,32 +796,257 @@
                 if (sb) {
                     const { error } = await sb.from('bisa_settings').upsert(payload, { onConflict: 'id' });
                     if (error) {
-                        showAlert('Saved locally, but Supabase settings update returned: ' + error.message, 'error');
+                        showAlert('Saved locally, Supabase returned: ' + error.message, 'error');
                         return;
                     }
                 }
-                currentSettings = payload;
-                document.getElementById('adminBrandLabel').textContent = payload.brand_name + ' Admin';
-                showAlert('Site settings saved and synced across pages.', 'success');
+                fillAllSettingFields(payload);
+                showAlert('Settings & section updates saved and synced.', 'success');
+            }
+
+            document.getElementById('headlinesForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await persistSettings({
+                    brand_name: document.getElementById('hlBrandName').value.trim() || 'BISA',
+                    main_headline: document.getElementById('hlHeroTitle').value.trim(),
+                    hero_subtext: document.getElementById('hlHeroSubtext').value.trim(),
+                    about_mission: document.getElementById('hlAboutMission').value.trim(),
+                    about_vision: document.getElementById('hlAboutVision').value.trim(),
+                    explore_notice: document.getElementById('hlExploreNotice').value.trim(),
+                    site_assets: {
+                        ...(currentSettings.site_assets || {}),
+                        footer_tagline: document.getElementById('hlFooterTagline').value.trim()
+                    }
+                });
+            });
+
+            document.getElementById('mediaForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const logoFile = document.getElementById('logoFileUpload').files[0];
+                const heroFile = document.getElementById('heroSectionImgFile').files[0];
+                const aboutFile = document.getElementById('aboutImgFileUpload').files[0];
+
+                const uploadedLogo = logoFile ? await uploadToStorage(logoFile, 'branding') : '';
+                const uploadedHero = heroFile ? await uploadToStorage(heroFile, 'sections') : '';
+                const uploadedAbout = aboutFile ? await uploadToStorage(aboutFile, 'sections') : '';
+
+                const logoUrl = uploadedLogo || document.getElementById('logoUrlInput').value.trim();
+                const heroUrl = uploadedHero || document.getElementById('heroSectionImgUrl').value.trim();
+                const aboutUrl = uploadedAbout || document.getElementById('aboutImgUrlInput').value.trim();
+
+                const catMedia = { ...(currentSettings.category_media || {}) };
+                const urlInputs = Array.from(document.querySelectorAll('#categoryMediaInputs input[data-cat].input'));
+                const fileInputs = Array.from(document.querySelectorAll('#categoryMediaInputs input.cat-file-upload[data-cat]'));
+
+                for (const inp of urlInputs) {
+                    if (inp.value.trim()) catMedia[inp.dataset.cat] = inp.value.trim();
+                }
+                for (const fInp of fileInputs) {
+                    if (fInp.files && fInp.files[0]) {
+                        const uploadedCat = await uploadToStorage(fInp.files[0], 'categories');
+                        if (uploadedCat) catMedia[fInp.dataset.cat] = uploadedCat;
+                    }
+                }
+
+                await persistSettings({
+                    logo_url: logoUrl,
+                    category_media: catMedia,
+                    slideshow: [...slidesList],
+                    site_assets: {
+                        ...(currentSettings.site_assets || {}),
+                        hero_image_url: heroUrl,
+                        about_image_url: aboutUrl
+                    }
+                });
+            });
+
+            document.getElementById('siteControlForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const hiddenTabs = Array.from(document.querySelectorAll('#tabVisibilityCheckboxes input[type="checkbox"]'))
+                    .filter((cb) => !cb.checked)
+                    .map((cb) => cb.value);
+
+                await persistSettings({
+                    logo_placement: document.getElementById('siteLogoPlacement').value,
+                    site_assets: {
+                        ...(currentSettings.site_assets || {}),
+                        hidden_tabs: hiddenTabs,
+                        social_links: {
+                            facebook: document.getElementById('siteSocialFb').value.trim(),
+                            instagram: document.getElementById('siteSocialIg').value.trim(),
+                            whatsapp: document.getElementById('siteSocialWa').value.trim()
+                        }
+                    }
+                });
+            });
+
+            function populateBusinessForm(biz) {
+                document.getElementById('editBizId').value = biz ? biz.id : '';
+                document.getElementById('bizEditName').value = biz ? (biz.business_name || biz.name || '') : '';
+                document.getElementById('bizEditCategory').value = biz ? (biz.category || 'Services') : 'Services';
+                document.getElementById('bizEditPrice').value = biz && biz.price != null ? biz.price : 25;
+                document.getElementById('bizEditLocation').value = biz ? (biz.location || '') : '';
+                document.getElementById('bizEditFindUs').value = biz ? (biz.find_us || '') : '';
+                document.getElementById('bizEditStatus').value = biz ? (biz.status || 'pending') : 'pending';
+                document.getElementById('bizEditPhone').value = biz ? (biz.phone || '') : '';
+                document.getElementById('bizEditEmail').value = biz ? (biz.email || '') : '';
+                document.getElementById('bizEditWebsite').value = biz ? (biz.website || '') : '';
+                document.getElementById('bizEditDesc').value = biz ? (biz.description || '') : '';
+                document.getElementById('bizEditImageUrl').value = biz ? (biz.image_url || '') : '';
+                document.getElementById('bizEditorHeading').textContent = biz
+                    ? 'Editing Business: ' + (biz.business_name || biz.name || '')
+                    : 'Create or Edit Business Details';
+            }
+
+            document.getElementById('clearBizFormBtn').addEventListener('click', () => populateBusinessForm(null));
+
+            document.getElementById('attachProfileToBizFormBtn').addEventListener('click', () => {
+                if (!activeUser) {
+                    showAlert('Log in on the Profile & Approved Link tab first.', 'error');
+                    return;
+                }
+                const p = activeProfile || {};
+                if (p.phone) document.getElementById('bizEditPhone').value = p.phone;
+                if (activeUser.email) document.getElementById('bizEditEmail').value = activeUser.email;
+                if (p.location) document.getElementById('bizEditLocation').value = p.location;
+                showAlert('Profile details filled into the business editor.', 'success');
+            });
+
+            document.getElementById('adminBusinessForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!sb) return;
+                const editId = document.getElementById('editBizId').value.trim();
+                const fileEl = document.getElementById('bizEditImageFile');
+                let imgUrl = document.getElementById('bizEditImageUrl').value.trim();
+                if (fileEl.files && fileEl.files[0]) {
+                    const uploaded = await uploadToStorage(fileEl.files[0], 'businesses');
+                    if (uploaded) imgUrl = uploaded;
+                }
+
+                const record = {
+                    business_name: document.getElementById('bizEditName').value.trim(),
+                    category: document.getElementById('bizEditCategory').value,
+                    price: Number(document.getElementById('bizEditPrice').value || 0),
+                    location: document.getElementById('bizEditLocation').value.trim(),
+                    find_us: document.getElementById('bizEditFindUs').value.trim(),
+                    status: document.getElementById('bizEditStatus').value,
+                    phone: document.getElementById('bizEditPhone').value.trim(),
+                    email: document.getElementById('bizEditEmail').value.trim(),
+                    website: document.getElementById('bizEditWebsite').value.trim(),
+                    description: document.getElementById('bizEditDesc').value.trim(),
+                    image_url: imgUrl || null,
+                    images: imgUrl ? [imgUrl] : []
+                };
+
+                const res = editId
+                    ? await sb.from('bisa_businesses').update(record).eq('id', editId)
+                    : await sb.from('bisa_businesses').insert([record]);
+
+                if (res.error) {
+                    showAlert('Business save failed: ' + res.error.message, 'error');
+                    return;
+                }
+                fileEl.value = '';
+                populateBusinessForm(null);
+                await loadBusinesses();
+                showAlert(editId ? 'Business updated in Supabase.' : 'Business created in Supabase.', 'success');
+            });
+
+            function refreshApprovedBusinessDropdown() {
+                if (!linkTargetSelect) return;
+                const approved = businessesList.filter((b) => (b.status || '').toLowerCase() === 'approved');
+                if (!approved.length) {
+                    linkTargetSelect.innerHTML = '<option value="">No approved businesses available</option>';
+                    return;
+                }
+                linkTargetSelect.innerHTML = approved.map((b) =>
+                    `<option value="${b.id}">${b.business_name || b.name || 'Business'} (${b.location || 'Campus'})</option>`
+                ).join('');
+            }
+
+            async function loadBusinesses() {
+                if (!sb) return;
+                const { data, error } = await sb.from('bisa_businesses').select('*').order('created_at', { ascending: false });
+                if (error) {
+                    bizBody.innerHTML = `<tr><td colspan="6">Error fetching businesses: ${error.message}</td></tr>`;
+                    return;
+                }
+                businessesList = Array.isArray(data) ? data : [];
+                try {
+                    localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(businessesList));
+                } catch (_) {}
+                refreshApprovedBusinessDropdown();
+
+                if (!businessesList.length) {
+                    bizBody.innerHTML = '<tr><td colspan="6">No business submissions found.</td></tr>';
+                    return;
+                }
+
+                bizBody.innerHTML = businessesList.map((b) => {
+                    const st = (b.status || 'pending').toLowerCase();
+                    const badgeCls = st === 'approved' ? 'badge-approved' : (st === 'rejected' ? 'badge-rejected' : 'badge-pending');
+                    const feat = Boolean(b.featured_on_campus);
+                    const thumb = b.image_url ? `<img src="${b.image_url}" alt="" class="preview-thumb">` : '<span style="font-size:11px;color:var(--gray);">No image</span>';
+                    return `
+                        <tr>
+                            <td>${thumb}</td>
+                            <td><strong>${b.business_name || b.name || 'Unnamed'}</strong><br><span style="font-size:12px;color:var(--gray);">${b.description || ''}</span></td>
+                            <td>${b.category || '-'}<br><strong>GH₵ ${b.price ?? 0}</strong></td>
+                            <td>${b.location || '-'}<br><span style="font-size:12px;">${b.phone || ''} ${b.email ? '· ' + b.email : ''}</span></td>
+                            <td><span class="badge ${badgeCls}">${st}</span><br><span style="font-size:11px;">Featured: ${feat ? 'Yes' : 'No'}</span></td>
+                            <td>
+                                <div class="action-cluster">
+                                    <button type="button" class="btn-xs btn-ok" data-biz-act="approve" data-id="${b.id}">Approve</button>
+                                    <button type="button" class="btn-xs btn-no" data-biz-act="reject" data-id="${b.id}">Reject</button>
+                                    <button type="button" class="btn-xs btn-gold" data-biz-act="feature" data-id="${b.id}" data-feat="${feat}">${feat ? 'Unfeature' : 'Feature'}</button>
+                                    <button type="button" class="btn-xs btn-edit" data-biz-act="edit" data-id="${b.id}">Edit</button>
+                                    <button type="button" class="btn-xs btn-del" data-biz-act="delete" data-id="${b.id}">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            bizBody.addEventListener('click', async (e) => {
+                const btn = e.target.closest('button[data-biz-act]');
+                if (!btn || !sb) return;
+                const id = btn.dataset.id;
+                const act = btn.dataset.bizAct;
+                const target = businessesList.find((item) => String(item.id) === String(id));
+
+                if (act === 'edit' && target) {
+                    populateBusinessForm(target);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                if (act === 'approve') {
+                    await sb.from('bisa_businesses').update({ status: 'approved' }).eq('id', id);
+                    showAlert('Business approved.', 'success');
+                } else if (act === 'reject') {
+                    await sb.from('bisa_businesses').update({ status: 'rejected', featured_on_campus: false }).eq('id', id);
+                    showAlert('Business rejected.', 'success');
+                } else if (act === 'feature') {
+                    const nextFeat = btn.dataset.feat !== 'true';
+                    await sb.from('bisa_businesses').update({ featured_on_campus: nextFeat, status: 'approved' }).eq('id', id);
+                    showAlert(nextFeat ? 'Featured on campus.' : 'Removed from featured.', 'success');
+                } else if (act === 'delete') {
+                    await sb.from('bisa_businesses').delete().eq('id', id);
+                    showAlert('Business deleted.', 'success');
+                }
+                await loadBusinesses();
             });
 
             async function loadMessages() {
-                if (!sb) {
-                    msgBody.innerHTML = '<tr><td colspan="4">Supabase client unavailable.</td></tr>';
-                    return;
-                }
-                const { data, error } = await sb
-                    .from('bisa_messages')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
+                if (!sb) return;
+                const { data, error } = await sb.from('bisa_messages').select('*').order('created_at', { ascending: false });
                 if (error) {
-                    msgBody.innerHTML = '<tr><td colspan="4">Messages table not set up yet or unavailable (' + error.message + ').</td></tr>';
+                    msgBody.innerHTML = `<tr><td colspan="4">Error fetching messages: ${error.message}</td></tr>`;
                     return;
                 }
                 const rows = Array.isArray(data) ? data : [];
                 if (!rows.length) {
-                    msgBody.innerHTML = '<tr><td colspan="4">No contact messages yet.</td></tr>';
+                    msgBody.innerHTML = '<tr><td colspan="4">No messages received yet.</td></tr>';
                     return;
                 }
                 msgBody.innerHTML = rows.map((m) => `
@@ -738,10 +1059,122 @@
                 `).join('');
             }
 
+            async function syncUserProfile(user) {
+                activeUser = user || null;
+                const accLink = document.getElementById('dashAccountLink');
+                if (!activeUser) {
+                    if (accLink) accLink.textContent = 'Login';
+                    document.getElementById('dashProfileCard').classList.add('hidden');
+                    document.getElementById('dashLoginCard').classList.remove('hidden');
+                    return;
+                }
+                if (accLink) accLink.textContent = 'Profile';
+                document.getElementById('dashLoginCard').classList.add('hidden');
+                document.getElementById('dashProfileCard').classList.remove('hidden');
+
+                let cached = null;
+                try {
+                    const raw = localStorage.getItem(PROFILE_CACHE_PREFIX + activeUser.id);
+                    if (raw) cached = JSON.parse(raw);
+                } catch (_) {}
+
+                if (sb) {
+                    const { data } = await sb.from('profiles').select('*').eq('id', activeUser.id).maybeSingle();
+                    if (data) cached = data;
+                }
+
+                activeProfile = cached || {
+                    full_name: (activeUser.user_metadata && activeUser.user_metadata.full_name) || activeUser.email.split('@')[0],
+                    email: activeUser.email
+                };
+
+                document.getElementById('dashActiveProfileName').textContent = activeProfile.full_name || activeUser.email;
+                document.getElementById('dashActiveProfileEmail').textContent = activeUser.email;
+                document.getElementById('profFullName').value = activeProfile.full_name || '';
+                document.getElementById('profPhone').value = activeProfile.phone || '';
+                document.getElementById('profLocation').value = activeProfile.location || '';
+                document.getElementById('profRole').value = activeProfile.role || 'Vendor / Admin';
+                document.getElementById('profBio').value = activeProfile.bio || '';
+            }
+
+            document.getElementById('dashLoginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!sb) return;
+                const email = document.getElementById('dashLoginEmail').value.trim();
+                const password = document.getElementById('dashLoginPassword').value;
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) {
+                    showAlert(error.message, 'error');
+                    return;
+                }
+                await syncUserProfile(data.user);
+                showAlert('Signed in.', 'success');
+            });
+
+            document.getElementById('dashLogoutBtn').addEventListener('click', async () => {
+                if (sb) await sb.auth.signOut();
+                await syncUserProfile(null);
+                showAlert('Signed out.', 'success');
+            });
+
+            document.getElementById('dashProfileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!activeUser) return;
+                const payload = {
+                    id: activeUser.id,
+                    email: activeUser.email,
+                    full_name: document.getElementById('profFullName').value.trim(),
+                    phone: document.getElementById('profPhone').value.trim(),
+                    location: document.getElementById('profLocation').value.trim(),
+                    role: document.getElementById('profRole').value.trim(),
+                    bio: document.getElementById('profBio').value.trim(),
+                    updated_at: new Date().toISOString()
+                };
+                activeProfile = payload;
+                try {
+                    localStorage.setItem(PROFILE_CACHE_PREFIX + activeUser.id, JSON.stringify(payload));
+                } catch (_) {}
+                if (sb) {
+                    const { error } = await sb.from('profiles').upsert(payload, { onConflict: 'id' });
+                    if (error) {
+                        showAlert('Profile saved locally; Supabase returned: ' + error.message, 'error');
+                        return;
+                    }
+                }
+                await syncUserProfile(activeUser);
+                showAlert('Profile saved.', 'success');
+            });
+
+            document.getElementById('applyProfileToApprovedBtn').addEventListener('click', async () => {
+                if (!sb) return;
+                const bizId = linkTargetSelect.value;
+                if (!bizId) {
+                    showAlert('Select an approved business first.', 'error');
+                    return;
+                }
+                if (!activeProfile && !activeUser) {
+                    showAlert('Sign in and save your profile details first.', 'error');
+                    return;
+                }
+                const updateFields = {};
+                if (activeProfile && activeProfile.phone) updateFields.phone = activeProfile.phone;
+                if (activeUser && activeUser.email) updateFields.email = activeUser.email;
+                if (activeProfile && activeProfile.location) updateFields.location = activeProfile.location;
+                if (activeProfile && activeProfile.full_name) updateFields.owner_name = activeProfile.full_name;
+
+                const { error } = await sb.from('bisa_businesses').update(updateFields).eq('id', bizId);
+                if (error) {
+                    showAlert('Could not attach profile details: ' + error.message, 'error');
+                    return;
+                }
+                await loadBusinesses();
+                showAlert('Profile details attached to the approved business.', 'success');
+            });
+
             async function loadSettings() {
                 try {
                     const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(CONFIG_KEY);
-                    if (cached) fillSettingsForm(JSON.parse(cached));
+                    if (cached) fillAllSettingFields(JSON.parse(cached));
                 } catch (_) {}
 
                 if (!sb) return;
@@ -751,34 +1184,29 @@
                         localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
                         localStorage.setItem(CONFIG_KEY, JSON.stringify(data));
                     } catch (_) {}
-                    fillSettingsForm(data);
+                    fillAllSettingFields(data);
                 }
             }
 
-            async function initSession() {
-                if (!sb) {
-                    await syncSessionState(null);
-                    return;
+            async function initDashboard() {
+                await loadSettings();
+                await loadBusinesses();
+                await loadMessages();
+                if (sb) {
+                    const { data } = await sb.auth.getSession();
+                    await syncUserProfile((data && data.session && data.session.user) || null);
+                    sb.auth.onAuthStateChange((_ev, session) => {
+                        syncUserProfile((session && session.user) || null);
+                    });
                 }
-                const { data } = await sb.auth.getSession();
-                await syncSessionState((data && data.session && data.session.user) || null);
-                sb.auth.onAuthStateChange((_event, session) => {
-                    syncSessionState((session && session.user) || null);
-                });
             }
 
-            document.getElementById('refreshAllBtn').addEventListener('click', () => {
-                loadSettings();
-                loadBusinesses();
-                loadMessages();
-                initSession();
-                showAlert('Refreshed data from Supabase.', 'success');
+            document.getElementById('syncAllBtn').addEventListener('click', async () => {
+                await initDashboard();
+                showAlert('Fetched and synced latest data from Supabase.', 'success');
             });
 
-            loadSettings();
-            loadBusinesses();
-            loadMessages();
-            initSession();
+            initDashboard();
         })();
     </script>
 </body>
