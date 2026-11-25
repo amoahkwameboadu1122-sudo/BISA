@@ -52,6 +52,23 @@
             border-radius: 8px;
             display: block;
         }
+        .social-icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.12);
+            text-decoration: none;
+        }
+        .social-icon-img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            display: block;
+        }
 
         /* Horizontal row of moderately sized Featured on Campus cards */
         #featuredBusinessesGrid.featured-horizontal-row {
@@ -79,12 +96,22 @@
             overflow: hidden;
             background: #f6ede0;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #featuredBusinessesGrid.featured-horizontal-row .business-img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
+        }
+        .featured-card-fallback {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray, #6c5867);
+            padding: 8px;
+            text-align: center;
         }
         #featuredBusinessesGrid.featured-horizontal-row .business-name {
             font-size: 15px;
@@ -120,15 +147,16 @@
     <header class="header" id="siteHeader">
         <div class="container header-container" id="headerContainer">
             <div class="header-brand-wrap" id="headerBrandWrap">
-                <img id="headerLogoImg" src="" alt="" class="header-logo-img" style="display: none;">
+                <img id="headerLogoImg" src="assets/bisa-logo-mark.png" alt="BISA Logo Mark" class="header-logo-img">
                 <a href="index.html" class="logo" id="siteLogoText">BISA</a>
             </div>
-            <nav class="nav">
+            <nav class="nav" aria-label="Main Navigation">
                 <a href="index.html" class="nav-link active">Home</a>
                 <a href="explore.html" class="nav-link">Explore</a>
                 <a href="business.html" class="nav-link">List Your Business</a>
                 <a href="about.html" class="nav-link">About</a>
                 <a href="contact.html" class="nav-link">Contact</a>
+                <a href="account.html" class="nav-link" id="navAccountLink">Login</a>
             </nav>
         </div>
     </header>
@@ -139,7 +167,7 @@
         <!-- HERO SECTION -->
         <section class="hero" id="homeHero">
             <div class="container hero-grid">
-                <div class="hero-text-col">
+                <div class="hero-text-col hero-text">
                     <h1 class="hero-title" id="homeHeroTitle">Let's Do Business &amp; Share Ideas</h1>
                     <p class="hero-description" id="homeHeroDescription">
                         Discover student-run businesses, creative services, and campus products all in one place.
@@ -161,7 +189,7 @@
                                         <p class="hero-description">Fresh campus meals &amp; snacks.</p>
                                     </div>
                                     <div class="slide-image">
-                                        <img src="bisa-flyer.png.png" alt="Campus Fresh Chop" class="hero-img">
+                                        <img src="assets/bisa-flyer.png.png" alt="Campus Fresh Chop" class="hero-img">
                                     </div>
                                 </div>
                             </div>
@@ -172,7 +200,7 @@
                                         <p class="hero-description">Brand identity, flyers &amp; motion graphics.</p>
                                     </div>
                                     <div class="slide-image">
-                                        <img src="bisa-logo-full.png" alt="Luminex Creative Lab" class="hero-img">
+                                        <img src="assets/bisa-logo-full.png" alt="Luminex Creative Lab" class="hero-img">
                                     </div>
                                 </div>
                             </div>
@@ -186,7 +214,7 @@
         </section>
 
         <!-- SEARCH SECTION -->
-        <section class="search-section">
+        <section class="search-section" aria-label="Search Campus Businesses">
             <div class="container">
                 <form class="search-form" action="explore.html" method="get">
                     <input type="text" name="q" class="input" placeholder="Search for food, design, web services, or hostels...">
@@ -196,32 +224,44 @@
         </section>
 
         <!-- CATEGORIES SECTION -->
-        <section class="section">
+        <section class="section" aria-labelledby="categories-heading">
             <div class="container">
-                <h2 class="section-title">Popular Categories</h2>
+                <h2 class="section-title" id="categories-heading">Popular Categories</h2>
                 <div class="categories-grid" id="homeCategoriesGrid">
-                    <a href="explore.html?category=Food%20%26%20Snacks" class="card category-card" data-category="Food & Snacks">
-                        <div class="category-icon"></div>
+                    <a href="explore.html?category=Food%20%26%20Snacks" class="card category-card" data-category="Food & Snacks" data-fallback-icon="assets/food-snacks.png">
+                        <div class="category-icon">
+                            <img src="assets/food-snacks.png" alt="Food and Snacks icon" class="category-icon-img">
+                        </div>
                         <p class="category-name">Food &amp; Snacks</p>
                     </a>
-                    <a href="explore.html?category=Graphics%20%26%20Art" class="card category-card" data-category="Graphics & Art">
-                        <div class="category-icon"></div>
+                    <a href="explore.html?category=Graphics%20%26%20Art" class="card category-card" data-category="Graphics & Art" data-fallback-icon="assets/graphics-art.png">
+                        <div class="category-icon">
+                            <img src="assets/graphics-art.png" alt="Graphics and Art icon" class="category-icon-img">
+                        </div>
                         <p class="category-name">Graphics &amp; Art</p>
                     </a>
-                    <a href="explore.html?category=Web%20%26%20Tech" class="card category-card" data-category="Web & Tech">
-                        <div class="category-icon"></div>
+                    <a href="explore.html?category=Web%20%26%20Tech" class="card category-card" data-category="Web & Tech" data-fallback-icon="assets/web-tech.png">
+                        <div class="category-icon">
+                            <img src="assets/web-tech.png" alt="Web and Tech icon" class="category-icon-img">
+                        </div>
                         <p class="category-name">Web &amp; Tech</p>
                     </a>
-                    <a href="explore.html?category=Books%20%26%20Notes" class="card category-card" data-category="Books & Notes">
-                        <div class="category-icon"></div>
+                    <a href="explore.html?category=Books%20%26%20Notes" class="card category-card" data-category="Books & Notes" data-fallback-icon="assets/books-notes.png">
+                        <div class="category-icon">
+                            <img src="assets/books-notes.png" alt="Books and Notes icon" class="category-icon-img">
+                        </div>
                         <p class="category-name">Books &amp; Notes</p>
                     </a>
-                    <a href="explore.html?category=Laundry" class="card category-card" data-category="Laundry">
-                        <div class="category-icon"></div>
+                    <a href="explore.html?category=Laundry" class="card category-card" data-category="Laundry" data-fallback-icon="assets/laundry.png">
+                        <div class="category-icon">
+                            <img src="assets/laundry.png" alt="Laundry icon" class="category-icon-img">
+                        </div>
                         <p class="category-name">Laundry</p>
                     </a>
-                    <a href="explore.html?category=Campus%20Services" class="card category-card" data-category="Campus Services">
-                        <div class="category-icon"></div>
+                    <a href="explore.html?category=Campus%20Services" class="card category-card" data-category="Campus Services" data-fallback-icon="assets/campus-service.png">
+                        <div class="category-icon">
+                            <img src="assets/campus-service.png" alt="Campus Services icon" class="category-icon-img">
+                        </div>
                         <p class="category-name">Campus Services</p>
                     </a>
                 </div>
@@ -229,9 +269,9 @@
         </section>
 
         <!-- FEATURED BUSINESSES SECTION (ONLY Admin-Approved & Featured Businesses) -->
-        <section class="section">
+        <section class="section" aria-labelledby="featured-heading">
             <div class="container">
-                <h2 class="section-title">Featured on Campus</h2>
+                <h2 class="section-title" id="featured-heading">Featured on Campus</h2>
                 <div class="businesses-grid featured-horizontal-row" id="featuredBusinessesGrid"></div>
             </div>
         </section>
@@ -252,6 +292,7 @@
                 <a href="index.html">Home</a>
                 <a href="explore.html">Explore</a>
                 <a href="business.html">List Your Business</a>
+                <a href="account.html">Login &amp; Profile</a>
             </div>
             <div class="footer-col">
                 <h4>Support</h4>
@@ -260,7 +301,7 @@
             </div>
             <div class="footer-col">
                 <h4>Socials</h4>
-                <div class="social-circles">
+                <div class="social-circles" id="footerSocialLinks">
                     <span class="circle"></span>
                     <span class="circle"></span>
                     <span class="circle"></span>
@@ -288,6 +329,23 @@
             let currentSlide = 0;
             let currentSettings = {};
             let approvedBusinesses = [];
+
+            function isSafeUrl(url) {
+                const raw = String(url || '').trim();
+                if (!raw) return false;
+                if (raw.startsWith('data:')) return false;
+                if (raw.startsWith('https://') || raw.startsWith('http://')) return true;
+                return !/^\s*(javascript|data|vbscript):/i.test(raw);
+            }
+
+            function attachFallback(imgEl, fallbackText) {
+                imgEl.addEventListener('error', () => {
+                    const span = document.createElement('span');
+                    span.className = 'featured-card-fallback';
+                    span.textContent = fallbackText || 'Image unavailable';
+                    imgEl.replaceWith(span);
+                }, { once: true });
+            }
 
             function initSlideshowControls() {
                 const slides = Array.from(document.querySelectorAll('#homeSlideshowContainer .slide'));
@@ -349,9 +407,7 @@
                 featuredItems.forEach((biz) => {
                     const bizName = biz.business_name || biz.name || 'Campus Business';
                     const desc = biz.description || '';
-                    const imgUrl = biz.image_url && !String(biz.image_url).startsWith('data:')
-                        ? biz.image_url
-                        : '';
+                    const imgUrl = isSafeUrl(biz.image_url) ? String(biz.image_url).trim() : '';
 
                     const article = document.createElement('article');
                     article.className = 'card business-card';
@@ -362,7 +418,13 @@
                         const img = document.createElement('img');
                         img.src = imgUrl;
                         img.alt = bizName;
+                        attachFallback(img, 'Photo unavailable');
                         imgBox.appendChild(img);
+                    } else {
+                        const span = document.createElement('span');
+                        span.className = 'featured-card-fallback';
+                        span.textContent = 'No photo';
+                        imgBox.appendChild(span);
                     }
 
                     const h3 = document.createElement('h3');
@@ -384,6 +446,39 @@
                     article.appendChild(link);
 
                     featuredGrid.appendChild(article);
+                });
+            }
+
+            function renderFooterSocials(cfg) {
+                const wrap = document.getElementById('footerSocialLinks');
+                if (!wrap) return;
+
+                const icons = cfg.social_icons || cfg.socialIcons || {};
+                const links = (cfg.site_assets && cfg.site_assets.social_links) || {};
+                const entries = Object.entries(icons).filter(([, url]) => isSafeUrl(url));
+
+                if (!entries.length) return;
+
+                wrap.innerHTML = '';
+                entries.forEach(([platform, iconUrl]) => {
+                    const href = links[platform] && isSafeUrl(links[platform]) ? links[platform] : '#';
+                    const el = document.createElement(href !== '#' ? 'a' : 'span');
+                    el.className = 'social-icon-link';
+                    if (href !== '#') {
+                        el.href = href;
+                        el.target = '_blank';
+                        el.rel = 'noopener noreferrer';
+                    }
+                    el.title = platform;
+
+                    const img = document.createElement('img');
+                    img.src = String(iconUrl).trim();
+                    img.alt = `${platform} icon`;
+                    img.className = 'social-icon-img';
+                    attachFallback(img, platform.slice(0, 2).toUpperCase());
+
+                    el.appendChild(img);
+                    wrap.appendChild(el);
                 });
             }
 
@@ -415,11 +510,13 @@
                 const footerBrandWrap = document.getElementById('footerBrandWrap');
                 const placement = cfg.logo_placement || cfg.logoPlacement || 'header-left';
 
-                if (activeLogo && headerLogoImg) {
-                    headerLogoImg.src = activeLogo;
+                if (activeLogo && isSafeUrl(activeLogo) && headerLogoImg) {
+                    headerLogoImg.src = String(activeLogo).trim();
                     headerLogoImg.alt = brandText + ' Logo';
                     headerLogoImg.style.display = 'inline-block';
-                    document.documentElement.style.setProperty('--bisa-active-logo', `url("${activeLogo}")`);
+                    document.documentElement.style.setProperty('--bisa-active-logo', `url("${String(activeLogo).trim()}")`);
+                } else if (headerLogoImg) {
+                    attachFallback(headerLogoImg, '');
                 }
 
                 if (headerContainer) {
@@ -433,14 +530,21 @@
                 const catMedia = cfg.category_media || {};
                 document.querySelectorAll('#homeCategoriesGrid .category-card').forEach((card) => {
                     const catName = card.dataset.category;
+                    const fallbackSrc = card.dataset.fallbackIcon || '';
                     const iconBox = card.querySelector('.category-icon');
-                    const iconUrl = catMedia[catName];
-                    if (iconBox) {
-                        if (iconUrl) {
-                            iconBox.innerHTML = `<img src="${iconUrl}" alt="${catName}" class="category-icon-img">`;
-                        } else {
-                            iconBox.innerHTML = '';
+                    const chosenUrl = isSafeUrl(catMedia[catName]) ? String(catMedia[catName]).trim() : fallbackSrc;
+                    if (iconBox && chosenUrl) {
+                        const img = document.createElement('img');
+                        img.src = chosenUrl;
+                        img.alt = `${catName} icon`;
+                        img.className = 'category-icon-img';
+                        if (fallbackSrc && chosenUrl !== fallbackSrc) {
+                            img.addEventListener('error', () => {
+                                img.src = fallbackSrc;
+                            }, { once: true });
                         }
+                        iconBox.innerHTML = '';
+                        iconBox.appendChild(img);
                     }
                 });
 
@@ -477,11 +581,12 @@
                             imgCol.className = 'slide-image';
 
                             const imgSrc = slide.image_url || slide.image || '';
-                            if (imgSrc) {
+                            if (imgSrc && isSafeUrl(imgSrc)) {
                                 const img = document.createElement('img');
-                                img.src = imgSrc;
+                                img.src = String(imgSrc).trim();
                                 img.alt = slide.title || 'Slide image';
                                 img.className = 'hero-img';
+                                attachFallback(img, 'Slide image unavailable');
                                 imgCol.appendChild(img);
                             }
 
@@ -494,8 +599,22 @@
                     }
                 }
 
+                renderFooterSocials(cfg);
                 renderFeaturedOnCampus();
             }
+
+            if (sb) {
+                sb.auth.getSession().then(({ data }) => {
+                    const navLink = document.getElementById('navAccountLink');
+                    if (navLink && data && data.session) {
+                        navLink.textContent = 'Profile';
+                    }
+                }).catch(() => {});
+            }
+
+            document.querySelectorAll('#homeSlideshowContainer img, #homeCategoriesGrid img').forEach((img) => {
+                attachFallback(img, 'Image unavailable');
+            });
 
             initSlideshowControls();
             renderFeaturedOnCampus();
