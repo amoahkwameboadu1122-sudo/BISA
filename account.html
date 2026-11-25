@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BISA - Login &amp; Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --plum: #54234A;
+      --plum-dark: #3d1836;
+      --gold: #FFB02E;
+      --coral: #F16B4B;
+      --vanilla: #FFF1DA;
+      --surface: #ffffff;
+      --border: #e6d7c3;
+      --text: #2a1625;
+      --muted: #6c5867;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--vanilla);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .account-main {
+      flex: 1;
+      max-width: 920px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.25rem 1.25rem 3.5rem;
+    }
+
+    .account-hero {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .account-hero h1 {
+      color: var(--plum);
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+    }
+
+    .account-hero p {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .account-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      box-shadow: 0 8px 24px rgba(84, 35, 74, 0.07);
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      background: #f8efe0;
+      padding: 0.35rem;
+      border-radius: 11px;
+      margin-bottom: 1.5rem;
+    }
+
+    .auth-tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--plum);
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.65rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .auth-tab-btn.active {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--plum);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.72rem 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--plum);
+    }
+
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.7rem 1.2rem;
+      border-radius: 9px;
+      border: none;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: 0.18s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--plum-dark);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: var(--plum-dark);
+    }
+
+    .btn-coral {
+      background: var(--coral);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--plum);
+      color: var(--plum);
+    }
+
+    .btn-outline:hover {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .profile-identity {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--plum);
+      color: var(--gold);
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .profile-name {
+      color: var(--plum);
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .profile-email {
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+
+    .status-banner {
+      padding: 0.75rem 1rem;
+      border-radius: 9px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .status-banner.show {
+      display: block;
+    }
+
+    .status-banner.success {
+      background: #e6f7ed;
+      color: #145c32;
+      border: 1px solid #9fd8b7;
+    }
+
+    .status-banner.error {
+      background: #fdecea;
+      color: #8a1f17;
+      border: 1px solid #f5b5b0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo" id="siteLogoText">BISA</a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="explore.html" class="nav-link">Explore</a>
+        <a href="business.html" class="nav-link">List Your Business</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="account.html" class="nav-link active" id="navAccountLink">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="account-main">
+    <div class="account-hero">
+      <h1 id="accountPageTitle">Account &amp; Profile</h1>
+      <p id="accountPageSubtitle">Sign in or create an account to manage your BISA profile and listings.</p>
+    </div>
+
+    <div id="accountAlert" class="status-banner"></div>
+
+    <!-- LOGIN & SIGN UP VIEW -->
+    <section id="authSection" class="account-card" style="max-width: 480px; margin: 0 auto;">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tabLoginBtn">Log In</button>
+        <button type="button" class="auth-tab-btn" id="tabSignupBtn">Create Account</button>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="you@bisa.edu.gh" required />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginSubmitBtn">Log In</button>
+      </form>
+
+      <form id="signupForm" class="hidden">
+        <div class="form-group">
+          <label for="signupFullName">Full Name</label>
+          <input type="text" id="signupFullName" placeholder="Kwame Mensah" required />
+        </div>
+        <div class="form-group">
+          <label for="signupEmail">Email Address</label>
+          <input type="email" id="signupEmail" placeholder="you@bisa.edu.gh" required />
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Password (min. 6 characters)</label>
+          <input type="password" id="signupPassword" minlength="6" placeholder="Create a password" required />
+        </div>
+        <button type="submit" class="btn btn-gold" style="width: 100%;" id="signupSubmitBtn">Create Account</button>
+      </form>
+    </section>
+
+    <!-- PROFILE VIEW -->
+    <section id="profileSection" class="account-card hidden">
+      <div class="profile-header">
+        <div class="profile-identity">
+          <div class="profile-avatar" id="profileAvatarInitials">B</div>
+          <div>
+            <div class="profile-name" id="profileDisplayName">Member</div>
+            <div class="profile-email" id="profileDisplayEmail"></div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.55rem; flex-wrap: wrap;">
+          <a href="business.html" class="btn btn-gold">List Your Business</a>
+          <button type="button" class="btn btn-coral" id="logoutBtn">Log Out</button>
+        </div>
+      </div>
+
+      <form id="profileForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="profileFullName">Full Name</label>
+            <input type="text" id="profileFullName" placeholder="Your full name" required />
+          </div>
+          <div class="form-group">
+            <label for="profilePhone">Phone / WhatsApp</label>
+            <input type="tel" id="profilePhone" placeholder="+233 ..." />
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="profileLocation">Location / Campus Area</label>
+            <input type="text" id="profileLocation" placeholder="e.g., Elmina, Central Region" />
+          </div>
+          <div class="form-group">
+            <label for="profileRole">Account Type</label>
+            <select id="profileRole">
+              <option value="Buyer / Student">Buyer / Student</option>
+              <option value="Vendor / Business Owner">Vendor / Business Owner</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="profileBio">Bio / Notes</label>
+          <textarea id="profileBio" placeholder="Tell others a bit about yourself or what you offer..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save Profile</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-col">
+        <h4><a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a></h4>
+        <p>Let's Do Business &amp; Share Ideas.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="business.html">List Your Business</a>
+        <a href="account.html">Login &amp; Profile</a>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 BISA. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+      const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+      const sb = window.supabase && typeof window.supabase.createClient === 'function'
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+        : null;
+
+      const PROFILE_CACHE_PREFIX = 'bisa_profile_cache_';
+
+      const alertEl = document.getElementById('accountAlert');
+      const authSection = document.getElementById('authSection');
+      const profileSection = document.getElementById('profileSection');
+      const tabLoginBtn = document.getElementById('tabLoginBtn');
+      const tabSignupBtn = document.getElementById('tabSignupBtn');
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const profileForm = document.getElementById('profileForm');
+      const navAccountLink = document.getElementById('navAccountLink');
+
+      let activeUser = null;
+
+      function showAlert(message, type = 'success') {
+        alertEl.textContent = message;
+        alertEl.className = `status-banner show ${type}`;
+      }
+
+      function setAuthTab(mode) {
+        const isLogin = mode === 'login';
+        tabLoginBtn.classList.toggle('active', isLogin);
+        tabSignupBtn.classList.toggle('active', !isLogin);
+        loginForm.classList.toggle('hidden', !isLogin);
+        signupForm.classList.toggle('hidden', isLogin);
+        alertEl.classList.remove('show');
+      }
+
+      tabLoginBtn.addEventListener('click', () => setAuthTab('login'));
+      tabSignupBtn.addEventListener('click', () => setAuthTab('signup'));
+
+      function getInitials(nameOrEmail) {
+        const clean = String(nameOrEmail || 'B').trim();
+        const parts = clean.split(/\s+/);
+        if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+        return clean.slice(0, 2).toUpperCase();
+      }
+
+      function applyProfileToUI(user, profileData) {
+        const fullName =
+          (profileData && profileData.full_name) ||
+          (user.user_metadata && user.user_metadata.full_name) ||
+          user.email.split('@')[0];
+
+        document.getElementById('profileDisplayName').textContent = fullName;
+        document.getElementById('profileDisplayEmail').textContent = user.email;
+        document.getElementById('profileAvatarInitials').textContent = getInitials(fullName || user.email);
+
+        document.getElementById('profileFullName').value = fullName;
+        document.getElementById('profilePhone').value = (profileData && profileData.phone) || '';
+        document.getElementById('profileLocation').value = (profileData && profileData.location) || '';
+        document.getElementById('profileRole').value = (profileData && profileData.role) || 'Buyer / Student';
+        document.getElementById('profileBio').value = (profileData && profileData.bio) || '';
+      }
+
+      async function loadProfile(user) {
+        activeUser = user;
+        authSection.classList.add('hidden');
+        profileSection.classList.remove('hidden');
+        navAccountLink.textContent = 'Profile';
+
+        let cached = null;
+        try {
+          const raw = localStorage.getItem(PROFILE_CACHE_PREFIX + user.id);
+          if (raw) cached = JSON.parse(raw);
+        } catch (_) {}
+
+        applyProfileToUI(user, cached);
+
+        if (!sb) return;
+
+        try {
+          const { data, error } = await sb
+            .from('profiles')
+            .select('*')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (!error && data) {
+            try {
+              localStorage.setItem(PROFILE_CACHE_PREFIX + user.id, JSON.stringify(data));
+            } catch (_) {}
+            applyProfileToUI(user, data);
+          }
+        } catch (_) {}
+      }
+
+      function showLoggedOutState() {
+        activeUser = null;
+        profileSection.classList.add('hidden');
+        authSection.classList.remove('hidden');
+        navAccountLink.textContent = 'Login';
+      }
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!sb) {
+          showAlert('Authentication service is unavailable.', 'error');
+          return;
+        }
+        const btn = document.getElementById('loginSubmitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Logging In...';
+
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        btn.disabled = false;
+        btn.textContent = 'Log In';
+
+        if (error) {
+          showAlert(error.message || 'Unable to log in.', 'error');
+          return;
+        }
+
+        if (data.user) {
+          showAlert('Logged in successfully.', 'success');
+          await loadProfile(data.user);
+        }
+      });
+
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!sb) {
+          showAlert('Authentication service is unavailable.', 'error');
+          return;
+        }
+        const btn = document.getElementById('signupSubmitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Creating Account...';
+
+        const fullName = document.getElementById('signupFullName').value.trim();
+        const email = document.getElementById('signupEmail').value.trim();
+        const password = document.getElementById('signupPassword').value;
+
+        const { data, error } = await sb.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } }
+        });
+
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+
+        if (error) {
+          showAlert(error.message || 'Unable to create account.', 'error');
+          return;
+        }
+
+        if (data.session && data.user) {
+          const initialProfile = {
+            id: data.user.id,
+            full_name: fullName,
+            email: data.user.email,
+            role: 'Buyer / Student'
+          };
+          try {
+            localStorage.setItem(PROFILE_CACHE_PREFIX + data.user.id, JSON.stringify(initialProfile));
+          } catch (_) {}
+          await sb.from('profiles').upsert(initialProfile, { onConflict: 'id' });
+          showAlert('Account created! Welcome to BISA.', 'success');
+          await loadProfile(data.user);
+        } else {
+          showAlert('Account created! Check your email to confirm your account, then log in.', 'success');
+          setAuthTab('login');
+        }
+      });
+
+      profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!activeUser) return;
+
+        const btn = document.getElementById('saveProfileBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        const payload = {
+          id: activeUser.id,
+          email: activeUser.email,
+          full_name: document.getElementById('profileFullName').value.trim(),
+          phone: document.getElementById('profilePhone').value.trim(),
+          location: document.getElementById('profileLocation').value.trim(),
+          role: document.getElementById('profileRole').value,
+          bio: document.getElementById('profileBio').value.trim(),
+          updated_at: new Date().toISOString()
+        };
+
+        try {
+          localStorage.setItem(PROFILE_CACHE_PREFIX + activeUser.id, JSON.stringify(payload));
+        } catch (_) {}
+
+        let dbError = null;
+        if (sb) {
+          const { error } = await sb.from('profiles').upsert(payload, { onConflict: 'id' });
+          dbError = error;
+          await sb.auth.updateUser({ data: { full_name: payload.full_name } });
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Save Profile';
+        applyProfileToUI(activeUser, payload);
+
+        if (dbError) {
+          showAlert('Profile saved locally. Create a `profiles` table in Supabase to sync across devices.', 'error');
+        } else {
+          showAlert('Profile saved!', 'success');
+        }
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', async () => {
+        if (sb) await sb.auth.signOut();
+        showLoggedOutState();
+        showAlert('You have been logged out.', 'success');
+      });
+
+      async function init() {
+        if (!sb) {
+          showLoggedOutState();
+          return;
+        }
+        const { data: { session } } = await sb.auth.getSession();
+        if (session && session.user) {
+          await loadProfile(session.user);
+        } else {
+          showLoggedOutState();
+        }
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
