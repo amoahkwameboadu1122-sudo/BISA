@@ -43,12 +43,6 @@
             color: #f5e7f2;
             font-size: 13px;
         }
-        .dash-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: center;
-        }
         .dash-alert {
             padding: 12px 16px;
             border-radius: 8px;
@@ -205,14 +199,10 @@
         <div class="dash-topbar">
             <div>
                 <h1 id="dashTitle">BISA Admin Control Dashboard</h1>
-                <p id="dashSubtitle">Full structure control: approve &amp; edit businesses, upload images to sections, update headlines, link profiles to approved businesses, and read messages.</p>
+                <p>Manage businesses &amp; approvals, user profiles &amp; login approvals, notices &amp; policies, headlines, section images, messages, and site structure.</p>
             </div>
-            <div class="dash-actions">
+            <div>
                 <button type="button" class="button button-secondary" id="syncAllBtn">Fetch &amp; Sync Supabase</button>
-                <a href="index.html" class="button button-primary">Home</a>
-                <a href="explore.html" class="button button-secondary">Explore</a>
-                <a href="business.html" class="button button-secondary">List Business</a>
-                <a href="account.html" class="button button-primary" id="dashAccountLink">Login / Profile</a>
             </div>
         </div>
 
@@ -220,9 +210,10 @@
 
         <div class="dash-tabs" id="dashTabsBar" role="tablist">
             <button type="button" class="dash-tab active" data-panel="panelBusinesses">Businesses &amp; Approvals</button>
+            <button type="button" class="dash-tab" data-panel="panelUsers">Users, Logins &amp; Business Link</button>
+            <button type="button" class="dash-tab" data-panel="panelNotices">Notices &amp; Policies</button>
             <button type="button" class="dash-tab" data-panel="panelHeadlines">Headlines &amp; Text</button>
             <button type="button" class="dash-tab" data-panel="panelMedia">Section &amp; Category Images</button>
-            <button type="button" class="dash-tab" data-panel="panelProfile">Profile &amp; Approved Link</button>
             <button type="button" class="dash-tab" data-panel="panelMessages">Received Messages</button>
             <button type="button" class="dash-tab" data-panel="panelSiteSync">Site &amp; Tab Structure</button>
         </div>
@@ -311,7 +302,6 @@
                     <div class="action-cluster">
                         <button type="submit" class="button button-primary" id="saveBizBtn">Save Business</button>
                         <button type="button" class="button button-secondary" id="clearBizFormBtn">Clear Form</button>
-                        <button type="button" class="btn-xs btn-gold" id="attachProfileToBizFormBtn">Fill Form From Profile Details</button>
                     </div>
                 </form>
             </div>
@@ -336,7 +326,117 @@
             </div>
         </section>
 
-        <!-- TAB 2: HEADLINES & TEXT ACROSS SECTIONS -->
+        <!-- TAB 2: MANAGE ALL USERS, ACCEPT LOGINS & LINK PROFILE TO APPROVED BUSINESS -->
+        <section id="panelUsers" class="dash-panel">
+            <div class="dash-box">
+                <h3>Edit User Profile &amp; Login Approval</h3>
+                <form id="userProfileEditForm">
+                    <input type="hidden" id="editUserId">
+                    <div class="dash-grid-3">
+                        <div class="field-row">
+                            <label for="usrFullName">Full Name</label>
+                            <input type="text" id="usrFullName" class="input" required>
+                        </div>
+                        <div class="field-row">
+                            <label for="usrEmail">Email</label>
+                            <input type="email" id="usrEmail" class="input" required>
+                        </div>
+                        <div class="field-row">
+                            <label for="usrLoginStatus">Login / Account Approval</label>
+                            <select id="usrLoginStatus" class="input">
+                                <option value="pending">Pending Login Approval</option>
+                                <option value="approved">Approved / Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="dash-grid-3">
+                        <div class="field-row">
+                            <label for="usrPhone">Phone / WhatsApp</label>
+                            <input type="text" id="usrPhone" class="input">
+                        </div>
+                        <div class="field-row">
+                            <label for="usrLocation">Location / Campus Area</label>
+                            <input type="text" id="usrLocation" class="input">
+                        </div>
+                        <div class="field-row">
+                            <label for="usrRole">Role</label>
+                            <input type="text" id="usrRole" class="input" value="Vendor / Student">
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <label for="usrBio">Profile Bio / Notes</label>
+                        <textarea id="usrBio" class="input textarea" rows="2"></textarea>
+                    </div>
+                    <div class="action-cluster">
+                        <button type="submit" class="button button-primary">Save User Profile &amp; Login Status</button>
+                        <button type="button" class="button button-secondary" id="clearUserFormBtn">Clear</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="dash-box">
+                <h3>Attach a User's Profile Details to an Approved Business</h3>
+                <div class="dash-grid-3">
+                    <div class="field-row">
+                        <label for="linkSourceUserSelect">Select User Profile</label>
+                        <select id="linkSourceUserSelect" class="input"></select>
+                    </div>
+                    <div class="field-row">
+                        <label for="linkTargetBusinessSelect">Select Approved Business</label>
+                        <select id="linkTargetBusinessSelect" class="input"></select>
+                    </div>
+                    <div class="field-row" style="justify-content: flex-end;">
+                        <button type="button" class="button button-secondary" id="applyUserProfileToApprovedBtn">Attach Profile to Approved Business</button>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Registered User Profiles &amp; Login Credentials</h2>
+            <div class="table-wrap">
+                <table class="dash-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Contact &amp; Location</th>
+                            <th>Role</th>
+                            <th>Login Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashUsersBody">
+                        <tr><td colspan="5">Fetching user profiles from Supabase...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: NOTICES & POLICIES (EXPLORE & BUSINESS SUBMISSION) -->
+        <section id="panelNotices" class="dash-panel">
+            <h2>Explore Notice &amp; Business Listing Policy</h2>
+            <p class="page-subtitle" style="margin-bottom: 14px;">Edit the notice shown to users on Explore and the policy shown before listing a business.</p>
+            <form id="noticesForm">
+                <div class="field-row">
+                    <label for="noticeExploreBanner">Explore Page Top Notice</label>
+                    <textarea id="noticeExploreBanner" class="input textarea" rows="2"></textarea>
+                </div>
+                <div class="field-row">
+                    <label for="noticeExploreModal">Explore Policy Prompt Text</label>
+                    <textarea id="noticeExploreModal" class="input textarea" rows="3"></textarea>
+                </div>
+                <div class="field-row">
+                    <label for="noticeVendorPolicy">List Your Business Policy Text</label>
+                    <textarea id="noticeVendorPolicy" class="input textarea" rows="4"></textarea>
+                </div>
+                <div class="field-row">
+                    <label for="noticeApprovalMessage">Post-Submission Approval Notice (24h window)</label>
+                    <input type="text" id="noticeApprovalMessage" class="input" placeholder="Your details have been sent for approval within 24 hours.">
+                </div>
+                <button type="submit" class="button button-primary">Save Notices &amp; Policies</button>
+            </form>
+        </section>
+
+        <!-- TAB 4: HEADLINES & TEXT ACROSS SECTIONS -->
         <section id="panelHeadlines" class="dash-panel">
             <h2>Headlines &amp; Section Text</h2>
             <form id="headlinesForm">
@@ -367,22 +467,16 @@
                     </div>
                 </div>
 
-                <div class="dash-grid-2">
-                    <div class="field-row">
-                        <label for="hlExploreNotice">Explore Page Policy Notice</label>
-                        <textarea id="hlExploreNotice" class="input textarea" rows="2"></textarea>
-                    </div>
-                    <div class="field-row">
-                        <label for="hlFooterTagline">Footer Tagline</label>
-                        <input type="text" id="hlFooterTagline" class="input" placeholder="Let's Do Business &amp; Share Ideas.">
-                    </div>
+                <div class="field-row">
+                    <label for="hlFooterTagline">Footer Tagline</label>
+                    <input type="text" id="hlFooterTagline" class="input" placeholder="Let's Do Business &amp; Share Ideas.">
                 </div>
 
                 <button type="submit" class="button button-primary">Save Headlines &amp; Text</button>
             </form>
         </section>
 
-        <!-- TAB 3: IMAGE UPLOADS TO SECTIONS, CATEGORIES & SLIDESHOW -->
+        <!-- TAB 5: IMAGE UPLOADS TO SECTIONS, CATEGORIES & SLIDESHOW -->
         <section id="panelMedia" class="dash-panel">
             <h2>Upload Images to Sections, Categories &amp; Slideshow</h2>
             <form id="mediaForm">
@@ -486,76 +580,7 @@
             </form>
         </section>
 
-        <!-- TAB 4: PROFILE DETAILS & ADDING PROFILE DETAILS TO APPROVED BUSINESSES -->
-        <section id="panelProfile" class="dash-panel">
-            <h2>Login, Profile Details &amp; Link to Approved Businesses</h2>
-
-            <div id="dashLoginCard" class="dash-box" style="max-width: 480px;">
-                <h3>Sign In</h3>
-                <form id="dashLoginForm">
-                    <div class="field-row">
-                        <label for="dashLoginEmail">Email Address</label>
-                        <input type="email" id="dashLoginEmail" class="input" required>
-                    </div>
-                    <div class="field-row">
-                        <label for="dashLoginPassword">Password</label>
-                        <input type="password" id="dashLoginPassword" class="input" required>
-                    </div>
-                    <button type="submit" class="button button-primary">Log In</button>
-                </form>
-            </div>
-
-            <div id="dashProfileCard" class="dash-box hidden">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-                    <div>
-                        <strong id="dashActiveProfileName">Member</strong>
-                        <div id="dashActiveProfileEmail" style="font-size:12px; color:var(--gray);"></div>
-                    </div>
-                    <button type="button" class="btn-xs btn-no" id="dashLogoutBtn">Log Out</button>
-                </div>
-
-                <form id="dashProfileForm">
-                    <div class="dash-grid-2">
-                        <div class="field-row">
-                            <label for="profFullName">Full Name</label>
-                            <input type="text" id="profFullName" class="input" required>
-                        </div>
-                        <div class="field-row">
-                            <label for="profPhone">Phone / WhatsApp</label>
-                            <input type="text" id="profPhone" class="input">
-                        </div>
-                        <div class="field-row">
-                            <label for="profLocation">Location / Campus Area</label>
-                            <input type="text" id="profLocation" class="input">
-                        </div>
-                        <div class="field-row">
-                            <label for="profRole">Account Role</label>
-                            <input type="text" id="profRole" class="input" value="Vendor / Admin">
-                        </div>
-                    </div>
-                    <div class="field-row">
-                        <label for="profBio">Bio / Notes</label>
-                        <textarea id="profBio" class="input textarea" rows="2"></textarea>
-                    </div>
-                    <button type="submit" class="button button-primary">Save Profile Details</button>
-                </form>
-
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--light-gray);">
-
-                <h3>Add Profile Details to an Approved Business</h3>
-                <div class="dash-grid-2">
-                    <div class="field-row">
-                        <label for="linkTargetBusinessSelect">Approved Business</label>
-                        <select id="linkTargetBusinessSelect" class="input"></select>
-                    </div>
-                    <div class="field-row" style="justify-content: flex-end;">
-                        <button type="button" class="button button-secondary" id="applyProfileToApprovedBtn">Apply Profile Details to Approved Business</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 5: RECEIVED MESSAGES -->
+        <!-- TAB 6: RECEIVED MESSAGES -->
         <section id="panelMessages" class="dash-panel">
             <h2>Received Contact Messages</h2>
             <div class="table-wrap">
@@ -575,7 +600,7 @@
             </div>
         </section>
 
-        <!-- TAB 6: SITE STRUCTURE, LOGO PLACEMENT, SOCIAL LINKS & TABS -->
+        <!-- TAB 7: SITE STRUCTURE, LOGO PLACEMENT, SOCIAL LINKS & TABS -->
         <section id="panelSiteSync" class="dash-panel">
             <h2>Site Structure, Logo Placement, Social Links &amp; Tabs</h2>
             <form id="siteControlForm">
@@ -607,9 +632,10 @@
                     <label>Enabled Dashboard Tabs</label>
                     <div class="action-cluster" id="tabVisibilityCheckboxes">
                         <label><input type="checkbox" value="panelBusinesses" checked> Businesses &amp; Approvals</label>
+                        <label><input type="checkbox" value="panelUsers" checked> Users &amp; Logins</label>
+                        <label><input type="checkbox" value="panelNotices" checked> Notices &amp; Policies</label>
                         <label><input type="checkbox" value="panelHeadlines" checked> Headlines &amp; Text</label>
                         <label><input type="checkbox" value="panelMedia" checked> Section &amp; Category Images</label>
-                        <label><input type="checkbox" value="panelProfile" checked> Profile &amp; Approved Link</label>
                         <label><input type="checkbox" value="panelMessages" checked> Received Messages</label>
                         <label><input type="checkbox" value="panelSiteSync" checked> Site &amp; Tab Structure</label>
                     </div>
@@ -631,19 +657,25 @@
             const CONFIG_KEY = 'bisa_admin_config_v1';
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
-            const PROFILE_CACHE_PREFIX = 'bisa_profile_cache_';
+            const LS_USERS_KEY = 'bisa_users_cache';
             const STORAGE_BUCKET = 'bisa-media';
+
+            const DEFAULT_EXPLORE_NOTICE = 'Welcome to BISA - Your campus marketplace for buying, selling, and connecting.';
+            const DEFAULT_EXPLORE_MODAL = "Before browsing or viewing a business or service's contact details, location, and offerings, please note that BISA connects you with student and local providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely in public or on-campus spots.";
+            const DEFAULT_VENDOR_POLICY = 'By listing your business on BISA, you confirm that your goods or services are legal, safe, and appropriate for the campus community. All business listings are reviewed by BISA administrators before appearing publicly on Explore, and you are responsible for accurate contact details, fair pricing, and safe meetup or service locations.';
+            const DEFAULT_APPROVAL_MSG = 'Your details have been sent for approval within 24 hours.';
 
             const alertEl = document.getElementById('dashAlert');
             const bizBody = document.getElementById('dashBusinessesBody');
+            const usrBody = document.getElementById('dashUsersBody');
             const msgBody = document.getElementById('dashMessagesBody');
-            const linkTargetSelect = document.getElementById('linkTargetBusinessSelect');
+            const linkSourceUserSelect = document.getElementById('linkSourceUserSelect');
+            const linkTargetBusinessSelect = document.getElementById('linkTargetBusinessSelect');
 
             let currentSettings = {};
             let businessesList = [];
+            let usersList = [];
             let slidesList = [];
-            let activeUser = null;
-            let activeProfile = null;
 
             function showAlert(msg, type) {
                 alertEl.textContent = msg;
@@ -724,8 +756,12 @@
                 document.getElementById('hlHeroSubtext').value = cfg.hero_subtext || cfg.heroSubtext || 'Discover student-run businesses, creative services, and campus products all in one place.';
                 document.getElementById('hlAboutMission').value = cfg.about_mission || '';
                 document.getElementById('hlAboutVision').value = cfg.about_vision || '';
-                document.getElementById('hlExploreNotice').value = cfg.explore_notice || '';
                 document.getElementById('hlFooterTagline').value = assets.footer_tagline || "Let's Do Business & Share Ideas.";
+
+                document.getElementById('noticeExploreBanner').value = cfg.explore_notice || DEFAULT_EXPLORE_NOTICE;
+                document.getElementById('noticeExploreModal').value = assets.explore_policy_text || DEFAULT_EXPLORE_MODAL;
+                document.getElementById('noticeVendorPolicy').value = assets.vendor_policy_text || DEFAULT_VENDOR_POLICY;
+                document.getElementById('noticeApprovalMessage').value = assets.approval_notice_msg || DEFAULT_APPROVAL_MSG;
 
                 document.getElementById('logoUrlInput').value = cfg.logo_url || cfg.activeLogo || 'assets/bisa-logo-mark.png';
                 document.getElementById('heroSectionImgUrl').value = assets.hero_image_url || '';
@@ -774,7 +810,7 @@
                     hero_subtext: patchObj.hero_subtext ?? currentSettings.hero_subtext ?? '',
                     about_mission: patchObj.about_mission ?? currentSettings.about_mission ?? '',
                     about_vision: patchObj.about_vision ?? currentSettings.about_vision ?? '',
-                    explore_notice: patchObj.explore_notice ?? currentSettings.explore_notice ?? '',
+                    explore_notice: patchObj.explore_notice ?? currentSettings.explore_notice ?? DEFAULT_EXPLORE_NOTICE,
                     logo_url: patchObj.logo_url ?? currentSettings.logo_url ?? 'assets/bisa-logo-mark.png',
                     logo_placement: patchObj.logo_placement ?? currentSettings.logo_placement ?? 'header-left',
                     category_media: patchObj.category_media ?? currentSettings.category_media ?? {},
@@ -801,8 +837,21 @@
                     }
                 }
                 fillAllSettingFields(payload);
-                showAlert('Settings & section updates saved and synced.', 'success');
+                showAlert('Admin updates saved and synced.', 'success');
             }
+
+            document.getElementById('noticesForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await persistSettings({
+                    explore_notice: document.getElementById('noticeExploreBanner').value.trim(),
+                    site_assets: {
+                        ...(currentSettings.site_assets || {}),
+                        explore_policy_text: document.getElementById('noticeExploreModal').value.trim(),
+                        vendor_policy_text: document.getElementById('noticeVendorPolicy').value.trim(),
+                        approval_notice_msg: document.getElementById('noticeApprovalMessage').value.trim() || DEFAULT_APPROVAL_MSG
+                    }
+                });
+            });
 
             document.getElementById('headlinesForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -812,7 +861,6 @@
                     hero_subtext: document.getElementById('hlHeroSubtext').value.trim(),
                     about_mission: document.getElementById('hlAboutMission').value.trim(),
                     about_vision: document.getElementById('hlAboutVision').value.trim(),
-                    explore_notice: document.getElementById('hlExploreNotice').value.trim(),
                     site_assets: {
                         ...(currentSettings.site_assets || {}),
                         footer_tagline: document.getElementById('hlFooterTagline').value.trim()
@@ -900,18 +948,6 @@
 
             document.getElementById('clearBizFormBtn').addEventListener('click', () => populateBusinessForm(null));
 
-            document.getElementById('attachProfileToBizFormBtn').addEventListener('click', () => {
-                if (!activeUser) {
-                    showAlert('Log in on the Profile & Approved Link tab first.', 'error');
-                    return;
-                }
-                const p = activeProfile || {};
-                if (p.phone) document.getElementById('bizEditPhone').value = p.phone;
-                if (activeUser.email) document.getElementById('bizEditEmail').value = activeUser.email;
-                if (p.location) document.getElementById('bizEditLocation').value = p.location;
-                showAlert('Profile details filled into the business editor.', 'success');
-            });
-
             document.getElementById('adminBusinessForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 if (!sb) return;
@@ -952,16 +988,18 @@
                 showAlert(editId ? 'Business updated in Supabase.' : 'Business created in Supabase.', 'success');
             });
 
-            function refreshApprovedBusinessDropdown() {
-                if (!linkTargetSelect) return;
-                const approved = businessesList.filter((b) => (b.status || '').toLowerCase() === 'approved');
-                if (!approved.length) {
-                    linkTargetSelect.innerHTML = '<option value="">No approved businesses available</option>';
-                    return;
+            function refreshLinkDropdowns() {
+                if (linkTargetBusinessSelect) {
+                    const approved = businessesList.filter((b) => (b.status || '').toLowerCase() === 'approved');
+                    linkTargetBusinessSelect.innerHTML = approved.length
+                        ? approved.map((b) => `<option value="${b.id}">${b.business_name || b.name || 'Business'} (${b.location || 'Campus'})</option>`).join('')
+                        : '<option value="">No approved businesses available</option>';
                 }
-                linkTargetSelect.innerHTML = approved.map((b) =>
-                    `<option value="${b.id}">${b.business_name || b.name || 'Business'} (${b.location || 'Campus'})</option>`
-                ).join('');
+                if (linkSourceUserSelect) {
+                    linkSourceUserSelect.innerHTML = usersList.length
+                        ? usersList.map((u) => `<option value="${u.id}">${u.full_name || u.email || 'User'} — ${u.email || ''}</option>`).join('')
+                        : '<option value="">No user profiles available</option>';
+                }
             }
 
             async function loadBusinesses() {
@@ -975,7 +1013,7 @@
                 try {
                     localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(businessesList));
                 } catch (_) {}
-                refreshApprovedBusinessDropdown();
+                refreshLinkDropdowns();
 
                 if (!businessesList.length) {
                     bizBody.innerHTML = '<tr><td colspan="6">No business submissions found.</td></tr>';
@@ -1037,6 +1075,133 @@
                 await loadBusinesses();
             });
 
+            function populateUserForm(u) {
+                document.getElementById('editUserId').value = u ? u.id : '';
+                document.getElementById('usrFullName').value = u ? (u.full_name || '') : '';
+                document.getElementById('usrEmail').value = u ? (u.email || '') : '';
+                document.getElementById('usrLoginStatus').value = u ? (u.login_status || 'pending') : 'pending';
+                document.getElementById('usrPhone').value = u ? (u.phone || '') : '';
+                document.getElementById('usrLocation').value = u ? (u.location || '') : '';
+                document.getElementById('usrRole').value = u ? (u.role || 'Vendor / Student') : 'Vendor / Student';
+                document.getElementById('usrBio').value = u ? (u.bio || '') : '';
+            }
+
+            document.getElementById('clearUserFormBtn').addEventListener('click', () => populateUserForm(null));
+
+            async function loadUsers() {
+                if (!sb) return;
+                const { data, error } = await sb.from('profiles').select('*');
+                if (error) {
+                    usrBody.innerHTML = `<tr><td colspan="5">Error fetching user profiles: ${error.message}</td></tr>`;
+                    return;
+                }
+                usersList = Array.isArray(data) ? data : [];
+                try {
+                    localStorage.setItem(LS_USERS_KEY, JSON.stringify(usersList));
+                } catch (_) {}
+                refreshLinkDropdowns();
+
+                if (!usersList.length) {
+                    usrBody.innerHTML = '<tr><td colspan="5">No user profiles found yet.</td></tr>';
+                    return;
+                }
+
+                usrBody.innerHTML = usersList.map((u) => {
+                    const st = (u.login_status || 'pending').toLowerCase();
+                    const badgeCls = st === 'approved' ? 'badge-approved' : (st === 'suspended' ? 'badge-rejected' : 'badge-pending');
+                    return `
+                        <tr>
+                            <td><strong>${u.full_name || 'User'}</strong><br><span style="font-size:12px;">${u.email || '-'}</span></td>
+                            <td>${u.phone || '-'}<br><span style="font-size:12px;color:var(--gray);">${u.location || '-'}</span></td>
+                            <td>${u.role || 'Member'}</td>
+                            <td><span class="badge ${badgeCls}">${st}</span></td>
+                            <td>
+                                <div class="action-cluster">
+                                    <button type="button" class="btn-xs btn-ok" data-usr-act="approve-login" data-id="${u.id}">Accept Login</button>
+                                    <button type="button" class="btn-xs btn-no" data-usr-act="suspend-login" data-id="${u.id}">Suspend</button>
+                                    <button type="button" class="btn-xs btn-edit" data-usr-act="edit-user" data-id="${u.id}">Edit</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            usrBody.addEventListener('click', async (e) => {
+                const btn = e.target.closest('button[data-usr-act]');
+                if (!btn || !sb) return;
+                const id = btn.dataset.id;
+                const act = btn.dataset.usrAct;
+                const target = usersList.find((u) => String(u.id) === String(id));
+
+                if (act === 'edit-user' && target) {
+                    populateUserForm(target);
+                    return;
+                }
+                if (act === 'approve-login') {
+                    await sb.from('profiles').update({ login_status: 'approved' }).eq('id', id);
+                    showAlert('User login accepted/approved.', 'success');
+                } else if (act === 'suspend-login') {
+                    await sb.from('profiles').update({ login_status: 'suspended' }).eq('id', id);
+                    showAlert('User login suspended.', 'success');
+                }
+                await loadUsers();
+            });
+
+            document.getElementById('userProfileEditForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!sb) return;
+                const uid = document.getElementById('editUserId').value.trim();
+                const payload = {
+                    full_name: document.getElementById('usrFullName').value.trim(),
+                    email: document.getElementById('usrEmail').value.trim(),
+                    login_status: document.getElementById('usrLoginStatus').value,
+                    phone: document.getElementById('usrPhone').value.trim(),
+                    location: document.getElementById('usrLocation').value.trim(),
+                    role: document.getElementById('usrRole').value.trim(),
+                    bio: document.getElementById('usrBio').value.trim(),
+                    updated_at: new Date().toISOString()
+                };
+                if (!uid) {
+                    showAlert('Select a user row to update an existing profile.', 'error');
+                    return;
+                }
+                const { error } = await sb.from('profiles').update(payload).eq('id', uid);
+                if (error) {
+                    showAlert('Could not update user profile: ' + error.message, 'error');
+                    return;
+                }
+                populateUserForm(null);
+                await loadUsers();
+                showAlert('User profile & login status saved.', 'success');
+            });
+
+            document.getElementById('applyUserProfileToApprovedBtn').addEventListener('click', async () => {
+                if (!sb) return;
+                const userId = linkSourceUserSelect.value;
+                const bizId = linkTargetBusinessSelect.value;
+                if (!userId || !bizId) {
+                    showAlert('Select both a user profile and an approved business.', 'error');
+                    return;
+                }
+                const userObj = usersList.find((u) => String(u.id) === String(userId));
+                if (!userObj) return;
+
+                const updateFields = {};
+                if (userObj.phone) updateFields.phone = userObj.phone;
+                if (userObj.email) updateFields.email = userObj.email;
+                if (userObj.location) updateFields.location = userObj.location;
+                if (userObj.full_name) updateFields.owner_name = userObj.full_name;
+
+                const { error } = await sb.from('bisa_businesses').update(updateFields).eq('id', bizId);
+                if (error) {
+                    showAlert('Failed to attach user profile to approved business: ' + error.message, 'error');
+                    return;
+                }
+                await loadBusinesses();
+                showAlert(`Attached ${userObj.full_name || userObj.email}'s profile details to the approved business.`, 'success');
+            });
+
             async function loadMessages() {
                 if (!sb) return;
                 const { data, error } = await sb.from('bisa_messages').select('*').order('created_at', { ascending: false });
@@ -1059,118 +1224,6 @@
                 `).join('');
             }
 
-            async function syncUserProfile(user) {
-                activeUser = user || null;
-                const accLink = document.getElementById('dashAccountLink');
-                if (!activeUser) {
-                    if (accLink) accLink.textContent = 'Login';
-                    document.getElementById('dashProfileCard').classList.add('hidden');
-                    document.getElementById('dashLoginCard').classList.remove('hidden');
-                    return;
-                }
-                if (accLink) accLink.textContent = 'Profile';
-                document.getElementById('dashLoginCard').classList.add('hidden');
-                document.getElementById('dashProfileCard').classList.remove('hidden');
-
-                let cached = null;
-                try {
-                    const raw = localStorage.getItem(PROFILE_CACHE_PREFIX + activeUser.id);
-                    if (raw) cached = JSON.parse(raw);
-                } catch (_) {}
-
-                if (sb) {
-                    const { data } = await sb.from('profiles').select('*').eq('id', activeUser.id).maybeSingle();
-                    if (data) cached = data;
-                }
-
-                activeProfile = cached || {
-                    full_name: (activeUser.user_metadata && activeUser.user_metadata.full_name) || activeUser.email.split('@')[0],
-                    email: activeUser.email
-                };
-
-                document.getElementById('dashActiveProfileName').textContent = activeProfile.full_name || activeUser.email;
-                document.getElementById('dashActiveProfileEmail').textContent = activeUser.email;
-                document.getElementById('profFullName').value = activeProfile.full_name || '';
-                document.getElementById('profPhone').value = activeProfile.phone || '';
-                document.getElementById('profLocation').value = activeProfile.location || '';
-                document.getElementById('profRole').value = activeProfile.role || 'Vendor / Admin';
-                document.getElementById('profBio').value = activeProfile.bio || '';
-            }
-
-            document.getElementById('dashLoginForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (!sb) return;
-                const email = document.getElementById('dashLoginEmail').value.trim();
-                const password = document.getElementById('dashLoginPassword').value;
-                const { data, error } = await sb.auth.signInWithPassword({ email, password });
-                if (error) {
-                    showAlert(error.message, 'error');
-                    return;
-                }
-                await syncUserProfile(data.user);
-                showAlert('Signed in.', 'success');
-            });
-
-            document.getElementById('dashLogoutBtn').addEventListener('click', async () => {
-                if (sb) await sb.auth.signOut();
-                await syncUserProfile(null);
-                showAlert('Signed out.', 'success');
-            });
-
-            document.getElementById('dashProfileForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                if (!activeUser) return;
-                const payload = {
-                    id: activeUser.id,
-                    email: activeUser.email,
-                    full_name: document.getElementById('profFullName').value.trim(),
-                    phone: document.getElementById('profPhone').value.trim(),
-                    location: document.getElementById('profLocation').value.trim(),
-                    role: document.getElementById('profRole').value.trim(),
-                    bio: document.getElementById('profBio').value.trim(),
-                    updated_at: new Date().toISOString()
-                };
-                activeProfile = payload;
-                try {
-                    localStorage.setItem(PROFILE_CACHE_PREFIX + activeUser.id, JSON.stringify(payload));
-                } catch (_) {}
-                if (sb) {
-                    const { error } = await sb.from('profiles').upsert(payload, { onConflict: 'id' });
-                    if (error) {
-                        showAlert('Profile saved locally; Supabase returned: ' + error.message, 'error');
-                        return;
-                    }
-                }
-                await syncUserProfile(activeUser);
-                showAlert('Profile saved.', 'success');
-            });
-
-            document.getElementById('applyProfileToApprovedBtn').addEventListener('click', async () => {
-                if (!sb) return;
-                const bizId = linkTargetSelect.value;
-                if (!bizId) {
-                    showAlert('Select an approved business first.', 'error');
-                    return;
-                }
-                if (!activeProfile && !activeUser) {
-                    showAlert('Sign in and save your profile details first.', 'error');
-                    return;
-                }
-                const updateFields = {};
-                if (activeProfile && activeProfile.phone) updateFields.phone = activeProfile.phone;
-                if (activeUser && activeUser.email) updateFields.email = activeUser.email;
-                if (activeProfile && activeProfile.location) updateFields.location = activeProfile.location;
-                if (activeProfile && activeProfile.full_name) updateFields.owner_name = activeProfile.full_name;
-
-                const { error } = await sb.from('bisa_businesses').update(updateFields).eq('id', bizId);
-                if (error) {
-                    showAlert('Could not attach profile details: ' + error.message, 'error');
-                    return;
-                }
-                await loadBusinesses();
-                showAlert('Profile details attached to the approved business.', 'success');
-            });
-
             async function loadSettings() {
                 try {
                     const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(CONFIG_KEY);
@@ -1191,14 +1244,8 @@
             async function initDashboard() {
                 await loadSettings();
                 await loadBusinesses();
+                await loadUsers();
                 await loadMessages();
-                if (sb) {
-                    const { data } = await sb.auth.getSession();
-                    await syncUserProfile((data && data.session && data.session.user) || null);
-                    sb.auth.onAuthStateChange((_ev, session) => {
-                        syncUserProfile((session && session.user) || null);
-                    });
-                }
             }
 
             document.getElementById('syncAllBtn').addEventListener('click', async () => {
