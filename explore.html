@@ -1,68 +1,35 @@
 <!DOCTYPE html>
+<!-- HTML5: Declares this document as HTML5 so browsers render elements and CSS properly. -->
 <html lang="en">
+<!-- HTML5: Root element of the page; lang="en" sets the language to English. -->
 <head>
-    <!-- HTML: Page metadata, stylesheet, and Supabase v2 SDK -->
+    <!-- HEAD: Holds page settings, title, Supabase SDK, and link to style.css. -->
     <meta charset="UTF-8">
+    <!-- META CHARSET: Ensures characters and symbols display properly. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- VIEWPORT: Adapts the layout cleanly across phones, tablets, and laptops. -->
     <title>BISA - Explore Businesses &amp; Services</title>
+    <!-- TITLE: Sets the text shown in the browser tab. -->
+
+    <!-- STYLESHEET LINK: Connects this Explore page directly to style.css inside B I S A WEBSITE. -->
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* CSS: Search bar, active filter pills, empty state, and modal slideshow */
-        .explore-top-bar {
-            display: flex;
-            gap: 10px;
+        .header-brand-wrap {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-        .explore-top-bar .input {
-            flex: 1 1 220px;
-        }
-        .active-filters-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
             gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 18px;
-            font-size: 13px;
-            color: var(--gray);
         }
-        .clear-filters-link {
-            background: none;
-            border: 1px solid var(--primary);
-            color: var(--primary);
+        .header-logo-img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
             border-radius: 6px;
-            padding: 4px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .clear-filters-link:hover {
-            background-color: var(--primary);
-            color: var(--white);
-        }
-        .empty-state-box {
-            grid-column: 1 / -1;
-            background-color: var(--white);
-            border: 1px solid var(--light-gray);
-            border-radius: var(--border-radius);
-            padding: 36px 24px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-        }
-        .empty-state-box h3 {
-            margin-bottom: 8px;
-        }
-        .empty-state-box p {
-            color: var(--gray);
-            font-size: 14px;
-            margin-bottom: 16px;
         }
         .explore-img-fallback {
             width: 100%;
             height: 100%;
+            min-height: 140px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -73,170 +40,67 @@
             padding: 12px;
             text-align: center;
         }
-        .biz-modal-slideshow {
-            position: relative;
-            width: 100%;
-            height: 205px;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            margin-bottom: 14px;
-            background-color: var(--bg-warm);
-            border: 1px solid var(--light-gray);
-        }
-        .biz-modal-slides {
-            display: flex;
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
-        .biz-modal-slide {
-            min-width: 100%;
-            height: 100%;
-        }
-        .biz-modal-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .social-icon-img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
             display: block;
-        }
-        .biz-slide-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: none;
-            background-color: var(--primary);
-            color: var(--white);
-            font-size: 16px;
-            line-height: 1;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .biz-slide-nav:hover {
-            background-color: var(--accent);
-        }
-        .biz-slide-prev { left: 10px; }
-        .biz-slide-next { right: 10px; }
-        .biz-slide-dots {
-            position: absolute;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 6px;
-            padding: 4px 8px;
-            border-radius: 999px;
-            background-color: rgba(34, 34, 34, 0.45);
-        }
-        .biz-slide-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.65);
-        }
-        .biz-slide-dot.active {
-            background-color: var(--secondary);
-            transform: scale(1.15);
-        }
-        .contact-modal-top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-            padding-right: 26px;
-        }
-        .contact-modal-top-bar .location-tag {
-            margin-bottom: 0;
-        }
-        .contact-detail-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            padding: 9px 12px;
-            border-radius: var(--border-radius);
-            background-color: var(--bg-warm);
-            border: 1px solid var(--light-gray);
-        }
-        .contact-detail-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .copy-value-btn {
-            padding: 4px 9px;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 6px;
-            border: 1px solid var(--primary);
-            background-color: var(--white);
-            color: var(--primary);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .copy-value-btn:hover {
-            background-color: var(--primary);
-            color: var(--white);
-        }
-        .contact-quick-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .contact-quick-links .button {
-            padding: 8px 14px;
-            font-size: 13px;
         }
     </style>
 </head>
 <body>
+    <!-- BODY: Contains all visible content on the Explore page. -->
 
-    <!-- HTML: Site navigation header -->
+    <!-- HEADER: Top bar holding the BISA logo mark, brand name, and navigation menu. -->
     <header class="header">
-        <div class="container header-container">
-            <a href="index.html" class="logo" id="siteLogoText">BISA</a>
-            <nav class="nav">
+        <div class="container header-container" id="headerContainer">
+            <!-- LOGO: Small bisa-logo-mark.png placed right beside the BISA text inside the link. -->
+            <div class="header-brand-wrap" id="headerBrandWrap">
+                <a href="index.html" class="logo" id="siteLogoLink">
+                    <!-- ASSET PATH: Lvl 300 > AGD 341 Advanced Digital Graphic Design Software > Group 6 > B I S A WEBSITE > assets > bisa-logo-mark.png -->
+                    <img src="assets/bisa-logo-mark.png" alt="BISA Logo Mark" id="headerLogoImg" class="header-logo-img">
+                    <span id="siteLogoText">BISA</span>
+                </a>
+            </div>
+
+            <!-- NAV: Main navigation menu linking across pages in B I S A WEBSITE. -->
+            <nav class="nav" aria-label="Main Navigation">
                 <a href="index.html" class="nav-link">Home</a>
                 <a href="explore.html" class="nav-link active">Explore</a>
                 <a href="business.html" class="nav-link">List Your Business</a>
                 <a href="about.html" class="nav-link">About</a>
                 <a href="contact.html" class="nav-link">Contact</a>
+                <a href="account.html" class="nav-link" id="navAccountLink">Login</a>
             </nav>
         </div>
     </header>
 
-    <!-- HTML: Main Explore content -->
+    <!-- MAIN: Unique core content of the Explore page. -->
     <main class="main">
 
-        <section class="explore-hero-banner">
+        <!-- PAGE HEADER SECTION: Notice banner, breadcrumb trail, main page heading, and subtitle. -->
+        <section class="page-header-section" aria-labelledby="explore-page-title">
             <div class="container">
-                <div class="explore-hero-notice">
-                    <strong>Notice:</strong> Welcome to BISA - Your campus marketplace for buying, selling, and connecting.
+                <div class="explore-hero-notice" id="exploreTopNoticeBox">
+                    <strong>Notice:</strong> <span id="exploreTopNoticeText">Welcome to BISA - Your campus marketplace for buying, selling, and connecting. Our policy notice appears when entering Explore and before viewing provider contact details.</span>
                 </div>
                 <p class="breadcrumb">Home / Explore</p>
-                <h1 class="page-title" id="exploreMainHeadline">Explore Businesses</h1>
-                <p class="page-subtitle" id="exploreHeroSubtext">Browse approved student enterprises, services, and products across Ghana.</p>
+                <h1 class="page-title" id="explore-page-title">Explore Businesses</h1>
+                <p class="page-subtitle" id="exploreSubtitleText">Browse verified student enterprises, services, and products.</p>
             </div>
         </section>
 
-        <section class="section explore-main-section">
+        <!-- EXPLORE LAYOUT SECTION: Two-column grid with filter sidebar and business cards. -->
+        <section class="section explore-main-section" aria-label="Explore Listings and Filters">
             <div class="container explore-grid">
 
-                <!-- HTML: Sidebar filters for category and location -->
-                <aside class="filters-sidebar">
-                    <h3 class="filters-title">Filters</h3>
+                <!-- FILTER SIDEBAR (<aside>): Category, price range, and location filter options. -->
+                <aside class="filters-sidebar" aria-label="Filter Options">
+                    <h2 class="filters-title">Filters</h2>
 
+                    <!-- CATEGORY FILTER -->
                     <div class="filter-group">
-                        <label class="filter-label">Category</label>
+                        <span class="filter-label">Category</span>
                         <div class="checkbox-wrapper" id="categoryFilterGroup">
                             <label><input type="checkbox" value="Products"> Products</label>
                             <label><input type="checkbox" value="Services"> Services</label>
@@ -250,130 +114,292 @@
                         </div>
                     </div>
 
+                    <!-- PRICE FILTER -->
                     <div class="filter-group">
-                        <label class="filter-label">Location (Ghana)</label>
+                        <label for="priceRangeInput" class="filter-label">Max Price: GH&#8373; <span id="priceRangeValue">100</span></label>
+                        <input type="range" id="priceRangeInput" class="price-slider" min="1" max="100" value="100">
+                    </div>
+
+                    <!-- LOCATION FILTER -->
+                    <div class="filter-group">
+                        <span class="filter-label">Location</span>
                         <div class="checkbox-wrapper" id="locationFilterGroup">
+                            <label><input type="checkbox" value="Campus"> Campus</label>
+                            <label><input type="checkbox" value="Nearby Town"> Nearby Town</label>
                             <label><input type="checkbox" value="Elmina"> Elmina</label>
                             <label><input type="checkbox" value="Cape Coast"> Cape Coast</label>
                             <label><input type="checkbox" value="Accra"> Accra</label>
-                            <label><input type="checkbox" value="Kumasi"> Kumasi</label>
-                            <label><input type="checkbox" value="Takoradi"> Takoradi</label>
                         </div>
                     </div>
 
                     <button type="button" class="button button-primary apply-btn" id="applyFiltersBtn">Apply Filters</button>
+                    <button type="button" class="btn-close apply-btn" id="resetFiltersBtn">Reset Filters</button>
                 </aside>
 
-                <!-- HTML: Search bar, active filter status, sort select, and approved listings grid -->
+                <!-- RESULTS CONTAINER: Search/sort bar, status line, business cards grid, and pagination. -->
                 <div class="explore-results-area">
 
-                    <form class="explore-top-bar" id="exploreSearchForm">
-                        <input type="text" id="exploreSearchInput" class="input" placeholder="Search approved businesses, services, or locations...">
-                        <button type="submit" class="button button-search" id="exploreSearchBtn">Search</button>
-                        <select id="exploreSortSelect" class="sort-select">
+                    <!-- SEARCH & SORT TOP BAR -->
+                    <form class="explore-top-bar" id="exploreSearchForm" action="explore.html" method="get">
+                        <input type="text" id="exploreSearchInput" name="q" class="input" placeholder="Search explore...">
+                        <button type="submit" class="button button-search">Search</button>
+                        <select id="exploreSortSelect" class="sort-select" aria-label="Sort businesses">
                             <option value="newest">Sort By: Newest</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
                             <option value="name-asc">Name: A to Z</option>
-                            <option value="name-desc">Name: Z to A</option>
                         </select>
                     </form>
 
-                    <div class="active-filters-bar">
-                        <span id="resultsCountLabel">Showing 0 approved businesses</span>
-                        <button type="button" class="clear-filters-link" id="clearFiltersBtn">Reset Search &amp; Filters</button>
+                    <p class="page-subtitle" id="resultsStatusText">Showing 6 businesses</p>
+
+                    <!-- BUSINESS CARDS GRID -->
+                    <div class="results-grid" id="exploreResultsGrid">
+                        <!-- CARD 1: chop -->
+                        <article
+                            class="card explore-card"
+                            data-name="chop"
+                            data-category="Products"
+                            data-price="25"
+                            data-location="Campus"
+                            data-location-label="Campus"
+                            data-description="Fresh campus meals, snacks, and fast delivery to halls and hostels."
+                            data-find-us="Main Campus Cafeteria &amp; Student Halls"
+                            data-phone="0554611569"
+                            data-email="freshchop@bisa-campus.edu.gh"
+                            data-images="assets/food-snacks.png,assets/bisa-flyer.png.png"
+                        >
+                            <div class="explore-img-box">
+                                <img src="assets/chop-flyer.png" alt="Campus Fresh Chop">
+                            </div>
+                            <div class="explore-card-content">
+                                <h3>chop</h3>
+                                <p>Fresh campus meals, snacks, and fast delivery to halls and hostels.</p>
+                                <span class="location-tag">&#128205; Campus &middot; GH&#8373; 25</span>
+                                <button type="button" class="button button-secondary card-btn open-contact-btn">Contact</button>
+                            </div>
+                        </article>
+
+                        <!-- CARD 2: Luminex Energy Solutions -->
+                        <article
+                            class="card explore-card"
+                            data-name="Luminex Energy Solutions"
+                            data-category="Services"
+                            data-price="45"
+                            data-location="Campus"
+                            data-location-label="Campus"
+                            data-description="Solar installations, energy audits and more."
+                            data-find-us="Renewable Departments, Campus"
+                            data-phone="024547608"
+                            data-email="www.luminexenergysolutions"
+                            data-images="assets/luminex-energy-solutions.png,assets/bisa-logo-full.png"
+                        >
+                            <div class="explore-img-box">
+                                <img src="assets/luminex-energy-solutions.png" alt="Luminex">
+                            </div>
+                            <div class="explore-card-content">
+                                <h3>Luminex Energy Solutions</h3>
+                                <p>Brand identity, event flyers, and graphic design for student groups.</p>
+                                <span class="location-tag">&#128205; Campus &middot; GH&#8373; 45</span>
+                                <button type="button" class="button button-secondary card-btn open-contact-btn">Contact</button>
+                            </div>
+                        </article>
+
+                        <!-- CARD 3: Kwams Designs -->
+                        <article
+                            class="card explore-card"
+                            data-name="Kwams Designs"
+                            data-category="Services"
+                            data-price="80"
+                            data-location="Nearby Town"
+                            data-location-label="Nearby"
+                            data-description="Responsive websites, bug fixes, and practical student tech support."
+                            data-find-us="Elmina Road Tech Hub (Near Campus Gate)"
+                            data-phone="0554611569"
+                            data-email="kwamsdesigns.com"
+                            data-images="assets/kwams-flyer.jpeg,assets/bisa-logo-mark.png"
+                        >
+                            <div class="explore-img-box">
+                                <img src="assets/kwams-flyer.jpeg" alt="Kwams Designs">
+                            </div>
+                            <div class="explore-card-content">
+                                <h3>Kwams Designs</h3>
+                                <p>Responsive websites, bug fixes, and practical student tech support.</p>
+                                <span class="location-tag">&#128205; Nearby &middot; GH&#8373; 80</span>
+                                <button type="button" class="button button-secondary card-btn open-contact-btn">Contact</button>
+                            </div>
+                        </article>
+
+                        <!-- CARD 4: Bamboo Craft & Art -->
+                        <article
+                            class="card explore-card"
+                            data-name="Bamboo Craft &amp; Art"
+                            data-category="Products"
+                            data-price="60"
+                            data-location="Campus"
+                            data-location-label="Campus"
+                            data-description="Handmade musical bamboo flutes and custom campus craft pieces."
+                            data-find-us="Campus Craft Courtyard"
+                            data-phone="0554611569"
+                            data-email="bamboocraft@bisa-campus.edu.gh"
+                            data-images="assets/flute-flyer.png,assets/graphics-art.png"
+                        >
+                            <div class="explore-img-box">
+                                <img src="assets/flute-flyer.png" alt="Bamboo Craft & Art">
+                            </div>
+                            <div class="explore-card-content">
+                                <h3>Bamboo Craft &amp; Art</h3>
+                                <p>Handmade musical bamboo flutes and custom campus craft pieces.</p>
+                                <span class="location-tag">&#128205; Campus &middot; GH&#8373; 60</span>
+                                <button type="button" class="button button-secondary card-btn open-contact-btn">Contact</button>
+                            </div>
+                        </article>
+
+                        <!-- CARD 5: Student Bookstore -->
+                        <article
+                            class="card explore-card"
+                            data-name="Student Bookstore"
+                            data-category="Businesses"
+                            data-price="35"
+                            data-location="Campus"
+                            data-location-label="Campus"
+                            data-description="Course books, printed lecture notes, and study guides for students."
+                            data-find-us="Central Library Walkway, Campus"
+                            data-phone="0554611569"
+                            data-email="bookstore@bisa-campus.edu.gh"
+                            data-images="assets/books-notes.png,assets/bisa-logo-mark.png"
+                        >
+                            <div class="explore-img-box">
+                                <img src="assets/books-notes.png" alt="Student Bookstore">
+                            </div>
+                            <div class="explore-card-content">
+                                <h3>Student Bookstore</h3>
+                                <p>Course books, printed lecture notes, and study guides for students.</p>
+                                <span class="location-tag">&#128205; Campus &middot; GH&#8373; 35</span>
+                                <button type="button" class="button button-secondary card-btn open-contact-btn">Contact</button>
+                            </div>
+                        </article>
+
+                        <!-- CARD 6: Hostel Laundry Hub -->
+                        <article
+                            class="card explore-card"
+                            data-name="Hostel Laundry Hub"
+                            data-category="Businesses"
+                            data-price="20"
+                            data-location="Nearby Town"
+                            data-location-label="Nearby"
+                            data-description="Fast washing, folding, and pickup/drop-off service for hostels."
+                            data-find-us="Hostel Zone Block B, Nearby Town"
+                            data-phone="0554611569"
+                            data-email="laundryhub@bisa-campus.edu.gh"
+                            data-images="assets/laundry.png,assets/campus-service.png"
+                        >
+                            <div class="explore-img-box">
+                                <img src="assets/laundry.png" alt="Hostel Laundry Hub">
+                            </div>
+                            <div class="explore-card-content">
+                                <h3>Hostel Laundry Hub</h3>
+                                <p>Fast washing, folding, and pickup/drop-off service for hostels.</p>
+                                <span class="location-tag">&#128205; Nearby &middot; GH&#8373; 20</span>
+                                <button type="button" class="button button-secondary card-btn open-contact-btn">Contact</button>
+                            </div>
+                        </article>
                     </div>
 
-                    <!-- HTML: Only renders records with status === 'approved' -->
-                    <div class="results-grid" id="exploreResultsGrid"></div>
+                    <!-- PAGINATION -->
+                    <nav class="pagination" aria-label="Pagination">
+                        <button type="button" class="button button-secondary">Previous</button>
+                        <span class="page-num active">1</span>
+                        <span class="page-num">2</span>
+                        <span class="page-num">3</span>
+                        <button type="button" class="button button-secondary">Next</button>
+                    </nav>
 
                 </div>
 
             </div>
         </section>
 
+        <!-- POLICY MODAL (<dialog>): Notice shown before viewing provider contact details. -->
+        <dialog id="connectPolicyModal" class="policy-modal">
+            <div class="policy-content">
+                <p class="policy-alert"><strong>Read Our Policy</strong></p>
+                <p class="policy-text" id="explorePolicyModalText">
+                    Before browsing or viewing a business or service's contact details, location, and offerings, please note that BISA connects you with student and local providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely in public or on-campus spots.
+                </p>
+                <div class="policy-actions">
+                    <button type="button" class="btn-close" id="cancelPolicyBtn">Cancel</button>
+                    <button type="button" class="btn-agree" id="agreePolicyBtn">I Understand &amp; Continue</button>
+                </div>
+            </div>
+        </dialog>
+
+        <!-- CONTACT DETAILS MODAL (<dialog>): Displays selected business photos, location, and contact info. -->
+        <dialog id="contactModal" class="policy-modal">
+            <div class="policy-content contact-modal-content">
+                <button type="button" class="modal-close-btn" id="closeContactModalBtn" aria-label="Close modal">&times;</button>
+
+                <div class="contact-modal-top-bar">
+                    <h3 id="contactModalName" class="contact-modal-name">Campus Fresh Chop</h3>
+                    <span id="contactModalLocation" class="location-tag">&#128205; Campus</span>
+                </div>
+
+                <!-- SLIDESHOW: Selected business preview images -->
+                <div class="biz-modal-slideshow" id="bizModalSlideshow">
+                    <div class="biz-modal-slides" id="bizModalSlides"></div>
+                    <button type="button" class="biz-slide-nav biz-slide-prev" id="bizSlidePrev" aria-label="Previous image">&#10094;</button>
+                    <button type="button" class="biz-slide-nav biz-slide-next" id="bizSlideNext" aria-label="Next image">&#10095;</button>
+                    <div class="biz-slide-dots" id="bizSlideDots"></div>
+                </div>
+
+                <p id="contactModalDescription" class="contact-modal-description"></p>
+
+                <!-- CONTACT DETAILS LIST -->
+                <div class="contact-modal-details">
+                    <div class="contact-detail-card">
+                        <div class="contact-detail-stack">
+                            <span class="contact-label">Where to find service:</span>
+                            <span id="contactModalFindUs" class="contact-value"></span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail-card">
+                        <div class="contact-detail-stack">
+                            <span class="contact-label">Tel / Phone:</span>
+                            <a id="contactModalPhone" href="#" class="contact-link"></a>
+                        </div>
+                        <button type="button" class="copy-value-btn" id="copyPhoneBtn">Copy</button>
+                    </div>
+
+                    <div class="contact-detail-card">
+                        <div class="contact-detail-stack">
+                            <span class="contact-label">Email:</span>
+                            <a id="contactModalEmail" href="#" class="contact-link"></a>
+                        </div>
+                        <button type="button" class="copy-value-btn" id="copyEmailBtn">Copy</button>
+                    </div>
+                </div>
+
+                <!-- QUICK CONTACT ACTION BUTTONS -->
+                <div class="contact-quick-links">
+                    <a id="quickCallBtn" href="#" class="button button-primary">Call Now</a>
+                    <a id="quickEmailBtn" href="#" class="button button-secondary">Email Provider</a>
+                </div>
+
+                <div class="contact-modal-actions">
+                    <button type="button" class="btn-close" id="reReadNoticeBtn">Read Notice Again</button>
+                    <button type="button" class="btn-close" id="doneContactModalBtn">Close</button>
+                </div>
+            </div>
+        </dialog>
+
     </main>
 
-    <!-- HTML: Step 1 Policy Modal -->
-    <dialog id="connectPolicyModal" class="policy-modal">
-        <div class="policy-content">
-            <p class="policy-alert"><strong>Read Our Policy</strong></p>
-            <p class="policy-text" id="explorePolicyText">
-                Before viewing this business or service's contact details, location in Ghana, and offerings, please note that BISA connects you with student and local providers. Verify service terms, pricing, and availability directly with the provider, and meet or transact safely in public or on-campus spots.
-            </p>
-            <div class="policy-actions">
-                <button type="button" class="btn-close" id="cancelPolicyBtn">Cancel</button>
-                <button type="button" class="btn-agree" id="agreePolicyBtn">I Understand &amp; Continue</button>
-            </div>
-        </div>
-    </dialog>
-
-    <!-- HTML: Step 2 Business Contact & Slideshow Modal -->
-    <dialog id="contactModal" class="policy-modal">
-        <div class="policy-content contact-modal-content">
-            <button type="button" class="modal-close-btn" id="closeContactModalBtn" aria-label="Close modal">&times;</button>
-
-            <div class="contact-modal-top-bar">
-                <h3 id="contactModalName" class="contact-modal-name"></h3>
-                <span id="contactModalLocation" class="location-tag"></span>
-            </div>
-
-            <div class="biz-modal-slideshow" id="bizModalSlideshow">
-                <div class="biz-modal-slides" id="bizModalSlides"></div>
-                <button type="button" class="biz-slide-nav biz-slide-prev" id="bizSlidePrev" aria-label="Previous image">&#10094;</button>
-                <button type="button" class="biz-slide-nav biz-slide-next" id="bizSlideNext" aria-label="Next image">&#10095;</button>
-                <div class="biz-slide-dots" id="bizSlideDots"></div>
-            </div>
-
-            <p id="contactModalDescription" class="contact-modal-description"></p>
-
-            <div class="contact-modal-details">
-                <div class="contact-detail contact-detail-card">
-                    <div class="contact-detail-stack">
-                        <span class="contact-label">Where to find service:</span>
-                        <span id="contactModalFindUs" class="contact-value"></span>
-                    </div>
-                </div>
-
-                <div class="contact-detail contact-detail-card">
-                    <div class="contact-detail-stack">
-                        <span class="contact-label">Tel / Phone:</span>
-                        <a id="contactModalPhone" href="#" class="contact-link"></a>
-                    </div>
-                    <button type="button" class="copy-value-btn" id="copyPhoneBtn">Copy</button>
-                </div>
-
-                <div class="contact-detail contact-detail-card">
-                    <div class="contact-detail-stack">
-                        <span class="contact-label">Email:</span>
-                        <a id="contactModalEmail" href="#" class="contact-link"></a>
-                    </div>
-                    <button type="button" class="copy-value-btn" id="copyEmailBtn">Copy</button>
-                </div>
-
-                <div class="contact-detail contact-detail-card" id="contactWebsiteRow" style="display: none;">
-                    <div class="contact-detail-stack">
-                        <span class="contact-label">Main Page:</span>
-                        <a id="contactModalWebsite" href="#" target="_blank" rel="noopener noreferrer" class="contact-link">Visit Main Page</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="contact-quick-links">
-                <a id="quickCallBtn" href="#" class="button button-primary">Call Now</a>
-                <a id="quickEmailBtn" href="#" class="button button-secondary">Email Provider</a>
-                <a id="quickWebsiteBtn" href="#" target="_blank" rel="noopener noreferrer" class="button button-secondary" style="display: none;">Main Page</a>
-            </div>
-
-            <div class="contact-modal-actions">
-                <button type="button" class="btn-close" id="doneContactModalBtn">Close</button>
-            </div>
-        </div>
-    </dialog>
-
-    <!-- HTML: Site Footer with Admin Portal link -->
+    <!-- FOOTER: Bottom section with links, social icons, and copyright. -->
     <footer class="footer">
         <div class="container footer-content">
             <div class="footer-col">
-                <h4><a href="admin.html" class="footer-admin-trigger" id="footerBrandLink" title="Open Admin Portal">BISA</a></h4>
+                <h4><a href="admin.html" id="footerBrandLink">BISA</a></h4>
                 <p>Let's Do Business &amp; Share Ideas.</p>
             </div>
             <div class="footer-col">
@@ -381,6 +407,7 @@
                 <a href="index.html">Home</a>
                 <a href="explore.html">Explore</a>
                 <a href="business.html">List Your Business</a>
+                <a href="account.html">Login &amp; Profile</a>
             </div>
             <div class="footer-col">
                 <h4>Support</h4>
@@ -389,10 +416,16 @@
             </div>
             <div class="footer-col">
                 <h4>Socials</h4>
-                <div class="social-circles">
-                    <span class="circle"></span>
-                    <span class="circle"></span>
-                    <span class="circle"></span>
+                <div class="social-circles" id="footerSocialLinks">
+                    <a href="#" class="circle" aria-label="BISA on Facebook">
+                        <img src="assets/facebook.png" alt="Facebook">
+                    </a>
+                    <a href="#" class="circle" aria-label="BISA on Instagram">
+                        <img src="assets/instagram.png" alt="Instagram">
+                    </a>
+                    <a href="#" class="circle" aria-label="BISA on WhatsApp">
+                        <img src="assets/whatsapp.png" alt="WhatsApp">
+                    </a>
                 </div>
             </div>
         </div>
@@ -402,33 +435,45 @@
     </footer>
 
     <script>
-        // JS: Loads ONLY approved businesses from Supabase/cache and runs live search + category/location filtering
         (function () {
             const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
-            const SUPABASE_ANON_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
             const sb = window.supabase && typeof window.supabase.createClient === 'function'
-                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
                 : null;
 
             const CONFIG_KEY = 'bisa_admin_config_v1';
             const LS_SETTINGS_KEY = 'bisa_settings_cache';
             const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
-            const PENDING_NOTICE_KEY = 'bisa_pending_explore_notice';
 
-            const connectPolicyModal = document.getElementById('connectPolicyModal');
+            const policyModal = document.getElementById('connectPolicyModal');
             const contactModal = document.getElementById('contactModal');
             const cancelPolicyBtn = document.getElementById('cancelPolicyBtn');
             const agreePolicyBtn = document.getElementById('agreePolicyBtn');
             const closeContactModalBtn = document.getElementById('closeContactModalBtn');
             const doneContactModalBtn = document.getElementById('doneContactModalBtn');
-            const resultsGrid = document.getElementById('exploreResultsGrid');
-            const resultsCountLabel = document.getElementById('resultsCountLabel');
+            const reReadNoticeBtn = document.getElementById('reReadNoticeBtn');
 
+            const resultsGrid = document.getElementById('exploreResultsGrid');
             const searchForm = document.getElementById('exploreSearchForm');
             const searchInput = document.getElementById('exploreSearchInput');
             const sortSelect = document.getElementById('exploreSortSelect');
+            const priceSlider = document.getElementById('priceRangeInput');
+            const priceValueText = document.getElementById('priceRangeValue');
             const applyFiltersBtn = document.getElementById('applyFiltersBtn');
-            const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+            const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+            const resultsStatusText = document.getElementById('resultsStatusText');
+
+            const modalName = document.getElementById('contactModalName');
+            const modalLocation = document.getElementById('contactModalLocation');
+            const modalDescription = document.getElementById('contactModalDescription');
+            const modalFindUs = document.getElementById('contactModalFindUs');
+            const modalPhone = document.getElementById('contactModalPhone');
+            const modalEmail = document.getElementById('contactModalEmail');
+            const quickCallBtn = document.getElementById('quickCallBtn');
+            const quickEmailBtn = document.getElementById('quickEmailBtn');
+            const copyPhoneBtn = document.getElementById('copyPhoneBtn');
+            const copyEmailBtn = document.getElementById('copyEmailBtn');
 
             const slideshowWrap = document.getElementById('bizModalSlideshow');
             const slidesTrack = document.getElementById('bizModalSlides');
@@ -436,79 +481,196 @@
             const slideNextBtn = document.getElementById('bizSlideNext');
             const slideDotsWrap = document.getElementById('bizSlideDots');
 
-            let approvedBusinesses = [];
-            let selectedCardData = null;
-            let pendingNoticePayload = null;
+            let cards = Array.from(resultsGrid.querySelectorAll('.explore-card'));
+            let activeBusiness = null;
             let currentSlides = [];
-            let currentSlideIdx = 0;
+            let currentSlideIndex = 0;
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const initialQuery = (urlParams.get('q') || '').trim();
-            const initialCategory = (urlParams.get('category') || '').trim().toLowerCase();
-            const initialBizId = (urlParams.get('biz') || '').trim();
-            const requireNoticeParam = urlParams.get('require_notice') === '1';
-
-            if (initialQuery && searchInput) {
-                searchInput.value = initialQuery;
+            function isSafeUrl(url) {
+                const raw = String(url || '').trim();
+                if (!raw) return false;
+                if (raw.startsWith('data:')) return false;
+                if (raw.startsWith('https://') || raw.startsWith('http://')) return true;
+                return !/^\s*(javascript|data|vbscript):/i.test(raw);
             }
-            if (initialCategory) {
-                document.querySelectorAll('#categoryFilterGroup input[type="checkbox"]').forEach(cb => {
-                    if (cb.value.toLowerCase() === initialCategory) {
-                        cb.checked = true;
-                    }
+
+            function bindImageFallback(imgEl, fallbackLabel) {
+                if (!imgEl) return;
+                imgEl.addEventListener('error', () => {
+                    const box = document.createElement('div');
+                    box.className = 'explore-img-fallback';
+                    box.textContent = fallbackLabel || 'Image unavailable';
+                    imgEl.replaceWith(box);
+                }, { once: true });
+            }
+
+            function openDialog(dialogEl) {
+                if (!dialogEl) return;
+                if (typeof dialogEl.showModal === 'function') {
+                    if (!dialogEl.open) dialogEl.showModal();
+                } else {
+                    dialogEl.setAttribute('open', '');
+                }
+            }
+
+            function closeDialog(dialogEl) {
+                if (!dialogEl) return;
+                if (typeof dialogEl.close === 'function') {
+                    if (dialogEl.open) dialogEl.close();
+                } else {
+                    dialogEl.removeAttribute('open');
+                }
+            }
+
+            function createCardFromApprovedRow(biz) {
+                const name = biz.business_name || biz.name || 'Unnamed Business';
+                const category = biz.category || 'Businesses';
+                const price = Number(biz.price || 25) || 25;
+                const location = biz.location || 'Campus';
+                const desc = biz.description || '';
+                const findUs = biz.service_location || biz.where_to_find || biz.find_us || location;
+                const phone = biz.phone || biz.tel || '';
+                const email = biz.email || '';
+                const imgUrl = isSafeUrl(biz.image_url) ? String(biz.image_url).trim() : '';
+
+                const article = document.createElement('article');
+                article.className = 'card explore-card';
+                article.dataset.name = name;
+                article.dataset.category = category;
+                article.dataset.price = String(price);
+                article.dataset.location = location;
+                article.dataset.locationLabel = location;
+                article.dataset.description = desc;
+                article.dataset.findUs = findUs;
+                article.dataset.phone = phone;
+                article.dataset.email = email;
+                article.dataset.images = imgUrl;
+
+                const imgBox = document.createElement('div');
+                imgBox.className = 'explore-img-box';
+                if (imgUrl) {
+                    const img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.alt = name;
+                    bindImageFallback(img, 'Photo unavailable');
+                    imgBox.appendChild(img);
+                } else {
+                    const fb = document.createElement('div');
+                    fb.className = 'explore-img-fallback';
+                    fb.textContent = 'No photo provided';
+                    imgBox.appendChild(fb);
+                }
+
+                const content = document.createElement('div');
+                content.className = 'explore-card-content';
+
+                const h3 = document.createElement('h3');
+                h3.textContent = name;
+
+                const p = document.createElement('p');
+                p.textContent = desc;
+
+                const tag = document.createElement('span');
+                tag.className = 'location-tag';
+                tag.textContent = `📍 ${location} · GH₵ ${price}`;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'button button-secondary card-btn open-contact-btn';
+                btn.textContent = 'Contact';
+
+                content.appendChild(h3);
+                content.appendChild(p);
+                content.appendChild(tag);
+                content.appendChild(btn);
+
+                article.appendChild(imgBox);
+                article.appendChild(content);
+                return article;
+            }
+
+            function bindCardContactButtons() {
+                cards = Array.from(resultsGrid.querySelectorAll('.explore-card'));
+                cards.forEach(card => {
+                    const btn = card.querySelector('.open-contact-btn');
+                    if (!btn) return;
+                    btn.onclick = () => {
+                        activeBusiness = {
+                            name: card.dataset.name || 'Business',
+                            location: card.dataset.locationLabel || card.dataset.location || 'Campus',
+                            description: card.dataset.description || '',
+                            findUs: card.dataset.findUs || '',
+                            phone: card.dataset.phone || '',
+                            email: card.dataset.email || '',
+                            images: (card.dataset.images || '')
+                                .split(',')
+                                .map(s => s.trim())
+                                .filter(isSafeUrl)
+                        };
+                        openDialog(policyModal);
+                    };
                 });
             }
 
-            try {
-                const rawNotice = sessionStorage.getItem(PENDING_NOTICE_KEY);
-                if (rawNotice) {
-                    pendingNoticePayload = JSON.parse(rawNotice);
-                    sessionStorage.removeItem(PENDING_NOTICE_KEY);
-                }
-            } catch (_) {}
+            function applySearchFilterAndSort() {
+                const query = searchInput.value.trim().toLowerCase();
+                const maxPrice = Number(priceSlider.value);
+                const selectedCategories = Array.from(
+                    document.querySelectorAll('#categoryFilterGroup input[type="checkbox"]:checked')
+                ).map(cb => cb.value.toLowerCase());
+                const selectedLocations = Array.from(
+                    document.querySelectorAll('#locationFilterGroup input[type="checkbox"]:checked')
+                ).map(cb => cb.value.toLowerCase());
+                const sortBy = sortSelect.value;
 
-            function parseImageList(biz) {
-                const list = [];
-                if (biz.image_url && !String(biz.image_url).startsWith('data:')) {
-                    list.push(String(biz.image_url).trim());
-                }
-                if (biz.images) {
-                    const raw = Array.isArray(biz.images) ? biz.images : String(biz.images).split(',');
-                    raw.map(s => String(s).trim())
-                        .filter(u => u && !u.startsWith('data:'))
-                        .forEach(u => {
-                            if (!list.includes(u)) list.push(u);
-                        });
-                }
-                return list;
+                const matchingCards = cards.filter(card => {
+                    const name = (card.dataset.name || '').toLowerCase();
+                    const desc = (card.dataset.description || '').toLowerCase();
+                    const category = (card.dataset.category || '').toLowerCase();
+                    const location = (card.dataset.location || '').toLowerCase();
+                    const locLabel = (card.dataset.locationLabel || '').toLowerCase();
+                    const price = Number(card.dataset.price || 0);
+
+                    const matchesQuery = !query ||
+                        name.includes(query) ||
+                        desc.includes(query) ||
+                        category.includes(query) ||
+                        location.includes(query) ||
+                        locLabel.includes(query);
+
+                    const matchesCategory = !selectedCategories.length ||
+                        selectedCategories.some(sc => category.includes(sc) || sc.includes(category));
+
+                    const matchesLocation = !selectedLocations.length ||
+                        selectedLocations.some(sl => location.includes(sl) || locLabel.includes(sl));
+
+                    const matchesPrice = price <= maxPrice;
+
+                    return matchesQuery && matchesCategory && matchesLocation && matchesPrice;
+                });
+
+                matchingCards.sort((a, b) => {
+                    if (sortBy === 'price-low') return Number(a.dataset.price) - Number(b.dataset.price);
+                    if (sortBy === 'price-high') return Number(b.dataset.price) - Number(a.dataset.price);
+                    if (sortBy === 'name-asc') return (a.dataset.name || '').localeCompare(b.dataset.name || '');
+                    return 0;
+                });
+
+                cards.forEach(card => {
+                    card.style.display = 'none';
+                });
+
+                matchingCards.forEach(card => {
+                    card.style.display = '';
+                    resultsGrid.appendChild(card);
+                });
+
+                resultsStatusText.textContent = 'Showing ' + matchingCards.length + ' of ' + cards.length + ' businesses';
             }
 
-            function buildCardData(biz) {
-                const bizName = biz.business_name || biz.name || 'Unnamed Business';
-                const desc = biz.description || '';
-                const loc = biz.location || 'Elmina, Central Region';
-                const findUs = biz.service_location || biz.where_to_find || biz.find_us || loc;
-                const phone = biz.phone || biz.tel || '';
-                const email = biz.email || '';
-                const imgs = parseImageList(biz);
-                const website = biz.website || biz.website_url || '';
-
-                return {
-                    id: biz.id,
-                    name: bizName,
-                    description: desc,
-                    location: loc,
-                    findUs: findUs,
-                    phone: phone,
-                    email: email,
-                    images: imgs,
-                    website: website
-                };
-            }
-
-            function renderModalSlideshow(images, businessName) {
-                currentSlides = images;
-                currentSlideIdx = 0;
+            function renderSlides(images, businessName) {
+                currentSlides = images.filter(isSafeUrl);
+                currentSlideIndex = 0;
 
                 if (!currentSlides.length) {
                     slideshowWrap.style.display = 'none';
@@ -517,438 +679,106 @@
 
                 slideshowWrap.style.display = 'block';
                 slidesTrack.innerHTML = currentSlides
-                    .map((src, idx) => `<div class="biz-modal-slide"><img src="${src}" alt="${businessName} photo ${idx + 1}" onerror="this.closest('.biz-modal-slide').style.display='none'"></div>`)
+                    .map((src, index) => (
+                        '<div class="biz-modal-slide">' +
+                        '<img src="' + src + '" alt="' + businessName + ' image ' + (index + 1) + '">' +
+                        '</div>'
+                    ))
                     .join('');
 
-                const hasMultiple = currentSlides.length > 1;
-                slidePrevBtn.style.display = hasMultiple ? 'inline-flex' : 'none';
-                slideNextBtn.style.display = hasMultiple ? 'inline-flex' : 'none';
-                slideDotsWrap.style.display = hasMultiple ? 'flex' : 'none';
+                slidesTrack.querySelectorAll('img').forEach(img => bindImageFallback(img, 'Slide unavailable'));
+
+                const multiple = currentSlides.length > 1;
+                slidePrevBtn.style.display = multiple ? 'inline-flex' : 'none';
+                slideNextBtn.style.display = multiple ? 'inline-flex' : 'none';
+                slideDotsWrap.style.display = multiple ? 'flex' : 'none';
 
                 slideDotsWrap.innerHTML = currentSlides
-                    .map((_, idx) => `<button type="button" class="biz-slide-dot ${idx === 0 ? 'active' : ''}" data-dot="${idx}" aria-label="Slide ${idx + 1}"></button>`)
+                    .map((_, index) => (
+                        '<button type="button" class="biz-slide-dot ' + (index === 0 ? 'active' : '') + '" data-slide-index="' + index + '" aria-label="View image ' + (index + 1) + '"></button>'
+                    ))
                     .join('');
 
                 slideDotsWrap.querySelectorAll('.biz-slide-dot').forEach(dot => {
-                    dot.addEventListener('click', () => goToSlide(Number(dot.dataset.dot)));
+                    dot.addEventListener('click', () => goToSlide(Number(dot.dataset.slideIndex)));
                 });
 
-                updateSlideshow();
+                updateSlidePosition();
             }
 
-            function goToSlide(idx) {
+            function goToSlide(index) {
                 if (!currentSlides.length) return;
-                currentSlideIdx = (idx + currentSlides.length) % currentSlides.length;
-                updateSlideshow();
+                currentSlideIndex = (index + currentSlides.length) % currentSlides.length;
+                updateSlidePosition();
             }
 
-            function updateSlideshow() {
-                slidesTrack.style.transform = `translateX(-${currentSlideIdx * 100}%)`;
+            function updateSlidePosition() {
+                slidesTrack.style.transform = 'translateX(-' + (currentSlideIndex * 100) + '%)';
                 slideDotsWrap.querySelectorAll('.biz-slide-dot').forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === currentSlideIdx);
+                    dot.classList.toggle('active', idx === currentSlideIndex);
                 });
             }
 
-            slidePrevBtn.addEventListener('click', () => goToSlide(currentSlideIdx - 1));
-            slideNextBtn.addEventListener('click', () => goToSlide(currentSlideIdx + 1));
+            function populateAndOpenContactModal(biz) {
+                if (!biz) return;
+                modalName.textContent = biz.name;
+                modalLocation.textContent = '📍 ' + (biz.location || 'Campus');
+                modalDescription.textContent = biz.description || '';
+                modalFindUs.textContent = biz.findUs || 'Not specified';
 
-            function wireCopyBtn(btnId, textVal) {
-                const btn = document.getElementById(btnId);
-                if (!textVal) {
-                    btn.style.display = 'none';
-                    return;
-                }
-                btn.style.display = 'inline-block';
-                btn.textContent = 'Copy';
-                btn.onclick = async () => {
-                    try {
-                        await navigator.clipboard.writeText(textVal);
-                        btn.textContent = 'Copied';
-                        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
-                    } catch (_) {
-                        btn.textContent = 'Copy';
-                    }
-                };
-            }
-
-            function openContactDetailsModal(data) {
-                if (!data) return;
-                document.getElementById('contactModalName').textContent = data.name || 'Business';
-                document.getElementById('contactModalLocation').textContent = `📍 ${data.location || 'Ghana'}`;
-                document.getElementById('contactModalDescription').textContent = data.description || '';
-                document.getElementById('contactModalFindUs').textContent = data.findUs || data.location || 'Not specified';
-
-                const phoneEl = document.getElementById('contactModalPhone');
-                const quickCallBtn = document.getElementById('quickCallBtn');
-                if (data.phone) {
-                    phoneEl.textContent = data.phone;
-                    phoneEl.href = `tel:${data.phone}`;
-                    quickCallBtn.href = `tel:${data.phone}`;
+                if (biz.phone) {
+                    modalPhone.textContent = biz.phone;
+                    modalPhone.href = 'tel:' + biz.phone;
+                    quickCallBtn.href = 'tel:' + biz.phone;
                     quickCallBtn.style.display = 'inline-flex';
+                    copyPhoneBtn.style.display = 'inline-block';
                 } else {
-                    phoneEl.textContent = 'Not provided';
-                    phoneEl.removeAttribute('href');
+                    modalPhone.textContent = 'Not provided';
+                    modalPhone.removeAttribute('href');
                     quickCallBtn.style.display = 'none';
+                    copyPhoneBtn.style.display = 'none';
                 }
 
-                const emailEl = document.getElementById('contactModalEmail');
-                const quickEmailBtn = document.getElementById('quickEmailBtn');
-                if (data.email) {
-                    emailEl.textContent = data.email;
-                    emailEl.href = `mailto:${data.email}`;
-                    quickEmailBtn.href = `mailto:${data.email}`;
+                if (biz.email) {
+                    modalEmail.textContent = biz.email;
+                    modalEmail.href = 'mailto:' + biz.email;
+                    quickEmailBtn.href = 'mailto:' + biz.email;
                     quickEmailBtn.style.display = 'inline-flex';
+                    copyEmailBtn.style.display = 'inline-block';
                 } else {
-                    emailEl.textContent = 'Not provided';
-                    emailEl.removeAttribute('href');
+                    modalEmail.textContent = 'Not provided';
+                    modalEmail.removeAttribute('href');
                     quickEmailBtn.style.display = 'none';
+                    copyEmailBtn.style.display = 'none';
                 }
 
-                const websiteRow = document.getElementById('contactWebsiteRow');
-                const websiteLink = document.getElementById('contactModalWebsite');
-                const quickWebsiteBtn = document.getElementById('quickWebsiteBtn');
-                if (data.website) {
-                    websiteRow.style.display = 'flex';
-                    websiteLink.href = data.website;
-                    quickWebsiteBtn.href = data.website;
-                    quickWebsiteBtn.style.display = 'inline-flex';
-                } else {
-                    websiteRow.style.display = 'none';
-                    quickWebsiteBtn.style.display = 'none';
-                }
-
-                wireCopyBtn('copyPhoneBtn', data.phone);
-                wireCopyBtn('copyEmailBtn', data.email);
-                renderModalSlideshow(data.images || [], data.name || 'Business');
-
-                if (typeof contactModal.showModal === 'function') {
-                    contactModal.showModal();
-                } else {
-                    contactModal.setAttribute('open', '');
-                }
+                renderSlides(biz.images || [], biz.name);
+                openDialog(contactModal);
             }
 
-            function openPolicyNoticeModal(data, customNoticeText) {
-                selectedCardData = data;
-                const noticeEl = document.getElementById('explorePolicyText');
-                if (customNoticeText && noticeEl) {
-                    noticeEl.textContent = customNoticeText;
-                }
-                if (typeof connectPolicyModal.showModal === 'function') {
-                    if (!connectPolicyModal.open) connectPolicyModal.showModal();
-                } else {
-                    connectPolicyModal.setAttribute('open', '');
-                }
-            }
+            function renderFooterSocials(cfg) {
+                const wrap = document.getElementById('footerSocialLinks');
+                if (!wrap) return;
+                const icons = cfg.social_icons || cfg.socialIcons || {};
+                const links = (cfg.site_assets && cfg.site_assets.social_links) || {};
+                const entries = Object.entries(icons).filter(([, url]) => isSafeUrl(url));
+                if (!entries.length) return;
 
-            if (cancelPolicyBtn) {
-                cancelPolicyBtn.addEventListener('click', () => {
-                    selectedCardData = null;
-                    if (typeof connectPolicyModal.close === 'function') {
-                        connectPolicyModal.close();
-                    } else {
-                        connectPolicyModal.removeAttribute('open');
+                wrap.innerHTML = '';
+                entries.forEach(([platform, iconUrl]) => {
+                    const href = links[platform] && isSafeUrl(links[platform]) ? links[platform] : '#';
+                    const el = document.createElement(href !== '#' ? 'a' : 'span');
+                    el.className = 'circle';
+                    if (href !== '#') {
+                        el.href = href;
+                        el.target = '_blank';
+                        el.rel = 'noopener noreferrer';
                     }
-                });
-            }
+                    el.setAttribute('aria-label', platform);
 
-            if (agreePolicyBtn) {
-                agreePolicyBtn.addEventListener('click', () => {
-                    const targetData = selectedCardData;
-                    if (typeof connectPolicyModal.close === 'function') {
-                        connectPolicyModal.close();
-                    } else {
-                        connectPolicyModal.removeAttribute('open');
-                    }
-                    if (targetData) {
-                        openContactDetailsModal(targetData);
-                    }
-                });
-            }
-
-            function closeContactModal() {
-                if (typeof contactModal.close === 'function') {
-                    contactModal.close();
-                } else {
-                    contactModal.removeAttribute('open');
-                }
-            }
-
-            if (closeContactModalBtn) closeContactModalBtn.addEventListener('click', closeContactModal);
-            if (doneContactModalBtn) doneContactModalBtn.addEventListener('click', closeContactModal);
-
-            function applySettings(cfg) {
-                if (!cfg) return;
-                const brandName = cfg.brandName || cfg.brand_name;
-                const mainHeadline = cfg.mainHeadline || cfg.main_headline;
-                const heroSubtext = cfg.heroSubtext || cfg.hero_subtext;
-                const exploreNotice = cfg.exploreNotice || cfg.explore_notice;
-
-                if (brandName) {
-                    const siteLogo = document.getElementById('siteLogoText');
-                    const footerLink = document.getElementById('footerBrandLink');
-                    if (siteLogo) siteLogo.textContent = brandName;
-                    if (footerLink) footerLink.textContent = brandName;
-                }
-                if (mainHeadline) {
-                    const h1 = document.getElementById('exploreMainHeadline');
-                    if (h1) h1.textContent = mainHeadline;
-                }
-                if (heroSubtext) {
-                    const sub = document.getElementById('exploreHeroSubtext');
-                    if (sub) sub.textContent = heroSubtext;
-                }
-                if (exploreNotice) {
-                    const noticeEl = document.getElementById('explorePolicyText');
-                    if (noticeEl) noticeEl.textContent = exploreNotice;
-                }
-            }
-
-            function getFilteredAndSortedBusinesses() {
-                const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
-                const selectedCategories = Array.from(document.querySelectorAll('#categoryFilterGroup input:checked'))
-                    .map(i => i.value.trim().toLowerCase());
-                const selectedLocations = Array.from(document.querySelectorAll('#locationFilterGroup input:checked'))
-                    .map(i => i.value.trim().toLowerCase());
-                const sortMode = sortSelect ? sortSelect.value : 'newest';
-
-                let list = approvedBusinesses.filter(biz => {
-                    if ((biz.status || '').toLowerCase() !== 'approved') return false;
-
-                    const name = (biz.business_name || biz.name || '').toLowerCase();
-                    const desc = (biz.description || '').toLowerCase();
-                    const loc = (biz.location || '').toLowerCase();
-                    const cat = (biz.category || '').toLowerCase();
-                    const findUs = (biz.service_location || biz.where_to_find || biz.find_us || '').toLowerCase();
-
-                    if (query) {
-                        const haystack = `${name} ${desc} ${loc} ${cat} ${findUs}`;
-                        if (!haystack.includes(query)) return false;
-                    }
-
-                    if (selectedCategories.length > 0) {
-                        const matchesCat = selectedCategories.some(sc =>
-                            cat.includes(sc) || sc.includes(cat) || name.includes(sc) || desc.includes(sc)
-                        );
-                        if (!matchesCat) return false;
-                    }
-
-                    if (selectedLocations.length > 0) {
-                        const locHaystack = `${loc} ${findUs}`;
-                        const matchesLoc = selectedLocations.some(sl => locHaystack.includes(sl));
-                        if (!matchesLoc) return false;
-                    }
-
-                    return true;
-                });
-
-                if (sortMode === 'name-asc') {
-                    list.sort((a, b) => (a.business_name || a.name || '').localeCompare(b.business_name || b.name || ''));
-                } else if (sortMode === 'name-desc') {
-                    list.sort((a, b) => (b.business_name || b.name || '').localeCompare(a.business_name || a.name || ''));
-                }
-
-                return list;
-            }
-
-            function maybeTriggerMandatoryNotice(items) {
-                if (!pendingNoticePayload && !requireNoticeParam) return;
-                if (!items || !items.length) return;
-
-                let matchedBiz = null;
-                if (pendingNoticePayload && pendingNoticePayload.businessId !== null && pendingNoticePayload.businessId !== undefined) {
-                    matchedBiz = items.find(b => String(b.id) === String(pendingNoticePayload.businessId));
-                }
-                if (!matchedBiz && initialBizId) {
-                    matchedBiz = items.find(b => String(b.id) === String(initialBizId));
-                }
-                if (!matchedBiz) {
-                    matchedBiz = items[0];
-                }
-
-                const noticeText = pendingNoticePayload && pendingNoticePayload.notice ? pendingNoticePayload.notice : '';
-                pendingNoticePayload = null;
-                openPolicyNoticeModal(buildCardData(matchedBiz), noticeText);
-            }
-
-            function renderGrid() {
-                if (!resultsGrid) return;
-                const items = getFilteredAndSortedBusinesses();
-
-                if (resultsCountLabel) {
-                    resultsCountLabel.textContent = items.length === 1
-                        ? 'Showing 1 approved business'
-                        : `Showing ${items.length} approved businesses`;
-                }
-
-                if (!items.length) {
-                    resultsGrid.innerHTML = `
-                        <div class="empty-state-box">
-                            <h3>No Approved Businesses Found</h3>
-                            <p>Only businesses approved on the Admin page appear here. Try adjusting your search or filters, or submit a business for review.</p>
-                            <a href="business.html" class="button button-primary">List Your Business</a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                resultsGrid.innerHTML = '';
-                items.forEach(biz => {
-                    const cardData = buildCardData(biz);
-                    const desc = cardData.description;
-
-                    const article = document.createElement('article');
-                    article.className = 'card explore-card';
-
-                    const imgBox = document.createElement('div');
-                    imgBox.className = 'explore-img-box';
-                    if (cardData.images[0]) {
-                        const img = document.createElement('img');
-                        img.src = cardData.images[0];
-                        img.alt = cardData.name;
-                        img.onerror = () => {
-                            img.replaceWith(Object.assign(document.createElement('div'), {
-                                className: 'explore-img-fallback',
-                                textContent: 'Image unavailable'
-                            }));
-                        };
-                        imgBox.appendChild(img);
-                    } else {
-                        imgBox.appendChild(Object.assign(document.createElement('div'), {
-                            className: 'explore-img-fallback',
-                            textContent: 'No photo provided'
-                        }));
-                    }
-
-                    const content = document.createElement('div');
-                    content.className = 'explore-card-content';
-
-                    const h3 = document.createElement('h3');
-                    h3.textContent = cardData.name;
-
-                    const p = document.createElement('p');
-                    p.textContent = desc.length > 70 ? desc.slice(0, 70) + '...' : desc;
-
-                    const locSpan = document.createElement('span');
-                    locSpan.className = 'location-tag';
-                    locSpan.textContent = `📍 ${cardData.location}`;
-
-                    const contactBtn = document.createElement('button');
-                    contactBtn.type = 'button';
-                    contactBtn.className = 'button button-secondary card-btn contact-btn';
-                    contactBtn.textContent = 'Contact';
-                    contactBtn.addEventListener('click', () => {
-                        openPolicyNoticeModal(cardData);
-                    });
-
-                    content.appendChild(h3);
-                    content.appendChild(p);
-                    content.appendChild(locSpan);
-                    content.appendChild(contactBtn);
-
-                    article.appendChild(imgBox);
-                    article.appendChild(content);
-                    resultsGrid.appendChild(article);
-                });
-
-                maybeTriggerMandatoryNotice(items);
-            }
-
-            async function syncSupabaseData() {
-                try {
-                    const cachedCfg = localStorage.getItem(CONFIG_KEY) || localStorage.getItem(LS_SETTINGS_KEY);
-                    if (cachedCfg) applySettings(JSON.parse(cachedCfg));
-                } catch (_) {}
-
-                try {
-                    const rawBiz = localStorage.getItem(LS_BUSINESSES_KEY);
-                    const cachedBiz = rawBiz ? JSON.parse(rawBiz) : [];
-                    if (Array.isArray(cachedBiz)) {
-                        approvedBusinesses = cachedBiz.filter(b => (b.status || '').toLowerCase() === 'approved');
-                        renderGrid();
-                    }
-                } catch (_) {}
-
-                if (!sb) return;
-
-                try {
-                    const { data: settings } = await sb
-                        .from('bisa_settings')
-                        .select('*')
-                        .eq('id', 1)
-                        .maybeSingle();
-
-                    if (settings) {
-                        try {
-                            localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(settings));
-                        } catch (_) {}
-                        applySettings(settings);
-                    }
-                } catch (_) {}
-
-                try {
-                    const { data: approvedRows, error } = await sb
-                        .from('bisa_businesses')
-                        .select('*')
-                        .eq('status', 'approved')
-                        .order('created_at', { ascending: false });
-
-                    if (!error && Array.isArray(approvedRows)) {
-                        approvedBusinesses = approvedRows;
-                        try {
-                            localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(approvedBusinesses));
-                        } catch (_) {}
-                        renderGrid();
-                    }
-                } catch (_) {}
-            }
-
-            if (searchForm) {
-                searchForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    renderGrid();
-                });
-            }
-
-            if (searchInput) {
-                searchInput.addEventListener('input', () => {
-                    renderGrid();
-                });
-            }
-
-            if (sortSelect) {
-                sortSelect.addEventListener('change', () => {
-                    renderGrid();
-                });
-            }
-
-            if (applyFiltersBtn) {
-                applyFiltersBtn.addEventListener('click', () => {
-                    renderGrid();
-                });
-            }
-
-            document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', () => {
-                    renderGrid();
-                });
-            });
-
-            if (clearFiltersBtn) {
-                clearFiltersBtn.addEventListener('click', () => {
-                    if (searchInput) searchInput.value = '';
-                    if (sortSelect) sortSelect.value = 'newest';
-                    document.querySelectorAll('#categoryFilterGroup input[type="checkbox"], #locationFilterGroup input[type="checkbox"]').forEach(cb => {
-                        cb.checked = false;
-                    });
-                    renderGrid();
-                });
-            }
-
-            renderGrid();
-            syncSupabaseData();
-        })();
-    </script>
-
-</body>
-</html>
+                    const img = document.createElement('img');
+                    img.src = String(iconUrl).trim();
+                    img.alt = platform;
+                    img.className = 'social-icon-img';
+                    img.addEventListener('error', () => {
+                        el.textContent
