@@ -1,2500 +1,785 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- HTML: Document metadata and responsive viewport setup -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BISA Admin Portal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <!-- JS: Loads Supabase v2 client SDK from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    /* CSS: BISA brand variables and layout styles for the admin console */
-    :root {
-      --plum: #54234A;
-      --plum-dark: #3d1836;
-      --gold: #FFB02E;
-      --coral: #F16B4B;
-      --vanilla: #FFF1DA;
-      --surface: #ffffff;
-      --border: #e6d7c3;
-      --text: #2a1625;
-      --muted: #6c5867;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: var(--vanilla);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .login-wrapper {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-
-    .login-card {
-      background: var(--surface);
-      border: 2px solid var(--plum);
-      border-radius: 16px;
-      padding: 2.25rem;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 12px 30px rgba(84, 35, 74, 0.12);
-    }
-
-    .login-card h1 {
-      color: var(--plum);
-      font-size: 1.65rem;
-      font-weight: 800;
-      margin-bottom: 0.35rem;
-    }
-
-    .login-card p {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-    }
-
-    /* CSS: Logged-in top bar keeps only brand label and Log Out action */
-    .admin-topbar {
-      background: var(--plum);
-      color: #fff;
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-    }
-
-    .admin-brand {
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: var(--gold);
-    }
-
-    .admin-brand span {
-      color: #fff;
-      font-weight: 500;
-      font-size: 0.95rem;
-      margin-left: 0.5rem;
-    }
-
-    .admin-container {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 1.75rem 1.25rem 3rem;
-    }
-
-    .tab-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.6rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .tab-btn {
-      background: var(--surface);
-      color: var(--plum);
-      border: 1.5px solid var(--plum);
-      padding: 0.65rem 1.1rem;
-      border-radius: 10px;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: 0.18s ease;
-    }
-
-    .tab-btn.active,
-    .tab-btn:hover {
-      background: var(--plum);
-      color: #fff;
-    }
-
-    .tab-panel {
-      display: none;
-    }
-
-    .tab-panel.active {
-      display: block;
-    }
-
-    .panel-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 4px 16px rgba(84, 35, 74, 0.05);
-    }
-
-    .panel-card h2 {
-      color: var(--plum);
-      font-size: 1.2rem;
-      font-weight: 800;
-      margin-bottom: 0.35rem;
-    }
-
-    .panel-sub {
-      color: var(--muted);
-      font-size: 0.88rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1rem;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--plum);
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="url"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.7rem 0.85rem;
-      border: 1.5px solid var(--border);
-      border-radius: 9px;
-      font-family: inherit;
-      font-size: 0.92rem;
-      color: var(--text);
-      background: #fff;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--plum);
-    }
-
-    textarea {
-      min-height: 92px;
-      resize: vertical;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-      padding: 0.65rem 1.15rem;
-      border-radius: 9px;
-      border: none;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: 0.18s ease;
-      text-decoration: none;
-    }
-
-    .btn-primary {
-      background: var(--plum);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background: var(--plum-dark);
-    }
-
-    .btn-gold {
-      background: var(--gold);
-      color: var(--plum-dark);
-    }
-
-    .btn-coral {
-      background: var(--coral);
-      color: #fff;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1.5px solid var(--plum);
-      color: var(--plum);
-    }
-
-    .btn-outline:hover {
-      background: var(--plum);
-      color: #fff;
-    }
-
-    .btn-sm {
-      padding: 0.45rem 0.8rem;
-      font-size: 0.8rem;
-    }
-
-    .status-banner {
-      padding: 0.75rem 1rem;
-      border-radius: 9px;
-      font-size: 0.88rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      display: none;
-    }
-
-    .status-banner.show {
-      display: block;
-    }
-
-    .status-banner.success {
-      background: #e6f7ed;
-      color: #145c32;
-      border: 1px solid #9fd8b7;
-    }
-
-    .status-banner.error {
-      background: #fdecea;
-      color: #8a1f17;
-      border: 1px solid #f5b5b0;
-    }
-
-    .broken-img-warning {
-      background: #fdecea;
-      color: #8a1f17;
-      border: 1.5px dashed #e06c62;
-      border-radius: 8px;
-      padding: 0.65rem 0.8rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      line-height: 1.4;
-      text-align: center;
-      width: 100%;
-    }
-
-    .broken-url-hint {
-      display: block;
-      margin-top: 0.25rem;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: #5c1914;
-      word-break: break-all;
-    }
-
-    .featured-picker-bar {
-      display: flex;
-      gap: 0.75rem;
-      align-items: center;
-      flex-wrap: wrap;
-      background: #fff9ef;
-      border: 1.5px solid var(--border);
-      padding: 0.9rem 1rem;
-      border-radius: 11px;
-      margin-bottom: 1.25rem;
-    }
-
-    .featured-picker-bar select {
-      flex: 1 1 260px;
-    }
-
-    .biz-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 1.25rem;
-    }
-
-    .biz-card {
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .biz-img-box {
-      position: relative;
-      background: #f6ede0;
-      min-height: 190px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .biz-img-box img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-
-    .biz-img-placeholder {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-align: center;
-      padding: 1rem;
-    }
-
-    .img-review-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      background: var(--plum);
-      color: #fff;
-      z-index: 2;
-    }
-
-    .img-review-badge.accepted {
-      background: #1c7c43;
-    }
-
-    .img-review-badge.removed,
-    .img-review-badge.broken {
-      background: var(--coral);
-    }
-
-    .featured-tag-badge {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      font-weight: 800;
-      background: var(--gold);
-      color: var(--plum-dark);
-      z-index: 2;
-    }
-
-    .biz-image-controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      padding: 0.75rem 1rem;
-      background: #fff9ef;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .biz-body {
-      padding: 1rem;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      font-size: 0.86rem;
-    }
-
-    .biz-body h3 {
-      color: var(--plum);
-      font-size: 1.05rem;
-      font-weight: 800;
-    }
-
-    .biz-meta {
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .biz-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      padding: 0.85rem 1rem;
-      border-top: 1px solid var(--border);
-      background: #fcfaf7;
-    }
-
-    /* CSS: Modal dialog used to edit/modify any business listing */
-    dialog.edit-biz-dialog {
-      margin: auto;
-      border: 2px solid var(--plum);
-      border-radius: 16px;
-      padding: 0;
-      width: min(94vw, 640px);
-      max-height: 90vh;
-      overflow-y: auto;
-      background: var(--surface);
-      box-shadow: 0 22px 50px rgba(38, 20, 34, 0.3);
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    dialog.edit-biz-dialog::backdrop {
-      background: rgba(38, 20, 34, 0.65);
-      backdrop-filter: blur(3px);
-    }
-
-    .edit-biz-header {
-      background: var(--plum);
-      color: #fff;
-      padding: 1rem 1.35rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .edit-biz-header h3 {
-      color: var(--gold);
-      font-size: 1.1rem;
-      font-weight: 800;
-    }
-
-    .edit-biz-body {
-      padding: 1.35rem;
-    }
-
-    .media-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .media-item {
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      background: #fff;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .media-thumb-box {
-      width: 100%;
-      height: 135px;
-      background: #f5ece0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.4rem;
-    }
-
-    .media-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-
-    .media-item-info {
-      padding: 0.75rem;
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.45rem;
-      flex: 1;
-    }
-
-    .badge-cat {
-      display: inline-block;
-      align-self: flex-start;
-      background: var(--vanilla);
-      color: var(--plum);
-      border: 1px solid var(--plum);
-      padding: 0.15rem 0.5rem;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.72rem;
-    }
-
-    .category-slot-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-      gap: 1rem;
-    }
-
-    .category-slot-card {
-      border: 1.5px solid var(--border);
-      border-radius: 11px;
-      padding: 1rem;
-      background: #fffcf7;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .category-slot-preview {
-      min-width: 72px;
-      max-width: 140px;
-      min-height: 68px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-shrink: 0;
-      padding: 0.25rem;
-    }
-
-    .category-slot-preview img {
-      width: 64px;
-      height: 64px;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-
-    .slide-row {
-      display: grid;
-      grid-template-columns: 140px 1fr auto;
-      gap: 1rem;
-      align-items: center;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 0.85rem;
-      margin-bottom: 0.85rem;
-      background: #fffcf8;
-    }
-
-    .slide-thumb-box {
-      width: 140px;
-      min-height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f5ece0;
-      border-radius: 8px;
-      padding: 0.25rem;
-    }
-
-    .slide-row img {
-      width: 132px;
-      height: 76px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-
-    /* CSS: Contact message cards inside the Messages tab */
-    .messages-list {
-      display: grid;
-      gap: 1rem;
-    }
-
-    .message-card {
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 1.1rem 1.25rem;
-      background: #fffcf8;
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-
-    .message-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .message-sender {
-      color: var(--plum);
-      font-weight: 800;
-      font-size: 0.98rem;
-    }
-
-    .message-email {
-      color: var(--coral);
-      font-weight: 600;
-      font-size: 0.84rem;
-    }
-
-    .message-date {
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    .message-body {
-      color: var(--text);
-      font-size: 0.9rem;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-
-    .message-actions {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin-top: 0.25rem;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    @media (max-width: 680px) {
-      .slide-row {
-        grid-template-columns: 1fr;
-      }
-      .slide-thumb-box {
-        width: 100%;
-      }
-      .admin-topbar {
-        padding: 0.9rem 1rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BISA - Admin Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        .admin-main {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+        .admin-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+            background: var(--white);
+            padding: 20px 24px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--light-gray);
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        .admin-tab-btn {
+            padding: 10px 18px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--primary);
+            background: var(--white);
+            color: var(--primary);
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .admin-tab-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+        .admin-panel {
+            display: none;
+            background: var(--white);
+            padding: 24px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--light-gray);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        .admin-table-wrap {
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .admin-table th,
+        .admin-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--light-gray);
+            text-align: left;
+            vertical-align: top;
+        }
+        .admin-table th {
+            color: var(--primary);
+            font-weight: 700;
+            background: var(--bg-warm);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+        .status-pending {
+            background: #fff4d6;
+            color: #8a5a00;
+        }
+        .status-approved {
+            background: #e6f7ed;
+            color: #145c32;
+        }
+        .status-rejected {
+            background: #fdecea;
+            color: #8a1f17;
+        }
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .mini-btn {
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-approve {
+            background: #198754;
+            color: #fff;
+        }
+        .btn-reject {
+            background: #dc3545;
+            color: #fff;
+        }
+        .btn-feature {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+        .btn-delete {
+            background: #333;
+            color: #fff;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .admin-alert {
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 18px;
+            font-size: 13px;
+            font-weight: 600;
+            display: none;
+        }
+        .admin-alert.show {
+            display: block;
+        }
+        .admin-alert.success {
+            background: #e6f7ed;
+            color: #145c32;
+            border: 1px solid #9fd8b7;
+        }
+        .admin-alert.error {
+            background: #fdecea;
+            color: #8a1f17;
+            border: 1px solid #f5b5b0;
+        }
+        .admin-auth-box {
+            max-width: 460px;
+            margin-top: 16px;
+        }
+        .admin-profile-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--border-radius);
+            background: var(--bg-warm);
+            border: 1px solid var(--light-gray);
+            margin: 16px 0 20px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-
-  <!-- HTML: Supabase Auth Login Screen -->
-  <section id="loginView" class="login-wrapper">
-    <div class="login-card">
-      <h1>BISA Admin</h1>
-      <p>Sign in with your Supabase admin credentials to manage listings, site media, messages, and notices.</p>
-      <div id="loginAlert" class="status-banner"></div>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="adminEmail">Admin Email</label>
-          <input type="email" id="adminEmail" placeholder="admin@bisa.edu.gh" required />
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <img src="assets/bisa-logo-mark.png" alt="BISA Logo Mark">
+                <span id="adminBrandLabel">BISA Admin</span>
+            </a>
+            <nav class="nav" aria-label="Main Navigation">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="explore.html" class="nav-link">Explore</a>
+                <a href="business.html" class="nav-link">List Your Business</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+                <a href="account.html" class="nav-link" id="navAccountLink">Login</a>
+            </nav>
         </div>
-        <div class="form-group">
-          <label for="adminPassword">Password</label>
-          <input type="password" id="adminPassword" placeholder="••••••••" required />
-        </div>
-        <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginSubmitBtn">Sign In</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- HTML: Authenticated Admin Console (brand label + Log Out only; no nav bar or footer) -->
-  <section id="dashboardView" class="hidden">
-    <header class="admin-topbar">
-      <div class="admin-brand" id="topbarBrandLabel">BISA <span>Admin Console</span></div>
-      <button type="button" class="btn btn-gold btn-sm" id="logoutBtn">Log Out</button>
     </header>
 
-    <main class="admin-container">
-      <div id="globalAlert" class="status-banner"></div>
-
-      <div class="tab-bar">
-        <button type="button" class="tab-btn active" data-tab="businessesTab">Business Approvals &amp; Images</button>
-        <button type="button" class="tab-btn" data-tab="featuredCampusTab">Featured on Campus</button>
-        <button type="button" class="tab-btn" data-tab="brandingTab">Branding &amp; Logo Upload</button>
-        <button type="button" class="tab-btn" data-tab="slideshowTab">Hero Slideshow</button>
-        <button type="button" class="tab-btn" data-tab="siteAssetsTab">Category Icons &amp; Site Images</button>
-        <button type="button" class="tab-btn" data-tab="socialIconsTab">Social Media Icons</button>
-        <button type="button" class="tab-btn" data-tab="mediaLibraryTab">All Uploaded Media</button>
-        <button type="button" class="tab-btn" data-tab="noticesTab">Policy Notices</button>
-        <button type="button" class="tab-btn" data-tab="messagesTab">Messages</button>
-      </div>
-
-      <!-- TAB 1: BUSINESS LISTINGS, MODIFY/UPDATE & IMAGE MODERATION -->
-      <div id="businessesTab" class="tab-panel active">
-        <div class="panel-card">
-          <h2>Pending Vendor Submissions</h2>
-          <p class="panel-sub">Modify details, review vendor-uploaded business images (Accept, Change/Replace, or Remove), and approve or reject listings.</p>
-          <div id="pendingBusinessList" class="biz-grid"></div>
-        </div>
-
-        <div class="panel-card">
-          <h2>Approved &amp; Rejected Listings</h2>
-          <p class="panel-sub">Modify any existing business listing, swap or remove its photos, feature approved listings on campus, or change its approval status.</p>
-          <div id="reviewedBusinessList" class="biz-grid"></div>
-        </div>
-      </div>
-
-      <!-- TAB 2: FEATURED ON CAMPUS (ADD FROM APPROVED & EDIT FEATURED BUSINESSES) -->
-      <div id="featuredCampusTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Add Approved Business to Featured on Campus</h2>
-          <p class="panel-sub">Select an <strong>approved</strong> business to display on the Home page under <strong>Featured on Campus</strong>, or edit any featured business below.</p>
-
-          <div class="featured-picker-bar">
-            <select id="approvedToFeatureSelect">
-              <option value="">-- Select an Approved Business --</option>
-            </select>
-            <button type="button" class="btn btn-primary" id="addApprovedToFeaturedBtn">+ Add to Featured on Campus</button>
-          </div>
-
-          <h3 style="color: var(--plum); font-size: 1rem; margin-bottom: 0.75rem;">Currently Featured on Campus</h3>
-          <div id="currentlyFeaturedCampusList" class="biz-grid" style="margin-bottom: 1.5rem;"></div>
-
-          <h3 style="color: var(--plum); font-size: 1rem; margin-bottom: 0.75rem;">Approved Businesses Available to Feature</h3>
-          <div id="approvedAvailableCampusList" class="biz-grid"></div>
-        </div>
-      </div>
-
-      <!-- TAB 3: BRANDING, HEADLINES & LOGO UPLOAD -->
-      <div id="brandingTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Brand Identity, Headlines &amp; Logo Asset</h2>
-          <p class="panel-sub">Upload a brand logo/icon directly to Supabase Storage or select from uploaded icons, and set where it appears.</p>
-
-          <form id="brandingForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="brandNameInput">Brand Name</label>
-                <input type="text" id="brandNameInput" value="BISA" required />
-              </div>
-
-              <div class="form-group">
-                <label for="logoPlacementInput">Logo Placement</label>
-                <select id="logoPlacementInput">
-                  <option value="header-left">Header Left</option>
-                  <option value="header-center">Header Center</option>
-                  <option value="hero-top">Hero Top</option>
-                  <option value="footer-brand">Footer Brand</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="mainHeadlineInput">Main Headline</label>
-              <input type="text" id="mainHeadlineInput" placeholder="Let's Do Business &amp; Share Ideas" required />
-            </div>
-
-            <div class="form-group">
-              <label for="heroSubtextInput">Hero Subtext</label>
-              <textarea id="heroSubtextInput" placeholder="Discover student-run businesses, creative services, and campus products all in one place."></textarea>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="logoFileUpload">Upload New Logo / Icon File</label>
-                <input type="file" id="logoFileUpload" accept="image/*" />
-              </div>
-
-              <div class="form-group">
-                <label for="activeLogoUrlInput">Active Logo Image URL</label>
-                <input type="url" id="activeLogoUrlInput" placeholder="https://..." />
-              </div>
-            </div>
-
-            <div id="logoPreviewWrap" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-              <div id="activeLogoPreviewBox" style="display: none; align-items: center; gap: 0.75rem;">
-                <img id="activeLogoPreview" src="" alt="Active Logo" style="width: 64px; height: 64px; object-fit: contain; border: 1px solid var(--border); border-radius: 10px; background: #fff;" />
-              </div>
-              <div id="activeLogoBrokenWarning" class="broken-img-warning hidden" style="max-width: 420px; text-align: left;">
-                Warning: Active logo URL could not be loaded. Upload a replacement file or update the URL above.
-              </div>
-              <button type="button" class="btn btn-outline btn-sm" id="clearLogoBtn">Remove Active Logo</button>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Save Branding &amp; Logo Settings</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- TAB 4: HERO SLIDESHOW -->
-      <div id="slideshowTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Add Hero Slideshow Slide</h2>
-          <p class="panel-sub">Upload a banner/slideshow image or paste an image URL to display on the homepage hero.</p>
-
-          <form id="addSlideForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="slideFileInput">Upload Slide Image</label>
-                <input type="file" id="slideFileInput" accept="image/*" />
-              </div>
-              <div class="form-group">
-                <label for="slideUrlInput">Or Image URL</label>
-                <input type="url" id="slideUrlInput" placeholder="https://..." />
-              </div>
-            </div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="slideTitleInput">Slide Headline / Caption</label>
-                <input type="text" id="slideTitleInput" placeholder="Campus Fresh Chop" />
-              </div>
-              <div class="form-group">
-                <label for="slideSubtitleInput">Slide Subcaption</label>
-                <input type="text" id="slideSubtitleInput" placeholder="Fresh meals &amp; snacks across campus" />
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add Slide</button>
-          </form>
-        </div>
-
-        <div class="panel-card">
-          <h2>Current Slideshow Items</h2>
-          <div id="slideshowList"></div>
-        </div>
-      </div>
-
-      <!-- TAB 5: CATEGORY ICONS & SITE AREA IMAGES -->
-      <div id="siteAssetsTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Category Icons &amp; Images</h2>
-          <p class="panel-sub">Upload custom icons or thumbnails for each marketplace category, or re-upload any broken asset.</p>
-          <div id="categorySlotsContainer" class="category-slot-grid"></div>
-        </div>
-
-        <div class="panel-card">
-          <h2>Site Area Banners &amp; Promo Flyers</h2>
-          <p class="panel-sub">Upload icons, promotional flyers, or default fallback images for site sections (excluding vendor registration, where vendors upload their own photo).</p>
-          <div id="siteBannersContainer" class="category-slot-grid"></div>
-        </div>
-      </div>
-
-      <!-- TAB 6: SOCIAL MEDIA ICONS UPLOAD & UPDATE -->
-      <div id="socialIconsTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Social Media Icons &amp; Links</h2>
-          <p class="panel-sub">Upload or replace icons for each social platform (and optionally set each social URL), or add a custom social icon.</p>
-
-          <div id="socialIconsGrid" class="category-slot-grid" style="margin-bottom: 1.5rem;"></div>
-
-          <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; margin-bottom: 1.75rem;">
-            <button type="button" class="btn btn-primary" id="saveAllSocialIconsBtn">Save All Social Icons &amp; Links</button>
-          </div>
-
-          <hr style="border: none; border-top: 1px solid var(--border); margin-bottom: 1.35rem;" />
-
-          <h3 style="color: var(--plum); font-size: 1rem; font-weight: 800; margin-bottom: 0.35rem;">Add Custom Social Platform Icon</h3>
-          <p class="panel-sub">Upload an icon file or paste an icon image URL for an additional social channel.</p>
-
-          <form id="addCustomSocialForm">
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="customSocialNameInput">Platform Name</label>
-                <input type="text" id="customSocialNameInput" placeholder="e.g., LinkedIn or Discord" required />
-              </div>
-              <div class="form-group">
-                <label for="customSocialUrlInput">Profile / Page URL (Optional)</label>
-                <input type="url" id="customSocialUrlInput" placeholder="https://..." />
-              </div>
-            </div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="customSocialFileInput">Upload Icon Image</label>
-                <input type="file" id="customSocialFileInput" accept="image/*" />
-              </div>
-              <div class="form-group">
-                <label for="customSocialIconUrlInput">Or Icon Image URL</label>
-                <input type="url" id="customSocialIconUrlInput" placeholder="https://..." />
-              </div>
-            </div>
-            <button type="submit" class="btn btn-gold">+ Add Social Icon</button>
-          </form>
-        </div>
-      </div>
-
-      <!-- TAB 7: ALL MEDIA LIBRARY -->
-      <div id="mediaLibraryTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Upload Media to Storage (<code>bisa-media</code>)</h2>
-          <p class="panel-sub">Upload assets under Icon, Social, Image, Flyer, Slideshow, or Business categories.</p>
-
-          <form id="mediaUploadForm" class="form-grid" style="align-items: end;">
-            <div class="form-group" style="margin-bottom: 0;">
-              <label for="mediaCategorySelect">Asset Category</label>
-              <select id="mediaCategorySelect">
-                <option value="Icon">Icon</option>
-                <option value="Social">Social</option>
-                <option value="Image">Image</option>
-                <option value="Flyer">Flyer</option>
-                <option value="Slideshow">Slideshow</option>
-                <option value="Business">Business</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-              <label for="mediaFileInput">Select Image File</label>
-              <input type="file" id="mediaFileInput" accept="image/*" required />
-            </div>
+    <main class="admin-main">
+        <div class="admin-header-bar">
             <div>
-              <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Asset</button>
+                <h1 class="page-title">BISA Admin Portal</h1>
+                <p class="page-subtitle">Manage vendor submissions, homepage branding &amp; featured listings, contact messages, and your profile.</p>
             </div>
-          </form>
+            <div class="action-row">
+                <button type="button" class="button button-secondary" id="refreshAllBtn">Refresh from Supabase</button>
+                <a href="explore.html" class="button button-primary">View Explore</a>
+            </div>
         </div>
 
-        <div class="panel-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
-            <div>
-              <h2>Media Library</h2>
-              <p class="panel-sub" style="margin-bottom: 0;">Copy asset URLs, replace broken files, set as site logo, or delete files from storage.</p>
-            </div>
-            <select id="mediaFilterSelect" style="max-width: 200px;">
-              <option value="ALL">All Categories</option>
-              <option value="Icon">Icon</option>
-              <option value="Social">Social</option>
-              <option value="Image">Image</option>
-              <option value="Flyer">Flyer</option>
-              <option value="Slideshow">Slideshow</option>
-              <option value="Business">Business</option>
-            </select>
-          </div>
-          <div id="mediaLibraryGrid" class="media-grid"></div>
-        </div>
-      </div>
+        <div id="adminAlert" class="admin-alert" role="status" aria-live="polite"></div>
 
-      <!-- TAB 8: POLICY NOTICES -->
-      <div id="noticesTab" class="tab-panel">
-        <div class="panel-card">
-          <h2>Policy Notice Modals</h2>
-          <p class="panel-sub">Edit the policy modal messages shown before viewing contact details on Explore and upon opening the Vendor Registration page.</p>
-          <form id="noticesForm">
-            <div class="form-group">
-              <label for="exploreNoticeInput">Explore Contact Policy Notice (<code>explore_notice</code>)</label>
-              <textarea id="exploreNoticeInput" rows="4" required></textarea>
-            </div>
-            <div class="form-group">
-              <label for="businessNoticeInput">List Your Business Page Policy Notice (<code>business_notice</code>)</label>
-              <textarea id="businessNoticeInput" rows="4" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Save Policy Notices</button>
-          </form>
+        <div class="admin-tabs" role="tablist">
+            <button type="button" class="admin-tab-btn active" data-tab="businessesTab">Businesses</button>
+            <button type="button" class="admin-tab-btn" data-tab="settingsTab">Site Settings &amp; Branding</button>
+            <button type="button" class="admin-tab-btn" data-tab="messagesTab">Contact Messages</button>
+            <button type="button" class="admin-tab-btn" data-tab="profileTab" id="tabProfileBtn">Login &amp; Profile</button>
         </div>
-      </div>
 
-      <!-- TAB 9: CONTACT MESSAGES FROM contact.html -->
-      <div id="messagesTab" class="tab-panel">
-        <div class="panel-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
-            <div>
-              <h2>Contact Messages</h2>
-              <p class="panel-sub" style="margin-bottom: 0;">Messages submitted from <code>contact.html</code>.</p>
+        <!-- TAB 1: BUSINESSES -->
+        <section id="businessesTab" class="admin-panel active">
+            <h2>Vendor Listings</h2>
+            <p class="page-subtitle">Approve submissions so they appear on Explore, and toggle Featured on Campus for the homepage.</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Business</th>
+                            <th>Category</th>
+                            <th>Location &amp; Contact</th>
+                            <th>Status</th>
+                            <th>Featured</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminBusinessesBody">
+                        <tr><td colspan="6">Loading businesses...</td></tr>
+                    </tbody>
+                </table>
             </div>
-            <button type="button" class="btn btn-outline btn-sm" id="refreshMessagesBtn">Refresh Messages</button>
-          </div>
-          <div id="messagesListContainer" class="messages-list"></div>
-        </div>
-      </div>
+        </section>
+
+        <!-- TAB 2: SITE SETTINGS -->
+        <section id="settingsTab" class="admin-panel">
+            <h2>Site Settings &amp; Homepage Sync</h2>
+            <p class="page-subtitle">Updates here save to <code>bisa_settings</code> and sync to <code>index.html</code>, <code>explore.html</code>, <code>about.html</code>, and <code>contact.html</code>.</p>
+
+            <form id="adminSettingsForm">
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="cfgBrandName" class="form-label">Brand Name</label>
+                        <input type="text" id="cfgBrandName" class="input" placeholder="BISA">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfgHeadline" class="form-label">Hero Headline</label>
+                        <input type="text" id="cfgHeadline" class="input" placeholder="Let's Do Business &amp; Share Ideas">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfgLogoPlacement" class="form-label">Logo Placement</label>
+                        <select id="cfgLogoPlacement" class="input">
+                            <option value="header-left">Header Left</option>
+                            <option value="header-center">Header Center</option>
+                            <option value="hero-top">Hero Top</option>
+                            <option value="footer-brand">Footer Brand Highlight</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cfgLogoUrl" class="form-label">Logo Image URL (or asset path)</label>
+                        <input type="text" id="cfgLogoUrl" class="input" placeholder="assets/bisa-logo-mark.png">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cfgSubtext" class="form-label">Hero Description</label>
+                    <textarea id="cfgSubtext" class="input textarea" rows="2"></textarea>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="cfgSocialFb" class="form-label">Facebook URL</label>
+                        <input type="text" id="cfgSocialFb" class="input" placeholder="https://facebook.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfgSocialIg" class="form-label">Instagram URL</label>
+                        <input type="text" id="cfgSocialIg" class="input" placeholder="https://instagram.com/...">
+                    </div>
+                    <div class="form-group">
+                        <label for="cfgSocialWa" class="form-label">WhatsApp URL</label>
+                        <input type="text" id="cfgSocialWa" class="input" placeholder="https://wa.me/233...">
+                    </div>
+                </div>
+
+                <button type="submit" class="button button-primary" id="saveSettingsBtn">Save &amp; Sync Settings</button>
+            </form>
+        </section>
+
+        <!-- TAB 3: MESSAGES -->
+        <section id="messagesTab" class="admin-panel">
+            <h2>Messages from Contact Page</h2>
+            <p class="page-subtitle">Messages submitted on <code>contact.html</code> appear here when saved to <code>bisa_messages</code>.</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Sender</th>
+                            <th>Email</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminMessagesBody">
+                        <tr><td colspan="4">Loading messages...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 4: LOGIN & PROFILE -->
+        <section id="profileTab" class="admin-panel">
+            <h2>Login &amp; Admin Profile</h2>
+            <p class="page-subtitle">Sign in with your Supabase account or edit your profile saved in <code>profiles</code> and synced with <code>account.html</code>.</p>
+
+            <div id="adminAuthBox" class="admin-auth-box">
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="adminLoginEmail" class="form-label">Email Address</label>
+                        <input type="email" id="adminLoginEmail" class="input" placeholder="admin@bisa.edu.gh" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminLoginPassword" class="form-label">Password</label>
+                        <input type="password" id="adminLoginPassword" class="input" placeholder="Enter your password" required>
+                    </div>
+                    <div class="action-row">
+                        <button type="submit" class="button button-primary" id="adminLoginBtn">Log In</button>
+                        <a href="account.html" class="button button-secondary">Open Full Account Page</a>
+                    </div>
+                </form>
+            </div>
+
+            <div id="adminProfileBox" class="hidden">
+                <div class="admin-profile-top">
+                    <div>
+                        <strong id="adminProfileDisplayName">Admin User</strong>
+                        <div class="page-subtitle" id="adminProfileDisplayEmail"></div>
+                    </div>
+                    <div class="action-row">
+                        <a href="account.html" class="button button-secondary">Account Page</a>
+                        <button type="button" class="mini-btn btn-reject" id="adminLogoutBtn">Log Out</button>
+                    </div>
+                </div>
+
+                <form id="adminProfileForm">
+                    <div class="settings-grid">
+                        <div class="form-group">
+                            <label for="adminProfileName" class="form-label">Full Name</label>
+                            <input type="text" id="adminProfileName" class="input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminProfilePhone" class="form-label">Phone / WhatsApp</label>
+                            <input type="text" id="adminProfilePhone" class="input" placeholder="+233 ...">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminProfileLocation" class="form-label">Location / Campus Area</label>
+                            <input type="text" id="adminProfileLocation" class="input" placeholder="e.g., Elmina, Central Region">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminProfileRole" class="form-label">Account Role</label>
+                            <input type="text" id="adminProfileRole" class="input" placeholder="Admin / Coordinator">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="adminProfileBio" class="form-label">Bio / Notes</label>
+                        <textarea id="adminProfileBio" class="input textarea" rows="3" placeholder="Admin or member notes..."></textarea>
+                    </div>
+
+                    <button type="submit" class="button button-primary" id="adminSaveProfileBtn">Save Profile</button>
+                </form>
+            </div>
+        </section>
     </main>
-  </section>
 
-  <!-- HTML: Modal dialog allowing admin to modify & update any business record -->
-  <dialog id="editBusinessModal" class="edit-biz-dialog" aria-labelledby="editBizModalTitle">
-    <div class="edit-biz-header">
-      <h3 id="editBizModalTitle">Modify Business Listing</h3>
-      <button type="button" class="btn btn-gold btn-sm" id="closeEditBizModalBtn">&times;</button>
-    </div>
-    <div class="edit-biz-body">
-      <form id="editBusinessForm">
-        <input type="hidden" id="editBizId" />
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editBizName">Business Name</label>
-            <input type="text" id="editBizName" required />
-          </div>
-          <div class="form-group">
-            <label for="editBizCategory">Category</label>
-            <input type="text" id="editBizCategory" placeholder="e.g., Services, Products, Businesses" />
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editBizLocation">Location</label>
-            <input type="text" id="editBizLocation" placeholder="e.g., Elmina, Central Region" />
-          </div>
-          <div class="form-group">
-            <label for="editBizFindUs">Where to Find Service</label>
-            <input type="text" id="editBizFindUs" placeholder="e.g., Campus Hub / Main Road" />
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editBizPhone">Tel / Phone</label>
-            <input type="text" id="editBizPhone" placeholder="+233 ..." />
-          </div>
-          <div class="form-group">
-            <label for="editBizEmail">Email</label>
-            <input type="email" id="editBizEmail" placeholder="vendor@bisa.edu.gh" />
-          </div>
-        </div>
-
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="editBizWebsite">Main Page / Website (Optional)</label>
-            <input type="url" id="editBizWebsite" placeholder="https://..." />
-          </div>
-          <div class="form-group">
-            <label for="editBizStatus">Approval Status</label>
-            <select id="editBizStatus">
-              <option value="pending">pending</option>
-              <option value="approved">approved</option>
-              <option value="rejected">rejected</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="editBizDescription">Description</label>
-          <textarea id="editBizDescription" rows="3"></textarea>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 0.6rem; flex-wrap: wrap;">
-          <button type="button" class="btn btn-outline" id="cancelEditBizBtn">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Business Changes</button>
-        </div>
-      </form>
-    </div>
-  </dialog>
-
-  <script>
-    // JS: Supabase client setup and storage/cache constants
-    const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
-    const STORAGE_BUCKET = 'bisa-media';
-
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    const LS_SETTINGS_KEY = 'bisa_settings_cache';
-    const LS_CONFIG_KEY = 'bisa_admin_config_v1';
-    const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
-    const LS_MEDIA_KEY = 'bisa_media_cache';
-    const LS_MESSAGES_KEY = 'bisa_messages_cache';
-
-    const DEFAULT_CATEGORIES = [
-      'Food & Snacks',
-      'Graphics & Art',
-      'Web & Tech',
-      'Books & Notes',
-      'Laundry',
-      'Campus Services'
-    ];
-
-    const SITE_BANNER_SLOTS = [
-      { key: 'explore_banner', label: 'Explore Page Hero Graphic / Icon' },
-      { key: 'featured_badge', label: 'Featured Business Badge Icon' },
-      { key: 'promo_flyer', label: 'Homepage / Campus Promo Flyer' },
-      { key: 'default_business_placeholder', label: 'Default Business Fallback Image (When Removed)' }
-    ];
-
-    const DEFAULT_SOCIAL_PLATFORMS = [
-      { key: 'instagram', label: 'Instagram' },
-      { key: 'tiktok', label: 'TikTok' },
-      { key: 'whatsapp', label: 'WhatsApp' },
-      { key: 'x', label: 'X (Twitter)' },
-      { key: 'facebook', label: 'Facebook' },
-      { key: 'youtube', label: 'YouTube' }
-    ];
-
-    let currentSettings = {
-      id: 1,
-      brand_name: 'BISA',
-      main_headline: "Let's Do Business & Share Ideas",
-      hero_subtext: 'Discover student-run businesses, creative services, and campus products all in one place.',
-      logo_url: '',
-      logo_placement: 'header-left',
-      explore_notice: 'Before viewing this business or service\'s contact details, location, and offerings, please note that BISA connects you with student and local providers.',
-      business_notice: 'All business listings are reviewed by BISA administrators before appearing publicly on Explore.',
-      slideshow: [],
-      category_media: {},
-      social_icons: {},
-      site_assets: { featured_business_ids: [], social_links: {} }
-    };
-
-    let allBusinesses = [];
-    let mediaLibrary = [];
-    let contactMessages = [];
-    const brokenUrlSet = new Set();
-
-    // JS: Helper to display transient feedback banners
-    function showAlert(elementId, message, type = 'success') {
-      const el = document.getElementById(elementId);
-      if (!el) return;
-      el.textContent = message;
-      el.className = `status-banner show ${type}`;
-      setTimeout(() => {
-        el.classList.remove('show');
-      }, 4500);
-    }
-
-    // JS: Escapes untrusted strings before inserting into HTML template literals
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function shortUrlLabel(url) {
-      const s = String(url || '');
-      if (s.startsWith('data:')) return 'Local data image';
-      return s.length > 65 ? `${s.slice(0, 62)}...` : s;
-    }
-
-    // JS: Renders an image or a clear warning box when the URL is known/detected as broken
-    function renderMonitoredImage(url, altText, imgAttrs = '', compact = false) {
-      const cleanUrl = String(url || '').trim();
-      if (!cleanUrl) {
-        return `<div class="biz-img-placeholder">No Image Attached</div>`;
-      }
-
-      if (brokenUrlSet.has(cleanUrl)) {
-        return `
-          <div class="broken-img-warning" style="${compact ? 'padding:0.4rem 0.5rem;font-size:0.72rem;' : ''}">
-            Broken image URL — upload a replacement
-            <span class="broken-url-hint">${escapeHtml(shortUrlLabel(cleanUrl))}</span>
-          </div>
-        `;
-      }
-
-      return `<img src="${escapeHtml(cleanUrl)}" alt="${escapeHtml(altText || 'Image')}" data-monitored-img="1" ${imgAttrs} />`;
-    }
-
-    // JS: Attaches error listeners to any rendered monitored <img> so broken URLs trigger a warning immediately
-    function bindMonitoredImages(rootEl, onBrokenUrl) {
-      if (!rootEl) return;
-      rootEl.querySelectorAll('img[data-monitored-img="1"]').forEach((img) => {
-        const srcVal = img.getAttribute('src') || '';
-        img.addEventListener('error', () => {
-          if (srcVal) brokenUrlSet.add(srcVal);
-          const warning = document.createElement('div');
-          warning.className = 'broken-img-warning';
-          warning.innerHTML = `
-            Broken image URL — upload a replacement
-            <span class="broken-url-hint">${escapeHtml(shortUrlLabel(srcVal))}</span>
-          `;
-          img.replaceWith(warning);
-          if (typeof onBrokenUrl === 'function') {
-            onBrokenUrl(srcVal);
-          }
-        }, { once: true });
-      });
-    }
-
-    // JS: Switches between dashboard tabs
-    document.querySelectorAll('.tab-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
-      });
-    });
-
-    // JS: Supabase Auth session check, sign-in, and sign-out handlers
-    const loginView = document.getElementById('loginView');
-    const dashboardView = document.getElementById('dashboardView');
-
-    async function checkSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        enterDashboard();
-      } else {
-        loginView.classList.remove('hidden');
-        dashboardView.classList.add('hidden');
-      }
-    }
-
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('adminEmail').value.trim();
-      const password = document.getElementById('adminPassword').value;
-      const submitBtn = document.getElementById('loginSubmitBtn');
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Signing In...';
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Sign In';
-
-      if (error) {
-        showAlert('loginAlert', error.message || 'Invalid login credentials.', 'error');
-        return;
-      }
-
-      if (data.session) {
-        enterDashboard();
-      }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await supabaseClient.auth.signOut();
-      dashboardView.classList.add('hidden');
-      loginView.classList.remove('hidden');
-      document.getElementById('adminPassword').value = '';
-    });
-
-    async function enterDashboard() {
-      loginView.classList.add('hidden');
-      dashboardView.classList.remove('hidden');
-      await Promise.all([loadSettings(), loadBusinesses(), loadMediaLibrary(), loadMessages()]);
-    }
-
-    // JS: Converts selected image file to base64 data URL for local fallback
-    function fileToDataUrl(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    // JS: Uploads a file to Supabase Storage bucket `bisa-media` under the chosen category folder
-    async function uploadFileToMedia(file, category = 'Image') {
-      const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-      const folder = category.toLowerCase();
-      const storagePath = `${folder}/${safeName}`;
-
-      try {
-        const { error: uploadError } = await supabaseClient.storage
-          .from(STORAGE_BUCKET)
-          .upload(storagePath, file, { cacheControl: '3600', upsert: true });
-
-        if (uploadError) throw uploadError;
-
-        const { data: publicData } = supabaseClient.storage
-          .from(STORAGE_BUCKET)
-          .getPublicUrl(storagePath);
-
-        const publicUrl = publicData.publicUrl;
-        brokenUrlSet.delete(publicUrl);
-        recordMediaLocally({
-          id: storagePath,
-          name: file.name,
-          category,
-          url: publicUrl,
-          path: storagePath,
-          created_at: new Date().toISOString()
-        });
-        return publicUrl;
-      } catch (err) {
-        console.warn('Supabase storage upload fallback:', err.message);
-        const dataUrl = await fileToDataUrl(file);
-        brokenUrlSet.delete(dataUrl);
-        recordMediaLocally({
-          id: `local-${Date.now()}`,
-          name: file.name,
-          category,
-          url: dataUrl,
-          path: null,
-          created_at: new Date().toISOString()
-        });
-        return dataUrl;
-      }
-    }
-
-    function recordMediaLocally(item) {
-      try {
-        const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
-        cached.unshift(item);
-        localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached.slice(0, 60)));
-      } catch (_) {}
-    }
-
-    // JS: Loads and saves `bisa_settings` (row id = 1)
-    async function loadSettings() {
-      try {
-        const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(LS_CONFIG_KEY);
-        if (cached) {
-          currentSettings = { ...currentSettings, ...JSON.parse(cached) };
-        }
-      } catch (_) {}
-
-      const { data, error } = await supabaseClient
-        .from('bisa_settings')
-        .select('*')
-        .eq('id', 1)
-        .maybeSingle();
-
-      if (!error && data) {
-        currentSettings = {
-          ...currentSettings,
-          ...data,
-          slideshow: Array.isArray(data.slideshow) ? data.slideshow : [],
-          category_media: data.category_media && typeof data.category_media === 'object' ? data.category_media : {},
-          social_icons: data.social_icons && typeof data.social_icons === 'object' ? data.social_icons : {},
-          site_assets: data.site_assets && typeof data.site_assets === 'object' ? data.site_assets : {}
-        };
-        try {
-          localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
-        } catch (_) {}
-      }
-
-      populateSettingsUI();
-      renderBusinesses();
-    }
-
-    async function saveSettings(partialUpdates, successMessage = 'Settings saved.') {
-      currentSettings = { ...currentSettings, ...partialUpdates, id: 1 };
-      try {
-        localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(currentSettings));
-        localStorage.setItem(LS_CONFIG_KEY, JSON.stringify({
-          brandName: currentSettings.brand_name,
-          mainHeadline: currentSettings.main_headline,
-          heroSubtext: currentSettings.hero_subtext,
-          activeLogo: currentSettings.logo_url,
-          logoPlacement: currentSettings.logo_placement,
-          exploreNotice: currentSettings.explore_notice,
-          businessNotice: currentSettings.business_notice,
-          slides: currentSettings.slideshow.map((s) => ({
-            title: s.title || '',
-            caption: s.subtitle || s.caption || '',
-            image: s.image_url || s.image || ''
-          })),
-          socialIcons: currentSettings.social_icons || {},
-          site_assets: currentSettings.site_assets
-        }));
-      } catch (_) {}
-
-      const payload = {
-        id: 1,
-        brand_name: currentSettings.brand_name,
-        main_headline: currentSettings.main_headline,
-        hero_subtext: currentSettings.hero_subtext,
-        logo_url: currentSettings.logo_url,
-        logo_placement: currentSettings.logo_placement,
-        explore_notice: currentSettings.explore_notice,
-        business_notice: currentSettings.business_notice,
-        slideshow: currentSettings.slideshow,
-        category_media: currentSettings.category_media,
-        social_icons: currentSettings.social_icons,
-        site_assets: currentSettings.site_assets
-      };
-
-      const { error } = await supabaseClient
-        .from('bisa_settings')
-        .upsert(payload, { onConflict: 'id' });
-
-      if (error) {
-        showAlert('globalAlert', `Saved locally (Supabase sync note: ${error.message})`, 'error');
-      } else {
-        showAlert('globalAlert', successMessage, 'success');
-      }
-
-      populateSettingsUI();
-    }
-
-    function populateSettingsUI() {
-      document.getElementById('topbarBrandLabel').innerHTML =
-        `${escapeHtml(currentSettings.brand_name || 'BISA')} <span>Admin Console</span>`;
-
-      document.getElementById('brandNameInput').value = currentSettings.brand_name || 'BISA';
-      document.getElementById('logoPlacementInput').value = currentSettings.logo_placement || 'header-left';
-      document.getElementById('mainHeadlineInput').value = currentSettings.main_headline || '';
-      document.getElementById('heroSubtextInput').value = currentSettings.hero_subtext || '';
-      document.getElementById('activeLogoUrlInput').value = currentSettings.logo_url || '';
-
-      const logoBox = document.getElementById('activeLogoPreviewBox');
-      const logoImg = document.getElementById('activeLogoPreview');
-      const logoWarn = document.getElementById('activeLogoBrokenWarning');
-      const logoUrl = String(currentSettings.logo_url || '').trim();
-
-      if (logoUrl && !brokenUrlSet.has(logoUrl)) {
-        logoImg.src = logoUrl;
-        logoBox.style.display = 'flex';
-        logoWarn.classList.add('hidden');
-        logoImg.onerror = () => {
-          brokenUrlSet.add(logoUrl);
-          logoBox.style.display = 'none';
-          logoWarn.classList.remove('hidden');
-        };
-      } else if (logoUrl && brokenUrlSet.has(logoUrl)) {
-        logoBox.style.display = 'none';
-        logoWarn.classList.remove('hidden');
-      } else {
-        logoBox.style.display = 'none';
-        logoWarn.classList.add('hidden');
-      }
-
-      document.getElementById('exploreNoticeInput').value = currentSettings.explore_notice || '';
-      document.getElementById('businessNoticeInput').value = currentSettings.business_notice || '';
-
-      renderSlideshowList();
-      renderCategoryAndSiteAssets();
-      renderSocialIconsTab();
-    }
-
-    // JS: Saves Branding, Headlines, and Logo Upload
-    document.getElementById('brandingForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      let logoUrl = document.getElementById('activeLogoUrlInput').value.trim();
-      const logoFile = document.getElementById('logoFileUpload').files[0];
-
-      if (logoFile) {
-        logoUrl = await uploadFileToMedia(logoFile, 'Icon');
-        document.getElementById('logoFileUpload').value = '';
-      }
-
-      if (logoUrl) brokenUrlSet.delete(logoUrl);
-
-      await saveSettings(
-        {
-          brand_name: document.getElementById('brandNameInput').value.trim() || 'BISA',
-          logo_placement: document.getElementById('logoPlacementInput').value,
-          main_headline: document.getElementById('mainHeadlineInput').value.trim(),
-          hero_subtext: document.getElementById('heroSubtextInput').value.trim(),
-          logo_url: logoUrl
-        },
-        'Branding and logo settings updated.'
-      );
-      await loadMediaLibrary();
-    });
-
-    document.getElementById('clearLogoBtn').addEventListener('click', async () => {
-      document.getElementById('activeLogoUrlInput').value = '';
-      await saveSettings({ logo_url: '' }, 'Active logo removed.');
-    });
-
-    // JS: Saves Policy Notices (`explore_notice` and `business_notice`)
-    document.getElementById('noticesForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      await saveSettings(
-        {
-          explore_notice: document.getElementById('exploreNoticeInput').value.trim(),
-          business_notice: document.getElementById('businessNoticeInput').value.trim()
-        },
-        'Policy notices updated.'
-      );
-    });
-
-    // JS: Hero Slideshow management
-    document.getElementById('addSlideForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const file = document.getElementById('slideFileInput').files[0];
-      let imageUrl = document.getElementById('slideUrlInput').value.trim();
-
-      if (file) {
-        imageUrl = await uploadFileToMedia(file, 'Slideshow');
-      }
-
-      if (!imageUrl) {
-        showAlert('globalAlert', 'Please upload an image or enter a slide image URL.', 'error');
-        return;
-      }
-
-      brokenUrlSet.delete(imageUrl);
-      const newSlide = {
-        id: `slide-${Date.now()}`,
-        image_url: imageUrl,
-        title: document.getElementById('slideTitleInput').value.trim(),
-        subtitle: document.getElementById('slideSubtitleInput').value.trim()
-      };
-
-      const updatedSlides = [...(currentSettings.slideshow || []), newSlide];
-      document.getElementById('addSlideForm').reset();
-      await saveSettings({ slideshow: updatedSlides }, 'Slide added to homepage slideshow.');
-      await loadMediaLibrary();
-    });
-
-    function renderSlideshowList() {
-      const container = document.getElementById('slideshowList');
-      const slides = currentSettings.slideshow || [];
-
-      if (!slides.length) {
-        container.innerHTML = '<p class="panel-sub">No custom slideshow slides added yet.</p>';
-        return;
-      }
-
-      container.innerHTML = slides
-        .map((slide, idx) => {
-          const slideUrl = slide.image_url || slide.image || '';
-          return `
-            <div class="slide-row">
-              <div class="slide-thumb-box">
-                ${renderMonitoredImage(slideUrl, `Slide ${idx + 1}`, '', true)}
-              </div>
-              <div style="display: grid; gap: 0.45rem;">
-                <input type="text" value="${escapeHtml(slide.title || '')}" placeholder="Slide Title" data-slide-field="title" data-idx="${idx}" />
-                <input type="text" value="${escapeHtml(slide.subtitle || slide.caption || '')}" placeholder="Slide Subcaption" data-slide-field="subtitle" data-idx="${idx}" />
-                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                  <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-                    Replace Image
-                    <input type="file" accept="image/*" hidden data-slide-replace="${idx}" />
-                  </label>
-                  <button type="button" class="btn btn-primary btn-sm" data-slide-save="${idx}">Save Slide</button>
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h4><a href="admin.html">BISA</a></h4>
+                <p>Let's Do Business &amp; Share Ideas.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="index.html">Home</a>
+                <a href="explore.html">Explore</a>
+                <a href="business.html">List Your Business</a>
+                <a href="account.html">Login &amp; Profile</a>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact Us</a>
+            </div>
+            <div class="footer-col">
+                <h4>Socials</h4>
+                <div class="social-circles">
+                    <a href="#" class="circle" aria-label="BISA on Facebook"><img src="assets/facebook.png" alt="Facebook"></a>
+                    <a href="#" class="circle" aria-label="BISA on Instagram"><img src="assets/instagram.png" alt="Instagram"></a>
+                    <a href="#" class="circle" aria-label="BISA on WhatsApp"><img src="assets/whatsapp.png" alt="WhatsApp"></a>
                 </div>
-              </div>
-              <button type="button" class="btn btn-coral btn-sm" data-slide-remove="${idx}">Remove</button>
             </div>
-          `;
-        })
-        .join('');
-
-      bindMonitoredImages(container);
-
-      container.querySelectorAll('[data-slide-save]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const idx = Number(btn.dataset.slideSave);
-          const titleVal = container.querySelector(`[data-slide-field="title"][data-idx="${idx}"]`).value.trim();
-          const subVal = container.querySelector(`[data-slide-field="subtitle"][data-idx="${idx}"]`).value.trim();
-          const updated = [...currentSettings.slideshow];
-          updated[idx] = { ...updated[idx], title: titleVal, subtitle: subVal };
-          await saveSettings({ slideshow: updated }, 'Slide updated.');
-        });
-      });
-
-      container.querySelectorAll('[data-slide-replace]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const idx = Number(input.dataset.slideReplace);
-          const file = input.files[0];
-          if (!file) return;
-          const newUrl = await uploadFileToMedia(file, 'Slideshow');
-          const updated = [...currentSettings.slideshow];
-          updated[idx] = { ...updated[idx], image_url: newUrl };
-          await saveSettings({ slideshow: updated }, 'Slide image replaced.');
-          await loadMediaLibrary();
-        });
-      });
-
-      container.querySelectorAll('[data-slide-remove]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const idx = Number(btn.dataset.slideRemove);
-          const updated = currentSettings.slideshow.filter((_, i) => i !== idx);
-          await saveSettings({ slideshow: updated }, 'Slide removed.');
-        });
-      });
-    }
-
-    // JS: Renders category icon slots and site banner slots
-    function renderCategoryAndSiteAssets() {
-      const catContainer = document.getElementById('categorySlotsContainer');
-      const catMedia = currentSettings.category_media || {};
-
-      catContainer.innerHTML = DEFAULT_CATEGORIES.map((cat) => {
-        const imgUrl = catMedia[cat] || '';
-        return `
-          <div class="category-slot-card">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <div class="category-slot-preview">
-                ${
-                  imgUrl
-                    ? renderMonitoredImage(imgUrl, cat, '', true)
-                    : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'
-                }
-              </div>
-              <div>
-                <strong style="color: var(--plum); font-size: 0.92rem;">${escapeHtml(cat)}</strong>
-                <div style="font-size: 0.75rem; color: var(--muted);">Category Icon / Card Image</div>
-              </div>
-            </div>
-            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-                ${imgUrl ? 'Replace Icon/Image' : 'Upload Icon/Image'}
-                <input type="file" accept="image/*" hidden data-cat-upload="${escapeHtml(cat)}" />
-              </label>
-              ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-cat-remove="${escapeHtml(cat)}">Remove</button>` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      bindMonitoredImages(catContainer);
-
-      catContainer.querySelectorAll('[data-cat-upload]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const cat = input.dataset.catUpload;
-          const file = input.files[0];
-          if (!file) return;
-          const url = await uploadFileToMedia(file, 'Icon');
-          const nextCatMedia = { ...(currentSettings.category_media || {}), [cat]: url };
-          await saveSettings({ category_media: nextCatMedia }, `Updated icon for ${cat}.`);
-          await loadMediaLibrary();
-        });
-      });
-
-      catContainer.querySelectorAll('[data-cat-remove]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const cat = btn.dataset.catRemove;
-          const nextCatMedia = { ...(currentSettings.category_media || {}) };
-          delete nextCatMedia[cat];
-          await saveSettings({ category_media: nextCatMedia }, `Removed icon for ${cat}.`);
-        });
-      });
-
-      const bannerContainer = document.getElementById('siteBannersContainer');
-      const siteAssets = currentSettings.site_assets || {};
-
-      bannerContainer.innerHTML = SITE_BANNER_SLOTS.map((slot) => {
-        const imgUrl = siteAssets[slot.key] || '';
-        return `
-          <div class="category-slot-card">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <div class="category-slot-preview">
-                ${
-                  imgUrl
-                    ? renderMonitoredImage(imgUrl, slot.label, '', true)
-                    : '<span style="font-size:0.7rem;color:#888;">Empty</span>'
-                }
-              </div>
-              <div>
-                <strong style="color: var(--plum); font-size: 0.88rem;">${escapeHtml(slot.label)}</strong>
-                <div style="font-size: 0.74rem; color: var(--muted);">Key: <code>${escapeHtml(slot.key)}</code></div>
-              </div>
-            </div>
-            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-                ${imgUrl ? 'Replace Image' : 'Upload Image'}
-                <input type="file" accept="image/*" hidden data-slot-upload="${escapeHtml(slot.key)}" />
-              </label>
-              ${imgUrl ? `<button type="button" class="btn btn-coral btn-sm" data-slot-remove="${escapeHtml(slot.key)}">Remove</button>` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      bindMonitoredImages(bannerContainer);
-
-      bannerContainer.querySelectorAll('[data-slot-upload]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const key = input.dataset.slotUpload;
-          const file = input.files[0];
-          if (!file) return;
-          const category = key === 'promo_flyer' ? 'Flyer' : 'Image';
-          const url = await uploadFileToMedia(file, category);
-          const nextAssets = { ...(currentSettings.site_assets || {}), [key]: url };
-          await saveSettings({ site_assets: nextAssets }, `Updated ${key}.`);
-          await loadMediaLibrary();
-        });
-      });
-
-      bannerContainer.querySelectorAll('[data-slot-remove]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const key = btn.dataset.slotRemove;
-          const nextAssets = { ...(currentSettings.site_assets || {}) };
-          delete nextAssets[key];
-          await saveSettings({ site_assets: nextAssets }, `Removed ${key}.`);
-        });
-      });
-    }
-
-    // JS: Social Media Icons upload, replacement, URL update, and custom social platforms
-    function getSocialPlatformsList() {
-      const iconsMap = currentSettings.social_icons && typeof currentSettings.social_icons === 'object'
-        ? currentSettings.social_icons
-        : {};
-      const customList = Array.isArray(currentSettings?.site_assets?.custom_social_platforms)
-        ? currentSettings.site_assets.custom_social_platforms
-        : [];
-
-      const map = new Map();
-      DEFAULT_SOCIAL_PLATFORMS.forEach((p) => map.set(p.key, { ...p, isCustom: false }));
-      customList.forEach((p) => {
-        if (p && p.key) map.set(p.key, { key: p.key, label: p.label || p.key, isCustom: true });
-      });
-      Object.keys(iconsMap).forEach((k) => {
-        if (!map.has(k)) {
-          map.set(k, { key: k, label: k.charAt(0).toUpperCase() + k.slice(1), isCustom: true });
-        }
-      });
-      return Array.from(map.values());
-    }
-
-    function renderSocialIconsTab() {
-      const grid = document.getElementById('socialIconsGrid');
-      if (!grid) return;
-
-      const platforms = getSocialPlatformsList();
-      const iconsMap = currentSettings.social_icons || {};
-      const linksMap = (currentSettings.site_assets && currentSettings.site_assets.social_links) || {};
-
-      grid.innerHTML = platforms.map((plat) => {
-        const iconUrl = String(iconsMap[plat.key] || '').trim();
-        const profileUrl = String(linksMap[plat.key] || '').trim();
-        return `
-          <div class="category-slot-card" data-social-key="${escapeHtml(plat.key)}">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <div class="category-slot-preview">
-                ${
-                  iconUrl
-                    ? renderMonitoredImage(iconUrl, `${plat.label} icon`, '', true)
-                    : '<span style="font-size:0.7rem;color:#888;">No Icon</span>'
-                }
-              </div>
-              <div>
-                <strong style="color: var(--plum); font-size: 0.92rem;">${escapeHtml(plat.label)}</strong>
-                <div style="font-size: 0.74rem; color: var(--muted);">Key: <code>${escapeHtml(plat.key)}</code></div>
-              </div>
-            </div>
-
-            <div class="form-group" style="margin-bottom: 0.25rem;">
-              <label style="font-size: 0.76rem;">Icon Image URL</label>
-              <input type="url" value="${escapeHtml(iconUrl)}" placeholder="https://..." data-social-icon-url="${escapeHtml(plat.key)}" />
-            </div>
-
-            <div class="form-group" style="margin-bottom: 0.25rem;">
-              <label style="font-size: 0.76rem;">Profile / Link URL (Optional)</label>
-              <input type="url" value="${escapeHtml(profileUrl)}" placeholder="https://..." data-social-link-url="${escapeHtml(plat.key)}" />
-            </div>
-
-            <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-                ${iconUrl ? 'Replace Icon' : 'Upload Icon'}
-                <input type="file" accept="image/*" hidden data-social-upload="${escapeHtml(plat.key)}" />
-              </label>
-              ${
-                iconUrl
-                  ? `<button type="button" class="btn btn-coral btn-sm" data-social-clear-icon="${escapeHtml(plat.key)}">Remove Icon</button>`
-                  : ''
-              }
-              ${
-                plat.isCustom
-                  ? `<button type="button" class="btn btn-outline btn-sm" data-social-remove-platform="${escapeHtml(plat.key)}">Delete</button>`
-                  : ''
-              }
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      bindMonitoredImages(grid);
-
-      grid.querySelectorAll('[data-social-upload]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const key = input.dataset.socialUpload;
-          const file = input.files[0];
-          if (!file) return;
-
-          const url = await uploadFileToMedia(file, 'Social');
-          const nextIcons = { ...(currentSettings.social_icons || {}), [key]: url };
-          const nextLinks = {
-            ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}),
-            [key]: (grid.querySelector(`[data-social-link-url="${key}"]`)?.value || '').trim()
-          };
-          const nextAssets = { ...(currentSettings.site_assets || {}), social_links: nextLinks };
-
-          await saveSettings(
-            { social_icons: nextIcons, site_assets: nextAssets },
-            `Uploaded icon for ${key}.`
-          );
-          await loadMediaLibrary();
-        });
-      });
-
-      grid.querySelectorAll('[data-social-clear-icon]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const key = btn.dataset.socialClearIcon;
-          const nextIcons = { ...(currentSettings.social_icons || {}) };
-          delete nextIcons[key];
-          await saveSettings({ social_icons: nextIcons }, `Removed icon for ${key}.`);
-        });
-      });
-
-      grid.querySelectorAll('[data-social-remove-platform]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const key = btn.dataset.socialRemovePlatform;
-          const nextIcons = { ...(currentSettings.social_icons || {}) };
-          delete nextIcons[key];
-
-          const existingCustom = Array.isArray(currentSettings?.site_assets?.custom_social_platforms)
-            ? currentSettings.site_assets.custom_social_platforms
-            : [];
-          const nextCustom = existingCustom.filter((p) => p.key !== key);
-
-          const nextLinks = { ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}) };
-          delete nextLinks[key];
-
-          const nextAssets = {
-            ...(currentSettings.site_assets || {}),
-            custom_social_platforms: nextCustom,
-            social_links: nextLinks
-          };
-
-          await saveSettings({ social_icons: nextIcons, site_assets: nextAssets }, `Deleted custom social platform "${key}".`);
-        });
-      });
-    }
-
-    document.getElementById('saveAllSocialIconsBtn').addEventListener('click', async () => {
-      const grid = document.getElementById('socialIconsGrid');
-      const platforms = getSocialPlatformsList();
-      const nextIcons = { ...(currentSettings.social_icons || {}) };
-      const nextLinks = { ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}) };
-
-      platforms.forEach((plat) => {
-        const iconInput = grid.querySelector(`[data-social-icon-url="${plat.key}"]`);
-        const linkInput = grid.querySelector(`[data-social-link-url="${plat.key}"]`);
-        const iconVal = iconInput ? iconInput.value.trim() : '';
-        const linkVal = linkInput ? linkInput.value.trim() : '';
-
-        if (iconVal) {
-          brokenUrlSet.delete(iconVal);
-          nextIcons[plat.key] = iconVal;
-        } else {
-          delete nextIcons[plat.key];
-        }
-
-        if (linkVal) {
-          nextLinks[plat.key] = linkVal;
-        } else {
-          delete nextLinks[plat.key];
-        }
-      });
-
-      const nextAssets = { ...(currentSettings.site_assets || {}), social_links: nextLinks };
-      await saveSettings(
-        { social_icons: nextIcons, site_assets: nextAssets },
-        'Social media icons and links saved.'
-      );
-    });
-
-    document.getElementById('addCustomSocialForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const rawName = document.getElementById('customSocialNameInput').value.trim();
-      const profileUrl = document.getElementById('customSocialUrlInput').value.trim();
-      const file = document.getElementById('customSocialFileInput').files[0];
-      let iconUrl = document.getElementById('customSocialIconUrlInput').value.trim();
-
-      if (!rawName) return;
-
-      if (file) {
-        iconUrl = await uploadFileToMedia(file, 'Social');
-      }
-
-      if (!iconUrl) {
-        showAlert('globalAlert', 'Please upload an icon image or enter an icon image URL.', 'error');
-        return;
-      }
-
-      brokenUrlSet.delete(iconUrl);
-      const key = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || `social_${Date.now()}`;
-
-      const existingCustom = Array.isArray(currentSettings?.site_assets?.custom_social_platforms)
-        ? currentSettings.site_assets.custom_social_platforms
-        : [];
-      const filteredCustom = existingCustom.filter((p) => p.key !== key);
-      filteredCustom.push({ key, label: rawName });
-
-      const nextIcons = { ...(currentSettings.social_icons || {}), [key]: iconUrl };
-      const nextLinks = { ...((currentSettings.site_assets && currentSettings.site_assets.social_links) || {}) };
-      if (profileUrl) {
-        nextLinks[key] = profileUrl;
-      }
-
-      const nextAssets = {
-        ...(currentSettings.site_assets || {}),
-        custom_social_platforms: filteredCustom,
-        social_links: nextLinks
-      };
-
-      document.getElementById('addCustomSocialForm').reset();
-      await saveSettings(
-        { social_icons: nextIcons, site_assets: nextAssets },
-        `Added "${rawName}" social icon.`
-      );
-      await loadMediaLibrary();
-    });
-
-    // JS: Featured on Campus helpers for approved businesses
-    function isBusinessFeatured(biz) {
-      const featuredIds = Array.isArray(currentSettings?.site_assets?.featured_business_ids)
-        ? currentSettings.site_assets.featured_business_ids.map(String)
-        : [];
-      return biz.featured_on_campus === true || featuredIds.includes(String(biz.id));
-    }
-
-    async function setFeaturedState(bizId, enable) {
-      const biz = allBusinesses.find((b) => String(b.id) === String(bizId));
-      if (!biz) return;
-
-      if (enable && (biz.status || 'pending') !== 'approved') {
-        showAlert('globalAlert', 'Approve this business first before adding it to Featured on Campus.', 'error');
-        return;
-      }
-
-      const existingIds = Array.isArray(currentSettings?.site_assets?.featured_business_ids)
-        ? currentSettings.site_assets.featured_business_ids.map(String)
-        : [];
-      const nextIds = enable
-        ? Array.from(new Set([...existingIds, String(bizId)]))
-        : existingIds.filter((id) => id !== String(bizId));
-
-      const nextAssets = {
-        ...(currentSettings.site_assets || {}),
-        featured_business_ids: nextIds
-      };
-
-      biz.featured_on_campus = enable;
-      try {
-        localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
-      } catch (_) {}
-
-      await supabaseClient
-        .from('bisa_businesses')
-        .update({ featured_on_campus: enable })
-        .eq('id', bizId);
-
-      await saveSettings(
-        { site_assets: nextAssets },
-        enable
-          ? `"${biz.business_name || biz.name}" added to Featured on Campus.`
-          : `"${biz.business_name || biz.name}" removed from Featured on Campus.`
-      );
-
-      renderBusinesses();
-    }
-
-    document.getElementById('addApprovedToFeaturedBtn').addEventListener('click', async () => {
-      const selectEl = document.getElementById('approvedToFeatureSelect');
-      const selectedId = selectEl.value;
-      if (!selectedId) {
-        showAlert('globalAlert', 'Please choose an approved business first.', 'error');
-        return;
-      }
-      await setFeaturedState(selectedId, true);
-      selectEl.value = '';
-    });
-
-    // JS: Business listing loading, modifying/updating, image moderation, and status updates
-    async function loadBusinesses() {
-      try {
-        const cached = JSON.parse(localStorage.getItem(LS_BUSINESSES_KEY) || '[]');
-        if (Array.isArray(cached) && cached.length) allBusinesses = cached;
-      } catch (_) {}
-
-      const { data, error } = await supabaseClient
-        .from('bisa_businesses')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && Array.isArray(data)) {
-        allBusinesses = data;
-        try {
-          localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
-        } catch (_) {}
-      }
-
-      renderBusinesses();
-    }
-
-    async function updateBusinessRecord(id, updates, message) {
-      const idx = allBusinesses.findIndex((b) => String(b.id) === String(id));
-      if (idx !== -1) {
-        allBusinesses[idx] = { ...allBusinesses[idx], ...updates };
-        try {
-          localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(allBusinesses));
-        } catch (_) {}
-      }
-
-      const { error } = await supabaseClient
-        .from('bisa_businesses')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) {
-        showAlert('globalAlert', `Updated locally (Supabase sync note: ${error.message})`, 'error');
-      } else {
-        showAlert('globalAlert', message, 'success');
-      }
-
-      renderBusinesses();
-    }
-
-    const editBusinessModal = document.getElementById('editBusinessModal');
-    const editBusinessForm = document.getElementById('editBusinessForm');
-
-    function openEditBusinessModal(biz) {
-      document.getElementById('editBizId').value = biz.id;
-      document.getElementById('editBizName').value = biz.business_name || biz.name || '';
-      document.getElementById('editBizCategory').value = biz.category || '';
-      document.getElementById('editBizLocation').value = biz.location || '';
-      document.getElementById('editBizFindUs').value = biz.service_location || biz.where_to_find || biz.find_us || '';
-      document.getElementById('editBizPhone').value = biz.phone || biz.tel || '';
-      document.getElementById('editBizEmail').value = biz.email || '';
-      document.getElementById('editBizWebsite').value = biz.website || biz.website_url || '';
-      document.getElementById('editBizStatus').value = biz.status || 'pending';
-      document.getElementById('editBizDescription').value = biz.description || '';
-      editBusinessModal.showModal();
-    }
-
-    document.getElementById('closeEditBizModalBtn').addEventListener('click', () => editBusinessModal.close());
-    document.getElementById('cancelEditBizBtn').addEventListener('click', () => editBusinessModal.close());
-
-    editBusinessForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('editBizId').value;
-      const updatedName = document.getElementById('editBizName').value.trim();
-      const updates = {
-        business_name: updatedName,
-        name: updatedName,
-        category: document.getElementById('editBizCategory').value.trim(),
-        location: document.getElementById('editBizLocation').value.trim(),
-        service_location: document.getElementById('editBizFindUs').value.trim(),
-        find_us: document.getElementById('editBizFindUs').value.trim(),
-        phone: document.getElementById('editBizPhone').value.trim(),
-        email: document.getElementById('editBizEmail').value.trim(),
-        website: document.getElementById('editBizWebsite').value.trim(),
-        status: document.getElementById('editBizStatus').value,
-        description: document.getElementById('editBizDescription').value.trim()
-      };
-
-      editBusinessModal.close();
-      await updateBusinessRecord(id, updates, `Updated "${updatedName}" listing.`);
-    });
-
-    function renderBusinessCard(biz) {
-      const imgUrl = String(biz.image_url || '').trim();
-      const isBroken = imgUrl && brokenUrlSet.has(imgUrl);
-      const imgState = biz.image_moderation_status || (imgUrl ? 'pending_review' : 'removed');
-      const featured = isBusinessFeatured(biz);
-
-      let badgeText = 'Vendor Photo: Pending Review';
-      let badgeClass = '';
-      if (isBroken) {
-        badgeText = 'Broken URL Warning';
-        badgeClass = 'broken';
-      } else if (imgState === 'accepted') {
-        badgeText = 'Image Accepted';
-        badgeClass = 'accepted';
-      } else if (imgState === 'replaced') {
-        badgeText = 'Image Updated by Admin';
-        badgeClass = 'accepted';
-      } else if (imgState === 'removed' || !imgUrl) {
-        badgeText = 'No Image / Removed';
-        badgeClass = 'removed';
-      }
-
-      return `
-        <article class="biz-card" data-biz-card-id="${escapeHtml(biz.id)}">
-          <div class="biz-img-box">
-            ${featured ? '<span class="featured-tag-badge">Featured on Campus</span>' : ''}
-            <span class="img-review-badge ${badgeClass}" data-biz-badge="${escapeHtml(biz.id)}">${badgeText}</span>
-            ${renderMonitoredImage(imgUrl, biz.business_name || biz.name || 'Business')}
-          </div>
-
-          <div class="biz-image-controls">
-            ${
-              imgUrl && !isBroken
-                ? `<button type="button" class="btn btn-primary btn-sm" data-biz-accept-img="${escapeHtml(biz.id)}">Accept Image</button>`
-                : ''
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BISA. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const SUPABASE_URL = 'https://vrgbataasdiyyhtsmjsp.supabase.co';
+            const SUPABASE_KEY = 'sb_publishable_cJh3pYYwrQDqWPSNJJOdGg_oEjRqqkY';
+            const sb = window.supabase && typeof window.supabase.createClient === 'function'
+                ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+                : null;
+
+            const LS_SETTINGS_KEY = 'bisa_settings_cache';
+            const CONFIG_KEY = 'bisa_admin_config_v1';
+            const LS_BUSINESSES_KEY = 'bisa_businesses_cache';
+            const PROFILE_CACHE_PREFIX = 'bisa_profile_cache_';
+
+            const alertEl = document.getElementById('adminAlert');
+            const bizBody = document.getElementById('adminBusinessesBody');
+            const msgBody = document.getElementById('adminMessagesBody');
+            const navAccountLink = document.getElementById('navAccountLink');
+            const tabProfileBtn = document.getElementById('tabProfileBtn');
+            const adminAuthBox = document.getElementById('adminAuthBox');
+            const adminProfileBox = document.getElementById('adminProfileBox');
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            const adminProfileForm = document.getElementById('adminProfileForm');
+
+            let currentSettings = {};
+            let activeUser = null;
+
+            function showAlert(msg, type) {
+                alertEl.textContent = msg;
+                alertEl.className = 'admin-alert show ' + (type || 'success');
             }
-            <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-              ${imgUrl ? 'Replace / Re-upload Image' : 'Upload Image'}
-              <input type="file" accept="image/*" hidden data-biz-replace-img="${escapeHtml(biz.id)}" />
-            </label>
-            ${
-              imgUrl
-                ? `<button type="button" class="btn btn-coral btn-sm" data-biz-remove-img="${escapeHtml(biz.id)}">Remove Image</button>`
-                : ''
-            }
-          </div>
 
-          <div class="biz-body">
-            <h3>${escapeHtml(biz.business_name || biz.name || 'Unnamed Business')}</h3>
-            <div class="biz-meta">
-              <strong>Category:</strong> ${escapeHtml(biz.category || 'General')} &bull;
-              <strong>Status:</strong> ${escapeHtml((biz.status || 'pending').toUpperCase())}
-            </div>
-            <p>${escapeHtml(biz.description || 'No description provided.')}</p>
-            <div class="biz-meta"><strong>Location:</strong> ${escapeHtml(biz.location || 'N/A')}</div>
-            <div class="biz-meta"><strong>Where to find:</strong> ${escapeHtml(biz.service_location || biz.where_to_find || biz.find_us || 'N/A')}</div>
-            <div class="biz-meta"><strong>Contact:</strong> ${escapeHtml(biz.phone || biz.tel || 'N/A')} | ${escapeHtml(biz.email || 'N/A')}</div>
-          </div>
-
-          <div class="biz-actions">
-            <button type="button" class="btn btn-outline btn-sm" data-biz-edit="${escapeHtml(biz.id)}">Edit / Modify</button>
-            ${
-              (biz.status || '').toLowerCase() === 'approved'
-                ? (featured
-                    ? `<button type="button" class="btn btn-coral btn-sm" data-biz-unfeat="${escapeHtml(biz.id)}">Unfeature</button>`
-                    : `<button type="button" class="btn btn-gold btn-sm" data-biz-feat="${escapeHtml(biz.id)}">Add to Featured</button>`)
-                : ''
-            }
-            ${
-              biz.status !== 'approved'
-                ? `<button type="button" class="btn btn-primary btn-sm" style="flex:1;" data-biz-status="approved" data-biz-id="${escapeHtml(biz.id)}">Approve</button>`
-                : ''
-            }
-            ${
-              biz.status !== 'rejected'
-                ? `<button type="button" class="btn btn-coral btn-sm" style="flex:1;" data-biz-status="rejected" data-biz-id="${escapeHtml(biz.id)}">Reject</button>`
-                : ''
-            }
-          </div>
-        </article>
-      `;
-    }
-
-    function wireBusinessCardEvents(container) {
-      if (!container) return;
-
-      bindMonitoredImages(container, () => {
-        container.querySelectorAll('[data-biz-card-id]').forEach((card) => {
-          const id = card.dataset.bizCardId;
-          const biz = allBusinesses.find((b) => String(b.id) === String(id));
-          if (biz && biz.image_url && brokenUrlSet.has(String(biz.image_url).trim())) {
-            const badge = card.querySelector('[data-biz-badge]');
-            if (badge) {
-              badge.textContent = 'Broken URL Warning';
-              badge.className = 'img-review-badge broken';
-            }
-            const acceptBtn = card.querySelector('[data-biz-accept-img]');
-            if (acceptBtn) acceptBtn.remove();
-          }
-        });
-      });
-
-      container.querySelectorAll('[data-biz-edit]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const biz = allBusinesses.find((b) => String(b.id) === String(btn.dataset.bizEdit));
-          if (biz) openEditBusinessModal(biz);
-        });
-      });
-
-      container.querySelectorAll('[data-biz-feat]').forEach((btn) => {
-        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizFeat, true));
-      });
-
-      container.querySelectorAll('[data-biz-unfeat]').forEach((btn) => {
-        btn.addEventListener('click', () => setFeaturedState(btn.dataset.bizUnfeat, false));
-      });
-
-      container.querySelectorAll('[data-biz-accept-img]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizAcceptImg;
-          await updateBusinessRecord(id, { image_moderation_status: 'accepted' }, 'Business image accepted.');
-        });
-      });
-
-      container.querySelectorAll('[data-biz-replace-img]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const id = input.dataset.bizReplaceImg;
-          const file = input.files[0];
-          if (!file) return;
-          const newUrl = await uploadFileToMedia(file, 'Business');
-          await updateBusinessRecord(
-            id,
-            { image_url: newUrl, image_moderation_status: 'replaced' },
-            'Business image replaced and saved.'
-          );
-          await loadMediaLibrary();
-        });
-      });
-
-      container.querySelectorAll('[data-biz-remove-img]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizRemoveImg;
-          await updateBusinessRecord(
-            id,
-            { image_url: null, image_moderation_status: 'removed' },
-            'Business image removed.'
-          );
-        });
-      });
-
-      container.querySelectorAll('[data-biz-status]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.bizId;
-          const status = btn.dataset.bizStatus;
-          const biz = allBusinesses.find((b) => String(b.id) === String(id));
-          const updates = { status };
-          if (status === 'approved' && biz && biz.image_url && !biz.image_moderation_status) {
-            updates.image_moderation_status = 'accepted';
-          }
-          if (status !== 'approved' && isBusinessFeatured(biz)) {
-            await setFeaturedState(id, false);
-          }
-          await updateBusinessRecord(id, updates, `Business marked as ${status}.`);
-        });
-      });
-    }
-
-    function renderBusinesses() {
-      const pendingContainer = document.getElementById('pendingBusinessList');
-      const reviewedContainer = document.getElementById('reviewedBusinessList');
-      const featuredListContainer = document.getElementById('currentlyFeaturedCampusList');
-      const availableFeaturedContainer = document.getElementById('approvedAvailableCampusList');
-      const selectEl = document.getElementById('approvedToFeatureSelect');
-
-      const pending = allBusinesses.filter((b) => (b.status || 'pending') === 'pending');
-      const reviewed = allBusinesses.filter((b) => (b.status || 'pending') !== 'pending');
-      const approved = allBusinesses.filter((b) => (b.status || 'pending').toLowerCase() === 'approved');
-      const featuredApproved = approved.filter((b) => isBusinessFeatured(b));
-      const availableApproved = approved.filter((b) => !isBusinessFeatured(b));
-
-      pendingContainer.innerHTML = pending.length
-        ? pending.map(renderBusinessCard).join('')
-        : '<p class="panel-sub">No pending business registrations right now.</p>';
-
-      reviewedContainer.innerHTML = reviewed.length
-        ? reviewed.map(renderBusinessCard).join('')
-        : '<p class="panel-sub">No approved or rejected businesses yet.</p>';
-
-      if (selectEl) {
-        selectEl.innerHTML = '<option value="">-- Select an Approved Business --</option>' +
-          availableApproved
-            .map((b) => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.business_name || b.name)} (${escapeHtml(b.location || 'Ghana')})</option>`)
-            .join('');
-      }
-
-      if (featuredListContainer) {
-        featuredListContainer.innerHTML = featuredApproved.length
-          ? featuredApproved.map(renderBusinessCard).join('')
-          : '<p class="panel-sub">No approved businesses are featured on campus yet. Select one above or click "Add to Featured" on an approved listing.</p>';
-      }
-
-      if (availableFeaturedContainer) {
-        availableFeaturedContainer.innerHTML = availableApproved.length
-          ? availableApproved.map(renderBusinessCard).join('')
-          : '<p class="panel-sub">No additional approved businesses waiting to be featured.</p>';
-      }
-
-      [pendingContainer, reviewedContainer, featuredListContainer, availableFeaturedContainer].forEach((el) => {
-        wireBusinessCardEvents(el);
-      });
-    }
-
-    // JS: Media library upload, listing, replacing broken files, copying URL, setting logo, and deletion
-    document.getElementById('mediaUploadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const category = document.getElementById('mediaCategorySelect').value;
-      const file = document.getElementById('mediaFileInput').files[0];
-      if (!file) return;
-
-      await uploadFileToMedia(file, category);
-      document.getElementById('mediaUploadForm').reset();
-      showAlert('globalAlert', `Uploaded "${file.name}" under ${category}.`, 'success');
-      await loadMediaLibrary();
-    });
-
-    document.getElementById('mediaFilterSelect').addEventListener('change', renderMediaLibrary);
-
-    async function loadMediaLibrary() {
-      const categories = ['Icon', 'Social', 'Image', 'Flyer', 'Slideshow', 'Business'];
-      const collected = [];
-
-      for (const cat of categories) {
-        const folder = cat.toLowerCase();
-        const { data, error } = await supabaseClient.storage
-          .from(STORAGE_BUCKET)
-          .list(folder, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
-
-        if (!error && Array.isArray(data)) {
-          data.forEach((fileObj) => {
-            if (!fileObj.name || fileObj.name === '.emptyFolderPlaceholder') return;
-            const path = `${folder}/${fileObj.name}`;
-            const { data: pub } = supabaseClient.storage.from(STORAGE_BUCKET).getPublicUrl(path);
-            collected.push({
-              id: path,
-              name: fileObj.name,
-              category: cat,
-              url: pub.publicUrl,
-              path
+            document.querySelectorAll('.admin-tab-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.admin-tab-btn').forEach((b) => b.classList.remove('active'));
+                    document.querySelectorAll('.admin-panel').forEach((p) => p.classList.remove('active'));
+                    btn.classList.add('active');
+                    const panel = document.getElementById(btn.dataset.tab);
+                    if (panel) panel.classList.add('active');
+                });
             });
-          });
-        }
-      }
 
-      try {
-        const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]');
-        const seenUrls = new Set(collected.map((m) => m.url));
-        cached.forEach((item) => {
-          if (item && item.url && !seenUrls.has(item.url)) {
-            collected.push(item);
-          }
-        });
-      } catch (_) {}
+            function applyAdminProfileUI(user, profileData) {
+                const displayName =
+                    (profileData && profileData.full_name) ||
+                    (user.user_metadata && user.user_metadata.full_name) ||
+                    user.email.split('@')[0];
 
-      mediaLibrary = collected;
-      renderMediaLibrary();
-    }
+                document.getElementById('adminProfileDisplayName').textContent = displayName;
+                document.getElementById('adminProfileDisplayEmail').textContent = user.email;
+                document.getElementById('adminProfileName').value = displayName;
+                document.getElementById('adminProfilePhone').value = (profileData && profileData.phone) || '';
+                document.getElementById('adminProfileLocation').value = (profileData && profileData.location) || '';
+                document.getElementById('adminProfileRole').value = (profileData && profileData.role) || 'Admin';
+                document.getElementById('adminProfileBio').value = (profileData && profileData.bio) || '';
+            }
 
-    function renderMediaLibrary() {
-      const grid = document.getElementById('mediaLibraryGrid');
-      const filter = document.getElementById('mediaFilterSelect').value;
-      const items = filter === 'ALL' ? mediaLibrary : mediaLibrary.filter((m) => m.category === filter);
+            async function syncSessionState(user) {
+                if (user) {
+                    activeUser = user;
+                    if (navAccountLink) navAccountLink.textContent = 'Profile';
+                    if (tabProfileBtn) tabProfileBtn.textContent = 'Profile (' + user.email.split('@')[0] + ')';
+                    adminAuthBox.classList.add('hidden');
+                    adminProfileBox.classList.remove('hidden');
 
-      if (!items.length) {
-        grid.innerHTML = '<p class="panel-sub">No media assets found in this category.</p>';
-        return;
-      }
+                    let cachedProfile = null;
+                    try {
+                        const raw = localStorage.getItem(PROFILE_CACHE_PREFIX + user.id);
+                        if (raw) cachedProfile = JSON.parse(raw);
+                    } catch (_) {}
+                    applyAdminProfileUI(user, cachedProfile);
 
-      grid.innerHTML = items
-        .map(
-          (item, index) => `
-        <div class="media-item">
-          <div class="media-thumb-box">
-            ${renderMonitoredImage(item.url, item.name, '', true)}
-          </div>
-          <div class="media-item-info">
-            <span class="badge-cat">${escapeHtml(item.category)}</span>
-            <div style="font-weight: 600; word-break: break-all;">${escapeHtml(item.name)}</div>
-            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: auto;">
-              <label class="btn btn-gold btn-sm" style="cursor: pointer;">
-                Re-upload
-                <input type="file" accept="image/*" hidden data-reupload-media="${index}" />
-              </label>
-              <button type="button" class="btn btn-outline btn-sm" data-copy-url="${escapeHtml(item.url)}">Copy URL</button>
-              <button type="button" class="btn btn-primary btn-sm" data-set-logo="${escapeHtml(item.url)}">Use as Logo</button>
-              <button type="button" class="btn btn-coral btn-sm" data-delete-media="${index}">Delete</button>
-            </div>
-          </div>
-        </div>
-      `
-        )
-        .join('');
-
-      bindMonitoredImages(grid);
-
-      grid.querySelectorAll('[data-reupload-media]').forEach((input) => {
-        input.addEventListener('change', async () => {
-          const item = items[Number(input.dataset.reuploadMedia)];
-          const file = input.files[0];
-          if (!item || !file) return;
-
-          await uploadFileToMedia(file, item.category || 'Image');
-          try {
-            const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]').filter((c) => c.url !== item.url);
-            localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached));
-          } catch (_) {}
-
-          showAlert('globalAlert', `Replaced "${item.name}" with "${file.name}".`, 'success');
-          await loadMediaLibrary();
-          await loadSettings();
-          await loadBusinesses();
-        });
-      });
-
-      grid.querySelectorAll('[data-copy-url]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          await navigator.clipboard.writeText(btn.dataset.copyUrl);
-          showAlert('globalAlert', 'Asset URL copied to clipboard.', 'success');
-        });
-      });
-
-      grid.querySelectorAll('[data-set-logo]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          await saveSettings({ logo_url: btn.dataset.setLogo }, 'Active site logo updated.');
-        });
-      });
-
-      grid.querySelectorAll('[data-delete-media]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const item = items[Number(btn.dataset.deleteMedia)];
-          if (!item) return;
-
-          if (item.path) {
-            await supabaseClient.storage.from(STORAGE_BUCKET).remove([item.path]);
-          }
-          try {
-            const cached = JSON.parse(localStorage.getItem(LS_MEDIA_KEY) || '[]').filter((c) => c.url !== item.url);
-            localStorage.setItem(LS_MEDIA_KEY, JSON.stringify(cached));
-          } catch (_) {}
-          showAlert('globalAlert', `Deleted "${item.name}".`, 'success');
-          await loadMediaLibrary();
-        });
-      });
-    }
-
-    // JS: Loads and renders messages submitted from contact.html
-    async function loadMessages() {
-      let merged = [];
-      try {
-        const cached = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]');
-        if (Array.isArray(cached)) merged = [...cached];
-      } catch (_) {}
-
-      const { data, error } = await supabaseClient
-        .from('bisa_messages')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (!error && Array.isArray(data)) {
-        const seen = new Set(data.map((m) => m.id || `${m.email}-${m.created_at}-${m.message}`));
-        const localOnly = merged.filter((m) => !seen.has(m.id || `${m.email}-${m.created_at}-${m.message}`));
-        merged = [...data, ...localOnly];
-      }
-
-      contactMessages = merged;
-      renderMessages();
-    }
-
-    function renderMessages() {
-      const container = document.getElementById('messagesListContainer');
-      if (!container) return;
-
-      if (!contactMessages.length) {
-        container.innerHTML = '<p class="panel-sub">No messages received yet.</p>';
-        return;
-      }
-
-      container.innerHTML = contactMessages
-        .map((msg, idx) => {
-          const dateLabel = msg.created_at ? new Date(msg.created_at).toLocaleString() : 'Recent';
-          return `
-            <article class="message-card">
-              <div class="message-header">
-                <div>
-                  <div class="message-sender">${escapeHtml(msg.name || 'Visitor')}</div>
-                  <div class="message-email">${escapeHtml(msg.email || 'No email')}</div>
-                </div>
-                <span class="message-date">${escapeHtml(dateLabel)}</span>
-              </div>
-              <p class="message-body">${escapeHtml(msg.message || '')}</p>
-              <div class="message-actions">
-                ${
-                  msg.email
-                    ? `<button type="button" class="btn btn-outline btn-sm" data-copy-msg-email="${escapeHtml(msg.email)}">Copy Email</button>
-                       <a href="mailto:${escapeHtml(msg.email)}" class="btn btn-primary btn-sm">Reply via Email</a>`
-                    : ''
+                    if (sb) {
+                        const { data, error } = await sb
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', user.id)
+                            .maybeSingle();
+                        if (!error && data) {
+                            try {
+                                localStorage.setItem(PROFILE_CACHE_PREFIX + user.id, JSON.stringify(data));
+                            } catch (_) {}
+                            applyAdminProfileUI(user, data);
+                        }
+                    }
+                } else {
+                    activeUser = null;
+                    if (navAccountLink) navAccountLink.textContent = 'Login';
+                    if (tabProfileBtn) tabProfileBtn.textContent = 'Login & Profile';
+                    adminProfileBox.classList.add('hidden');
+                    adminAuthBox.classList.remove('hidden');
                 }
-                <button type="button" class="btn btn-coral btn-sm" data-delete-msg="${idx}">Delete</button>
-              </div>
-            </article>
-          `;
-        })
-        .join('');
+            }
 
-      container.querySelectorAll('[data-copy-msg-email]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          await navigator.clipboard.writeText(btn.dataset.copyMsgEmail);
-          showAlert('globalAlert', 'Sender email copied.', 'success');
-        });
-      });
+            adminLoginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!sb) {
+                    showAlert('Supabase authentication is unavailable.', 'error');
+                    return;
+                }
+                const btn = document.getElementById('adminLoginBtn');
+                btn.disabled = true;
+                btn.textContent = 'Logging In...';
 
-      container.querySelectorAll('[data-delete-msg]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const idx = Number(btn.dataset.deleteMsg);
-          const target = contactMessages[idx];
-          if (!target) return;
+                const email = document.getElementById('adminLoginEmail').value.trim();
+                const password = document.getElementById('adminLoginPassword').value;
 
-          if (target.id !== undefined && target.id !== null) {
-            await supabaseClient.from('bisa_messages').delete().eq('id', target.id);
-          }
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                btn.disabled = false;
+                btn.textContent = 'Log In';
 
-          try {
-            const updatedCache = JSON.parse(localStorage.getItem(LS_MESSAGES_KEY) || '[]').filter(
-              (m) => !(m.email === target.email && m.message === target.message && m.created_at === target.created_at)
-            );
-            localStorage.setItem(LS_MESSAGES_KEY, JSON.stringify(updatedCache));
-          } catch (_) {}
+                if (error) {
+                    showAlert(error.message || 'Login failed.', 'error');
+                    return;
+                }
+                await syncSessionState(data.user || null);
+                showAlert('Logged in to BISA Admin.', 'success');
+            });
 
-          contactMessages.splice(idx, 1);
-          renderMessages();
-          showAlert('globalAlert', 'Message deleted.', 'success');
-        });
-      });
-    }
+            adminProfileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (!activeUser) return;
 
-    document.getElementById('refreshMessagesBtn').addEventListener('click', async () => {
-      await loadMessages();
-      showAlert('globalAlert', 'Messages refreshed.', 'success');
-    });
+                const btn = document.getElementById('adminSaveProfileBtn');
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
 
-    checkSession();
-  </script>
+                const payload = {
+                    id: activeUser.id,
+                    email: activeUser.email,
+                    full_name: document.getElementById('adminProfileName').value.trim(),
+                    phone: document.getElementById('adminProfilePhone').value.trim(),
+                    location: document.getElementById('adminProfileLocation').value.trim(),
+                    role: document.getElementById('adminProfileRole').value.trim() || 'Admin',
+                    bio: document.getElementById('adminProfileBio').value.trim(),
+                    updated_at: new Date().toISOString()
+                };
+
+                try {
+                    localStorage.setItem(PROFILE_CACHE_PREFIX + activeUser.id, JSON.stringify(payload));
+                } catch (_) {}
+
+                let dbError = null;
+                if (sb) {
+                    const { error } = await sb.from('profiles').upsert(payload, { onConflict: 'id' });
+                    dbError = error;
+                    await sb.auth.updateUser({ data: { full_name: payload.full_name } });
+                }
+
+                btn.disabled = false;
+                btn.textContent = 'Save Profile';
+                applyAdminProfileUI(activeUser, payload);
+
+                if (dbError) {
+                    showAlert('Profile saved locally, but Supabase returned: ' + dbError.message, 'error');
+                } else {
+                    showAlert('Profile saved and synced.', 'success');
+                }
+            });
+
+            document.getElementById('adminLogoutBtn').addEventListener('click', async () => {
+                if (sb) await sb.auth.signOut();
+                await syncSessionState(null);
+                showAlert('Logged out.', 'success');
+            });
+
+            function fillSettingsForm(cfg) {
+                if (!cfg) return;
+                currentSettings = { ...currentSettings, ...cfg };
+                document.getElementById('cfgBrandName').value = cfg.brand_name || cfg.brandName || 'BISA';
+                document.getElementById('cfgHeadline').value = cfg.main_headline || cfg.mainHeadline || "Let's Do Business & Share Ideas";
+                document.getElementById('cfgSubtext').value = cfg.hero_subtext || cfg.heroSubtext || 'Discover student-run businesses, creative services, and campus products all in one place.';
+                document.getElementById('cfgLogoPlacement').value = cfg.logo_placement || cfg.logoPlacement || 'header-left';
+                document.getElementById('cfgLogoUrl').value = cfg.logo_url || cfg.activeLogo || 'assets/bisa-logo-mark.png';
+
+                const links = (cfg.site_assets && cfg.site_assets.social_links) || {};
+                document.getElementById('cfgSocialFb').value = links.facebook || '';
+                document.getElementById('cfgSocialIg').value = links.instagram || '';
+                document.getElementById('cfgSocialWa').value = links.whatsapp || '';
+            }
+
+            async function loadBusinesses() {
+                if (!sb) {
+                    bizBody.innerHTML = '<tr><td colspan="6">Supabase client unavailable.</td></tr>';
+                    return;
+                }
+                const { data, error } = await sb
+                    .from('bisa_businesses')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    bizBody.innerHTML = '<tr><td colspan="6">Could not load businesses: ' + error.message + '</td></tr>';
+                    return;
+                }
+
+                const list = Array.isArray(data) ? data : [];
+                try {
+                    localStorage.setItem(LS_BUSINESSES_KEY, JSON.stringify(list));
+                } catch (_) {}
+
+                if (!list.length) {
+                    bizBody.innerHTML = '<tr><td colspan="6">No business submissions yet.</td></tr>';
+                    return;
+                }
+
+                bizBody.innerHTML = list.map((b) => {
+                    const status = (b.status || 'pending').toLowerCase();
+                    const badgeClass = status === 'approved' ? 'status-approved' : (status === 'rejected' ? 'status-rejected' : 'status-pending');
+                    const featured = Boolean(b.featured_on_campus);
+                    return `
+                        <tr data-id="${b.id}">
+                            <td><strong>${b.business_name || b.name || 'Unnamed'}</strong><br><span style="color:var(--gray);font-size:12px;">${b.description || ''}</span></td>
+                            <td>${b.category || '-'}</td>
+                            <td>${b.location || '-'}<br><span style="font-size:12px;">${b.phone || ''} ${b.email ? '· ' + b.email : ''}</span></td>
+                            <td><span class="status-badge ${badgeClass}">${status}</span></td>
+                            <td>${featured ? 'Yes' : 'No'}</td>
+                            <td>
+                                <div class="action-row">
+                                    <button type="button" class="mini-btn btn-approve" data-action="approve" data-id="${b.id}">Approve</button>
+                                    <button type="button" class="mini-btn btn-reject" data-action="reject" data-id="${b.id}">Reject</button>
+                                    <button type="button" class="mini-btn btn-feature" data-action="feature" data-id="${b.id}" data-featured="${featured}">${featured ? 'Unfeature' : 'Feature'}</button>
+                                    <button type="button" class="mini-btn btn-delete" data-action="delete" data-id="${b.id}">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            bizBody.addEventListener('click', async (e) => {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn || !sb) return;
+                const id = btn.dataset.id;
+                const action = btn.dataset.action;
+
+                if (action === 'approve') {
+                    await sb.from('bisa_businesses').update({ status: 'approved' }).eq('id', id);
+                    showAlert('Listing approved for Explore.', 'success');
+                } else if (action === 'reject') {
+                    await sb.from('bisa_businesses').update({ status: 'rejected', featured_on_campus: false }).eq('id', id);
+                    showAlert('Listing marked as rejected.', 'success');
+                } else if (action === 'feature') {
+                    const nextFeat = btn.dataset.featured !== 'true';
+                    await sb.from('bisa_businesses').update({ featured_on_campus: nextFeat, status: 'approved' }).eq('id', id);
+                    showAlert(nextFeat ? 'Listing featured on campus.' : 'Listing removed from featured.', 'success');
+                } else if (action === 'delete') {
+                    await sb.from('bisa_businesses').delete().eq('id', id);
+                    showAlert('Listing deleted.', 'success');
+                }
+                await loadBusinesses();
+            });
+
+            document.getElementById('adminSettingsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const mergedAssets = {
+                    ...(currentSettings.site_assets || {}),
+                    social_links: {
+                        facebook: document.getElementById('cfgSocialFb').value.trim(),
+                        instagram: document.getElementById('cfgSocialIg').value.trim(),
+                        whatsapp: document.getElementById('cfgSocialWa').value.trim()
+                    }
+                };
+
+                const payload = {
+                    id: 1,
+                    brand_name: document.getElementById('cfgBrandName').value.trim() || 'BISA',
+                    main_headline: document.getElementById('cfgHeadline').value.trim() || "Let's Do Business & Share Ideas",
+                    hero_subtext: document.getElementById('cfgSubtext').value.trim(),
+                    logo_placement: document.getElementById('cfgLogoPlacement').value,
+                    logo_url: document.getElementById('cfgLogoUrl').value.trim(),
+                    social_icons: currentSettings.social_icons || {
+                        facebook: 'assets/facebook.png',
+                        instagram: 'assets/instagram.png',
+                        whatsapp: 'assets/whatsapp.png'
+                    },
+                    site_assets: mergedAssets
+                };
+
+                try {
+                    localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(payload));
+                    localStorage.setItem(CONFIG_KEY, JSON.stringify(payload));
+                } catch (_) {}
+
+                if (sb) {
+                    const { error } = await sb.from('bisa_settings').upsert(payload, { onConflict: 'id' });
+                    if (error) {
+                        showAlert('Saved locally, but Supabase settings update returned: ' + error.message, 'error');
+                        return;
+                    }
+                }
+                currentSettings = payload;
+                document.getElementById('adminBrandLabel').textContent = payload.brand_name + ' Admin';
+                showAlert('Site settings saved and synced across pages.', 'success');
+            });
+
+            async function loadMessages() {
+                if (!sb) {
+                    msgBody.innerHTML = '<tr><td colspan="4">Supabase client unavailable.</td></tr>';
+                    return;
+                }
+                const { data, error } = await sb
+                    .from('bisa_messages')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    msgBody.innerHTML = '<tr><td colspan="4">Messages table not set up yet or unavailable (' + error.message + ').</td></tr>';
+                    return;
+                }
+                const rows = Array.isArray(data) ? data : [];
+                if (!rows.length) {
+                    msgBody.innerHTML = '<tr><td colspan="4">No contact messages yet.</td></tr>';
+                    return;
+                }
+                msgBody.innerHTML = rows.map((m) => `
+                    <tr>
+                        <td><strong>${m.name || 'Visitor'}</strong></td>
+                        <td>${m.email || '-'}</td>
+                        <td>${m.message || ''}</td>
+                        <td>${m.created_at ? new Date(m.created_at).toLocaleString() : '-'}</td>
+                    </tr>
+                `).join('');
+            }
+
+            async function loadSettings() {
+                try {
+                    const cached = localStorage.getItem(LS_SETTINGS_KEY) || localStorage.getItem(CONFIG_KEY);
+                    if (cached) fillSettingsForm(JSON.parse(cached));
+                } catch (_) {}
+
+                if (!sb) return;
+                const { data, error } = await sb.from('bisa_settings').select('*').eq('id', 1).maybeSingle();
+                if (!error && data) {
+                    try {
+                        localStorage.setItem(LS_SETTINGS_KEY, JSON.stringify(data));
+                        localStorage.setItem(CONFIG_KEY, JSON.stringify(data));
+                    } catch (_) {}
+                    fillSettingsForm(data);
+                }
+            }
+
+            async function initSession() {
+                if (!sb) {
+                    await syncSessionState(null);
+                    return;
+                }
+                const { data } = await sb.auth.getSession();
+                await syncSessionState((data && data.session && data.session.user) || null);
+                sb.auth.onAuthStateChange((_event, session) => {
+                    syncSessionState((session && session.user) || null);
+                });
+            }
+
+            document.getElementById('refreshAllBtn').addEventListener('click', () => {
+                loadSettings();
+                loadBusinesses();
+                loadMessages();
+                initSession();
+                showAlert('Refreshed data from Supabase.', 'success');
+            });
+
+            loadSettings();
+            loadBusinesses();
+            loadMessages();
+            initSession();
+        })();
+    </script>
 </body>
 </html>
